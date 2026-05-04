@@ -450,15 +450,23 @@ section {
   align-items: start;
 }
 .trust-icon {
-  display: inline-grid;
-  place-items: center;
-  width: 48px; height: 48px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 48px;
+  height: 48px;
   color: var(--accent);
   border: 1px solid var(--line-strong);
   border-radius: var(--radius-sm);
   background: var(--bg);
 }
-.trust-icon img { width: 28px; height: 28px; filter: brightness(0) saturate(100%) invert(72%) sepia(63%) saturate(395%) hue-rotate(2deg) brightness(95%) contrast(89%); }
+.trust-icon img {
+  display: block;
+  width: 28px;
+  height: 28px;
+  filter: brightness(0) saturate(100%) invert(72%) sepia(63%) saturate(395%) hue-rotate(2deg) brightness(95%) contrast(89%);
+}
 .trust-item strong {
   display: block;
   color: var(--ink);
