@@ -28,23 +28,22 @@ def star_polygon(cx, cy, r_outer, r_inner, points=5, rotation_deg=-90):
 
 
 def make_white_transparent(img):
-    """Background -> transparent, line strokes -> opaque cream."""
+    """Recolor any visible (non-transparent) line strokes to cream and make
+    light/white pixels transparent. Preserves source alpha=0 pixels."""
     img = img.convert("RGBA")
     pixels = img.load()
     W, H = img.size
     for y in range(H):
         for x in range(W):
             r, g, b, a = pixels[x, y]
+            if a == 0:
+                continue  # already transparent
             lum = int(0.299 * r + 0.587 * g + 0.114 * b)
             if lum >= 220:
-                # background
                 pixels[x, y] = (0, 0, 0, 0)
             elif lum <= 120:
-                # solid stroke -> full cream
                 pixels[x, y] = (*CREAM[:3], 255)
             else:
-                # anti-alias edge: cream with proportional alpha
-                # alpha ramps from 255 (lum=120) -> 0 (lum=220)
                 t = (220 - lum) / (220 - 120)
                 pixels[x, y] = (*CREAM[:3], int(255 * t))
     return img
