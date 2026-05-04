@@ -5,8 +5,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <title>Ellis Car Care, hand-detailed in Ann Arbor</title>
   <meta name="description" content="Hand auto detailing in Ann Arbor, Michigan. Two-bucket wash, full detail, hand wax, and paint restoration. Done in your driveway by Ellis, a local Burns Park detailer.">
-  <meta name="theme-color" content="#F4EBD9">
+  <meta name="theme-color" content="#0E1014">
   <meta name="robots" content="index,follow">
+  <meta name="color-scheme" content="dark">
 
   <link rel="canonical" href="https://ellis-car-care.vercel.app/">
   <link rel="icon" href="favicon.svg" type="image/svg+xml">
@@ -21,7 +22,7 @@
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,500;1,9..144,600&family=Inter:wght@400;500;600;700&display=swap">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,500;1,9..144,600&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap">
 
   <link rel="stylesheet" href="styles.css">
 
@@ -58,6 +59,7 @@
 <header class="topbar">
   <a class="brand" href="#top" aria-label="Ellis Car Care home">
     <span class="brand-name">Ellis Car Care</span>
+    <span class="brand-mono">ANN ARBOR · MI</span>
   </a>
   <nav class="topnav" aria-label="Primary">
     <a href="#menu">Pricing</a>
@@ -65,6 +67,7 @@
     <a href="#about">About</a>
     <a href="#book">Book</a>
   </nav>
+  <a class="topbar-phone" href="tel:+16282520740" data-tel-link>(628) 252-0740</a>
   <a class="topbar-cta" href="sms:+16282520740" data-sms-link aria-label="Text Ellis to book">
     Text to book
   </a>
@@ -76,19 +79,22 @@
   <section class="hero">
     <div class="container">
       <p class="eyebrow">Burns Park · Ann Arbor · Michigan</p>
-      <h1 class="display hero-h1">
-        Hand-detailed,<br>in your driveway.
-      </h1>
+      <h1 class="display hero-h1">Hand-detailed, in your driveway.</h1>
       <p class="lead hero-lead">
-        Two-bucket wash. Full detail. Hand wax. Paint restoration.<br>
-        Done by hand on your block, by Ellis.
+        Two-bucket wash. Full detail. Hand wax. Paint restoration. Done by hand on your block, by Ellis.
       </p>
+
+      <div class="hero-phone-block">
+        <span class="hero-phone-label">Text or call</span>
+        <a class="hero-phone" href="tel:+16282520740" data-tel-link>(628) 252-0740</a>
+      </div>
+
       <div class="hero-ctas">
         <a class="btn btn-primary btn-lg" href="sms:+16282520740" data-sms-link>Text to book</a>
-        <a class="btn btn-link" href="#menu">See pricing</a>
+        <a class="btn btn-ghost btn-lg" href="#menu">See pricing</a>
       </div>
       <p class="hero-meta">
-        <span data-next-available>Booking this week</span>
+        <span><span class="hero-status-dot" aria-hidden="true"></span><span data-next-available>Booking this week</span></span>
         <span class="hero-meta-sep" aria-hidden="true">·</span>
         <span>Replies in under an hour</span>
       </p>
@@ -100,7 +106,7 @@
     <div class="container trust-grid">
       <div class="trust-item">
         <span class="trust-icon" aria-hidden="true">
-          <img src="images/icons/hand.svg" alt="" width="32" height="32">
+          <img src="images/icons/hand.svg" alt="" width="22" height="22">
         </span>
         <div>
           <strong>Done by hand.</strong>
@@ -109,7 +115,7 @@
       </div>
       <div class="trust-item">
         <span class="trust-icon" aria-hidden="true">
-          <img src="images/icons/bill.svg" alt="" width="32" height="32">
+          <img src="images/icons/bill.svg" alt="" width="22" height="22">
         </span>
         <div>
           <strong>Pay after.</strong>
@@ -118,7 +124,7 @@
       </div>
       <div class="trust-item">
         <span class="trust-icon" aria-hidden="true">
-          <img src="images/icons/redo.svg" alt="" width="32" height="32">
+          <img src="images/icons/redo.svg" alt="" width="22" height="22">
         </span>
         <div>
           <strong>Redo if it's not right.</strong>
@@ -134,7 +140,7 @@
       <header class="section-head">
         <p class="eyebrow">Pricing</p>
         <h2 class="display">Three packages. One add-on.</h2>
-        <p class="muted">Burns Park is free. Greater Ann Arbor (48104, 48103, 48105) adds $5 for travel.</p>
+        <p>Burns Park is free. Greater Ann Arbor (48104, 48103, 48105) adds $5 for travel.</p>
       </header>
 
       <div class="bundles" data-bundles></div>
@@ -191,7 +197,7 @@
           <source srcset="images/ellis.webp" type="image/webp">
           <img src="images/ellis.jpg" alt="Ellis, founder of Ellis Car Care" width="320" height="426" loading="lazy">
         </picture>
-        <figcaption>Ellis, owner</figcaption>
+        <figcaption>Ellis · Owner</figcaption>
       </figure>
       <div class="about-copy">
         <p class="eyebrow">About</p>
@@ -208,7 +214,7 @@
         <p class="about-sig">
           <a href="sms:+16282520740" data-sms-link>Text Ellis</a>
           <span aria-hidden="true">·</span>
-          <a href="tel:+16282520740" data-tel-link data-tel-display>(628) 252-0740</a>
+          <a href="tel:+16282520740" data-tel-link>(628) 252-0740</a>
         </p>
       </div>
     </div>
@@ -227,7 +233,10 @@
         </ul>
       </div>
       <div class="area-art" aria-hidden="true">
-        <img src="images/michigan.svg" alt="" width="180" height="240">
+        <picture>
+          <source srcset="images/michigan-ai.webp" type="image/webp">
+          <img src="images/michigan-ai.png" alt="" width="220" height="220" loading="lazy">
+        </picture>
       </div>
     </div>
   </section>
@@ -250,12 +259,23 @@
         <p class="eyebrow">Book</p>
         <h2 class="display">Easiest way is text.</h2>
         <p>
-          Text is fastest. I usually reply inside an hour. If you'd rather use a form, fill it out and I'll text you to confirm.
+          Text is fastest, I usually reply inside an hour. Or scan the code, fill the form, or call.
         </p>
         <a class="btn btn-primary btn-lg" href="sms:+16282520740" data-sms-link>Text Ellis</a>
         <p class="book-or">
-          Or call <a href="tel:+16282520740" data-tel-link data-tel-display>(628) 252-0740</a>.
+          OR CALL <a href="tel:+16282520740" data-tel-link data-tel-display>(628) 252-0740</a>
         </p>
+
+        <div class="qr-block">
+          <picture>
+            <source srcset="images/qr-text-ellis.webp" type="image/webp">
+            <img src="images/qr-text-ellis.png" alt="Scan with phone camera to text Ellis" width="128" height="128" loading="lazy">
+          </picture>
+          <div>
+            <p class="eyebrow">Or scan</p>
+            <p>Point your phone camera at the code. It opens a pre-filled text to Ellis.</p>
+          </div>
+        </div>
       </div>
 
       <form class="book-form" id="bookForm" method="POST" action="mailto:info@elliscarcare.com" enctype="text/plain">
@@ -299,12 +319,12 @@
     <div class="container">
       <div class="referral-card">
         <div class="referral-copy">
-          <p class="eyebrow eyebrow-light">Referral</p>
+          <p class="eyebrow">Referral</p>
           <h2 class="display" data-referral-headline></h2>
           <p data-referral-body></p>
         </div>
         <div class="referral-ctas">
-          <a class="btn btn-on-dark" href="sms:?&body=" data-referral-share>Share with a neighbor</a>
+          <a class="btn btn-on-light" href="sms:?&body=" data-referral-share>Share with a neighbor</a>
         </div>
       </div>
     </div>
@@ -327,12 +347,12 @@
       <p class="muted small">Greater Ann Arbor served.</p>
     </div>
   </div>
-  <p class="footer-fine muted small">© <span id="year">2026</span> Ellis Car Care. Made in Ann Arbor.</p>
+  <p class="footer-fine muted small">© <span id="year">2026</span> ELLIS CAR CARE · MADE IN ANN ARBOR</p>
 </footer>
 
 <a class="sticky-cta" href="sms:+16282520740" data-sms-link aria-label="Text Ellis to book">
   Text to book
-  <span class="sticky-cta-sub">Cash, Venmo, or Zelle</span>
+  <span class="sticky-cta-sub">(628) 252-0740 · Cash, Venmo, Zelle</span>
 </a>
 
 <script src="config.js"></script>
