@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 220 240" fill="none" stroke="#0E2A47" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+  <!-- bubbles spilling out the top -->
+  <circle cx="60" cy="38" r="14" fill="#FAF4E8"/>
+  <circle cx="92" cy="22" r="10" fill="#FAF4E8"/>
+  <circle cx="120" cy="36" r="16" fill="#FAF4E8"/>
+  <circle cx="150" cy="20" r="9" fill="#FAF4E8"/>
+  <circle cx="172" cy="44" r="13" fill="#FAF4E8"/>
+  <circle cx="138" cy="58" r="8" fill="#FAF4E8"/>
+  <circle cx="78" cy="60" r="9" fill="#FAF4E8"/>
+  <!-- bucket body, hand-drawn trapezoid -->
+  <path d="M44 90 L176 88 L168 218 Q110 226 52 218 Z" fill="#2FA9B8" fill-opacity=".18" stroke="#0E2A47"/>
+  <!-- bucket rim -->
+  <path d="M40 90 Q110 80 180 90"/>
+  <path d="M44 100 Q110 92 176 100" opacity=".5"/>
+  <!-- handle -->
+  <path d="M60 92 Q110 50 162 92"/>
+  <!-- a little water inside hint -->
+  <path d="M58 142 Q110 152 162 142" opacity=".4"/>
+  <!-- subtle sheen on side -->
+  <path d="M68 110 L62 198" opacity=".35"/>
+</svg>

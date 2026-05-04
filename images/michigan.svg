@@ -1,0 +1,47 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 220 230" fill="none" stroke="#0E2A47" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+  <!--
+    Lower Peninsula of Michigan, the mitten.
+    Path travels clockwise starting top-left:
+      1. Top (Mackinac shore), fairly flat
+      2. Down the east coast a short way
+      3. Saginaw Bay indent (curves inward toward the body)
+      4. Out east, around the thumb tip, and back south to the wrist
+      5. Down the east coast to Detroit
+      6. Across the southern border
+      7. Up the Lake Michigan coast (gentle outward curve)
+      8. Round the top-left corner
+  -->
+  <path d="
+    M 58 24
+    L 132 24
+    Q 142 24 142 36
+    L 142 62
+    Q 134 70 124 76
+    Q 116 84 122 96
+    Q 132 108 148 96
+    Q 162 84 178 80
+    Q 196 80 196 100
+    Q 196 122 174 122
+    Q 158 122 150 116
+    Q 144 116 144 128
+    L 152 196
+    Q 152 210 138 210
+    L 58 210
+    Q 42 210 40 196
+    L 34 150
+    Q 28 116 34 84
+    Q 38 60 46 42
+    Q 50 28 58 24 Z
+  " fill="#FAF4E8" stroke="#0E2A47"/>
+
+  <!-- Hint of Lake Michigan along the west coast -->
+  <path d="M30 96 Q26 116 30 138" opacity=".35"/>
+
+  <!-- Saginaw Bay water hint -->
+  <path d="M126 84 Q132 92 142 92" opacity=".4" stroke="#2FA9B8" stroke-width="2"/>
+
+  <!-- Ann Arbor pin (south of the mitten's palm) -->
+  <circle cx="86" cy="184" r="6.5" fill="#F5B83A" stroke="#0E2A47" stroke-width="2.2"/>
+  <circle cx="86" cy="184" r="2" fill="#0E2A47" stroke="none"/>
+  <text x="100" y="189" font-family="Georgia, serif" font-size="13" font-weight="600" fill="#0E2A47" stroke="none">Ann Arbor</text>
+</svg>

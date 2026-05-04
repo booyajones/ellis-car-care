@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Got it. Thanks. Ellis Car Care</title>
+  <meta name="robots" content="noindex">
+  <link rel="icon" href="favicon.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600&display=swap">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body class="page-404">
+  <main class="container stack-lg" style="padding-top: 7rem; text-align: center; min-height: 80vh;">
+    <img src="images/sun.svg" alt="" width="120" height="120" style="margin: 0 auto;">
+    <h1 class="display">Got it. Ellis will text you back.</h1>
+    <p class="lead" style="margin-inline:auto;">
+      He usually answers inside an hour. If it's been a while, give him a nudge.
+    </p>
+    <p>
+      <a href="" data-tel-link class="btn btn-ghost"><span data-tel-display></span></a>
+      <a href="/" class="btn btn-primary btn-lg">Back to the menu</a>
+    </p>
+    <p class="muted small" style="margin-top:2rem;">
+      In the meantime: tell a Burns Park neighbor. You both get $10 off when they book.
+    </p>
+  </main>
+  <script src="config.js"></script>
+  <script>
+    (function () {
+      const c = window.CONFIG;
+      if (!c) return;
+      document.querySelectorAll("[data-tel-link]").forEach(a => a.setAttribute("href", "tel:" + c.contact.phoneHref));
+      document.querySelectorAll("[data-tel-display]").forEach(a => a.textContent = c.contact.phone);
+    })();
+  </script>
+</body>
+</html>

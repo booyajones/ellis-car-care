@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 180" fill="none" stroke="#0E2A47" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+  <!-- soap streak swooshing up from the sponge -->
+  <path d="M40 24 Q90 12 150 30 Q190 42 196 76" stroke-dasharray="6 8" opacity=".55"/>
+  <circle cx="195" cy="42" r="6" fill="#FAF4E8"/>
+  <circle cx="172" cy="22" r="4" fill="#FAF4E8"/>
+  <!-- sponge body, hand-drawn rectangle, slight tilt -->
+  <path d="M28 90 L208 80 Q220 92 218 130 Q216 158 200 158 L40 168 Q22 168 20 144 Q18 110 28 90 Z" fill="#F5B83A" stroke="#0E2A47"/>
+  <!-- sponge texture dots -->
+  <circle cx="58" cy="118" r="2.5" fill="#0E2A47" stroke="none" opacity=".55"/>
+  <circle cx="92" cy="106" r="2" fill="#0E2A47" stroke="none" opacity=".55"/>
+  <circle cx="126" cy="124" r="3" fill="#0E2A47" stroke="none" opacity=".55"/>
+  <circle cx="160" cy="108" r="2.2" fill="#0E2A47" stroke="none" opacity=".55"/>
+  <circle cx="184" cy="138" r="2.6" fill="#0E2A47" stroke="none" opacity=".55"/>
+  <circle cx="76" cy="146" r="2" fill="#0E2A47" stroke="none" opacity=".55"/>
+  <circle cx="142" cy="146" r="2.4" fill="#0E2A47" stroke="none" opacity=".55"/>
+  <!-- bottom drip -->
+  <path d="M88 168 Q90 178 96 174" opacity=".6"/>
+</svg>

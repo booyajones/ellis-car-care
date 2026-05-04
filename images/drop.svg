@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 130" fill="none" stroke="#0E2A47" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+  <path d="M50 12 Q22 60 24 86 Q26 116 50 118 Q74 116 76 86 Q78 60 50 12 Z" fill="#2FA9B8" fill-opacity=".25" stroke="#0E2A47"/>
+  <!-- highlight -->
+  <path d="M40 60 Q36 78 42 92" opacity=".55"/>
+</svg>
