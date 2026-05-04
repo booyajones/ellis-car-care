@@ -1,10 +1,5 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 220 290" fill="none" stroke="#0E2A47" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-  <!--
-    Lower Peninsula of Michigan.
-    Tall body with a clear thumb sticking up-east on the right side.
-    Saginaw Bay carves the inner curve between the thumb base and the body.
-    Path travels clockwise from top-left.
-  -->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 220 290" fill="none" stroke="#0E2A47" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+  <!-- Lower Peninsula of Michigan, clean editorial line silhouette. -->
   <path d="
     M 62 30
     L 138 30
@@ -27,17 +22,8 @@
     Q 26 138 30 92
     Q 34 60 44 44
     Q 52 30 62 30 Z
-  " fill="#FAF4E8" stroke="#0E2A47"/>
+  " fill="none" stroke="#0E2A47"/>
 
-  <!-- Saginaw Bay water hint -->
-  <path d="M124 92 Q134 100 146 96" opacity=".55" stroke="#2FA9B8" stroke-width="1.8" fill="none"/>
-  <path d="M126 102 Q138 110 150 104" opacity=".4" stroke="#2FA9B8" stroke-width="1.5" fill="none"/>
-
-  <!-- Lake Michigan hint along west coast -->
-  <path d="M28 124 Q22 160 28 196" opacity=".35"/>
-
-  <!-- Ann Arbor pin (south-central, in the lower body of the LP) -->
-  <circle cx="92" cy="220" r="7" fill="#F5B83A" stroke="#0E2A47" stroke-width="2.2"/>
-  <circle cx="92" cy="220" r="2.2" fill="#0E2A47" stroke="none"/>
-  <text x="106" y="225" font-family="Georgia, serif" font-size="13" font-weight="600" fill="#0E2A47" stroke="none">Ann Arbor</text>
+  <!-- Burns Park / Ann Arbor location, south-central. Single small mark, no label. -->
+  <circle cx="92" cy="220" r="3.2" fill="#0E2A47" stroke="none"/>
 </svg>

@@ -1,8 +1,8 @@
 /* ----------------------------------------------------------
    Ellis Car Care, app.js
    Reads CONFIG (from config.js) and renders the dynamic bits.
-   Static JSON-LD lives in index.html. This file only adds the
-   bundle-priced OfferCatalog so prices stay in sync with config.
+   Static JSON-LD lives in index.html; the OfferCatalog is appended
+   here so prices stay in sync with config.
    ---------------------------------------------------------- */
 
 (function () {
@@ -10,25 +10,22 @@
 
   const cfg = window.CONFIG;
   if (!cfg) {
-    console.warn("CONFIG not loaded. config.js missing or in wrong order.");
+    console.warn("CONFIG not loaded.");
     return;
   }
 
   const $  = (sel, root) => (root || document).querySelector(sel);
   const $$ = (sel, root) => Array.from((root || document).querySelectorAll(sel));
-  const fmtPrice = (n) => "$" + n;
   const enc = (s) => encodeURIComponent(s || "");
 
-  /* 1. SMS, tel, mail link wiring */
+  /* 1. Wire SMS / tel / mail links */
 
   const smsBody = `Hi Ellis, I'd like to book a detail. My car is a ____. I'm in Burns Park / 48104. Available: ____.`;
   const smsHref = `sms:${cfg.contact.phoneHref}?&body=${enc(smsBody)}`;
-  $$("[data-sms-link]").forEach((a) => { a.setAttribute("href", smsHref); });
-
+  $$("[data-sms-link]").forEach((a) => a.setAttribute("href", smsHref));
   $$("[data-tel-link]").forEach((a) => a.setAttribute("href", `tel:${cfg.contact.phoneHref}`));
   $$("[data-tel-display]").forEach((a) => a.textContent = cfg.contact.phone);
-  const mailHref = `mailto:${cfg.contact.email}`;
-  $$("[data-mailto-link]").forEach((a) => a.setAttribute("href", mailHref));
+  $$("[data-mailto-link]").forEach((a) => a.setAttribute("href", `mailto:${cfg.contact.email}`));
   $$("[data-mailto-display]").forEach((a) => a.textContent = cfg.contact.email);
 
   const avail = $("[data-next-available]");
@@ -36,11 +33,11 @@
     if (cfg.nextAvailable && cfg.nextAvailable.trim()) {
       avail.textContent = cfg.nextAvailable;
     } else {
-      avail.remove();
+      avail.parentElement && avail.parentElement.removeChild(avail);
     }
   }
 
-  /* 2. Render bundle cards */
+  /* 2. Render bundle cards (editorial layout, no stickers) */
 
   const bundlesEl = $("[data-bundles]");
   if (bundlesEl) {
@@ -50,49 +47,50 @@
       const popularBadge = b.popular ? '<span class="popular-badge">Most popular</span>' : "";
       const bundleSmsBody = `Hi Ellis, I'd like to book the ${b.name} ($${b.price}). My car is a ____. I'm in ____.`;
       const bundleSms = `sms:${cfg.contact.phoneHref}?&body=${enc(bundleSmsBody)}`;
+      const summary = b.summary ? `<p class="bundle-summary">${b.summary}</p>` : "";
       card.innerHTML = `
         ${popularBadge}
-        <span class="sticker" aria-hidden="true">
-          <span class="sticker-amount"><span class="dollar">$</span>${b.price}</span>
-          <span class="sticker-sub">flat</span>
-        </span>
-        <h3 class="bundle-name">${b.name}</h3>
-        <p class="bundle-time">${b.time}</p>
+        <header class="bundle-head">
+          <h3 class="bundle-name">${b.name}</h3>
+          <span class="bundle-price"><span class="dollar">$</span>${b.price}</span>
+        </header>
+        <p class="bundle-meta"><span>${b.time}</span><span>flat</span></p>
+        ${summary}
         <ul class="bundle-includes">
           ${b.includes.map((i) => `<li>${i}</li>`).join("")}
         </ul>
-        <a class="bundle-cta" href="${bundleSms}">Text to book ${b.name}</a>
+        <a class="bundle-cta" href="${bundleSms}">Text to book</a>
       `;
       bundlesEl.appendChild(card);
     });
   }
 
-  /* 3. Add-on + Season Pass */
+  /* 3. Add-on */
 
   const addonEl = $("[data-addon]");
   if (addonEl && cfg.addons && cfg.addons[0]) {
     const a = cfg.addons[0];
-    const priceLine = a.price == null ? "Text for a quote" : fmtPrice(a.price);
+    const priceLine = a.price == null ? "Quoted" : "$" + a.price;
     addonEl.innerHTML = `
       <p class="eyebrow">Add-on</p>
       <h3 class="extra-name">${a.name}</h3>
-      <p class="extra-price">${priceLine}</p>
+      <span class="extra-price">${priceLine}</span>
       <p class="extra-desc">${a.description}</p>
     `;
   }
 
-  const seasonEl = $("[data-season]");
-  if (seasonEl && cfg.seasonPass) {
-    const s = cfg.seasonPass;
-    seasonEl.innerHTML = `
-      <p class="eyebrow">Season pass</p>
-      <h3 class="extra-name">${s.name}</h3>
-      <p class="extra-price">${fmtPrice(s.price)}</p>
-      <p class="extra-desc">${s.description}</p>
-    `;
+  /* 4. Process bullet lists */
+
+  const bringEl = $("[data-bring]");
+  if (bringEl && cfg.process && cfg.process.iBring) {
+    bringEl.innerHTML = cfg.process.iBring.map((i) => `<li>${i}</li>`).join("");
+  }
+  const youEl = $("[data-you]");
+  if (youEl && cfg.process && cfg.process.youProvide) {
+    youEl.innerHTML = cfg.process.youProvide.map((i) => `<li>${i}</li>`).join("");
   }
 
-  /* 4. FAQ */
+  /* 5. FAQ */
 
   const faqEl = $("[data-faq]");
   if (faqEl && cfg.faq) {
@@ -107,7 +105,7 @@
     });
   }
 
-  /* 5. Referral */
+  /* 6. Referral */
 
   const refHead = $("[data-referral-headline]");
   const refBody = $("[data-referral-body]");
@@ -121,7 +119,7 @@
     }
   }
 
-  /* 6. Form: Formspree if configured, else mailto fallback (HTML form action is also mailto so JS-off works). */
+  /* 7. Form: Formspree if configured, otherwise mailto fallback (HTML action is mailto so JS-off works). */
 
   const form = $("#bookForm");
   if (form) {
@@ -143,12 +141,11 @@
         ].join("\n");
         const subject = "Ellis Car Care booking";
         window.location.href = `mailto:${cfg.contact.email}?subject=${enc(subject)}&body=${enc(lines)}`;
-        setTimeout(() => { window.location.href = "thanks.html"; }, 600);
       });
     }
   }
 
-  /* 7. Append OfferCatalog to the existing JSON-LD so prices stay in sync with config.js */
+  /* 8. Append OfferCatalog to the existing JSON-LD */
 
   try {
     const existing = $('script[type="application/ld+json"]');
@@ -171,30 +168,9 @@
       };
       existing.textContent = JSON.stringify(parsed);
     }
-  } catch (e) { /* leave the static JSON-LD alone if parsing fails */ }
+  } catch (e) { /* leave static JSON-LD alone if parsing fails */ }
 
-  /* 8. Scroll-driven sun rotation */
-
-  const sun = $(".floating-sun");
-  if (sun && !window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
-    let last = 0;
-    let ticking = false;
-    function onScroll() {
-      last = window.scrollY;
-      if (!ticking) {
-        window.requestAnimationFrame(() => {
-          const deg = (last * 0.08) % 360;
-          sun.style.transform = `rotate(${deg}deg)`;
-          ticking = false;
-        });
-        ticking = true;
-      }
-    }
-    window.addEventListener("scroll", onScroll, { passive: true });
-    onScroll();
-  }
-
-  /* 9. Sticky CTA: hide and remove from a11y tree when book is visible */
+  /* 9. Sticky CTA: hide and remove from a11y tree when book section is visible */
 
   const sticky = $(".sticky-cta");
   const book = $("#book");
@@ -211,7 +187,7 @@
     }
     const io = new IntersectionObserver((entries) => {
       entries.forEach((e) => setHidden(e.isIntersecting));
-    }, { threshold: 0.18 });
+    }, { rootMargin: "0px 0px -20% 0px", threshold: 0 });
     io.observe(book);
   }
 
