@@ -173,9 +173,13 @@
   /* 9. Sticky CTA: hide and remove from a11y tree when book section is visible */
 
   const sticky = $(".sticky-cta");
+  const hero = $(".hero");
   const book = $("#book");
-  if (sticky && book && "IntersectionObserver" in window) {
-    function setHidden(hidden) {
+  if (sticky && "IntersectionObserver" in window) {
+    let heroVisible = true;
+    let bookVisible = false;
+    function update() {
+      const hidden = heroVisible || bookVisible;
       sticky.classList.toggle("is-hidden", hidden);
       if (hidden) {
         sticky.setAttribute("aria-hidden", "true");
@@ -185,10 +189,23 @@
         sticky.removeAttribute("tabindex");
       }
     }
-    const io = new IntersectionObserver((entries) => {
-      entries.forEach((e) => setHidden(e.isIntersecting));
-    }, { rootMargin: "0px 0px -20% 0px", threshold: 0 });
-    io.observe(book);
+    if (hero) {
+      const heroIo = new IntersectionObserver((entries) => {
+        heroVisible = entries[0].isIntersecting;
+        update();
+      }, { threshold: 0.1 });
+      heroIo.observe(hero);
+    } else {
+      heroVisible = false;
+    }
+    if (book) {
+      const bookIo = new IntersectionObserver((entries) => {
+        bookVisible = entries[0].isIntersecting;
+        update();
+      }, { rootMargin: "0px 0px -20% 0px", threshold: 0 });
+      bookIo.observe(book);
+    }
+    update();
   }
 
   /* 10. Year in footer (also pre-filled in HTML for no-JS) */

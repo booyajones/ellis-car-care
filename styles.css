@@ -118,14 +118,14 @@ a:hover { color: var(--accent); text-decoration-color: var(--accent); }
   color: var(--ink);
   text-wrap: balance;
 }
-h1, .display.h1, .hero-h1 {
+h1.display, .hero-h1, h1 {
   font-size: clamp(3rem, 1.8rem + 6vw, 7rem);
   font-weight: 700;
   font-variation-settings: "opsz" 144;
   letter-spacing: -0.035em;
-  line-height: 0.94;
+  line-height: 1.02;
 }
-h2, .display {
+h2.display, h2 {
   font-size: clamp(2rem, 1.2rem + 2.8vw, 3.2rem);
   font-variation-settings: "opsz" 96;
 }
