@@ -1,28 +1,30 @@
-"""Build the 1200x630 OG share image for Ellis Car Care.
+"""Build the 1200x630 OG share image + apple-touch-icon for Ellis Car Care.
 
-Uses PIL only. No external network calls.
-Run once. Re-run if branding changes.
+v4.3 dark mode. Composites the hero photograph as the right slab, dark
+gradient mask blending into the navy-black canvas, then overlays the
+typographic system in cream + amber.
+
+Run: python build_og.py
 """
 
-from PIL import Image, ImageDraw, ImageFont
+from PIL import Image, ImageDraw, ImageFont, ImageFilter
 from pathlib import Path
-import math
-import random
 
-OUT = Path(__file__).parent / "og-image.png"
-APPLE_TOUCH = Path(__file__).parent / "apple-touch-icon.png"
+ROOT = Path(__file__).parent
+IMAGES = ROOT / "images"
+OG = ROOT / "og-image.png"
+APPLE = ROOT / "apple-touch-icon.png"
 
-# Brand colors
-NAVY = (14, 42, 71)
-CREAM = (244, 235, 217)
-CREAM_SOFT = (250, 244, 232)
-SUN = (245, 184, 58)
-TEAL = (47, 169, 184)
-INK = (26, 26, 26)
+# v4 brand colors
+BG       = (14, 16, 20)
+SURFACE  = (24, 28, 36)
+INK      = (242, 238, 230)
+INK_SOFT = (197, 192, 183)
+MUTED    = (138, 133, 121)
+AMBER    = (229, 162, 53)
 
 
 def load_font(names, size):
-    """Try a list of font names, return the first that loads."""
     for name in names:
         try:
             return ImageFont.truetype(name, size)
@@ -31,101 +33,110 @@ def load_font(names, size):
     return ImageFont.load_default()
 
 
-def draw_sun(draw, cx, cy, r, color=SUN, stroke=NAVY, sw=4):
-    """Hand-drawn sun: filled circle plus 8 main rays plus 8 short rays."""
-    draw.ellipse([cx - r, cy - r, cx + r, cy + r], fill=color, outline=stroke, width=sw)
-    # 8 long rays
-    for i in range(8):
-        a = math.radians(i * 45)
-        x1 = cx + math.cos(a) * (r + 12)
-        y1 = cy + math.sin(a) * (r + 12)
-        x2 = cx + math.cos(a) * (r + 38)
-        y2 = cy + math.sin(a) * (r + 38)
-        draw.line([(x1, y1), (x2, y2)], fill=stroke, width=sw)
-    # 8 shorter rays offset
-    for i in range(8):
-        a = math.radians(i * 45 + 22.5)
-        x1 = cx + math.cos(a) * (r + 12)
-        y1 = cy + math.sin(a) * (r + 12)
-        x2 = cx + math.cos(a) * (r + 26)
-        y2 = cy + math.sin(a) * (r + 26)
-        draw.line([(x1, y1), (x2, y2)], fill=stroke, width=sw - 1)
+def build_og():
+    W, H = 1200, 630
+    img = Image.new("RGB", (W, H), BG)
+
+    # 1. Composite the hero photograph on the right ~45% with a feathered fade
+    hero_src = IMAGES / "hero.jpg"
+    if hero_src.exists():
+        hero = Image.open(hero_src).convert("RGB")
+        slab_w = int(W * 0.46)
+        slab_h = H
+        hw, hh = hero.size
+        ratio = max(slab_w / hw, slab_h / hh)
+        nw, nh = int(hw * ratio), int(hh * ratio)
+        hero_resized = hero.resize((nw, nh), Image.LANCZOS)
+        # Center crop to slab dimensions
+        left = (nw - slab_w) // 2
+        top = (nh - slab_h) // 2
+        hero_cropped = hero_resized.crop((left, top, left + slab_w, top + slab_h))
+
+        # Build a feathered alpha mask, fully transparent at left edge fading to opaque
+        mask = Image.new("L", (slab_w, slab_h), 255)
+        mdraw = ImageDraw.Draw(mask)
+        fade = 280
+        for x in range(fade):
+            alpha = int(round((x / fade) * 255))
+            mdraw.line([(x, 0), (x, slab_h)], fill=alpha)
+        # Slight darkening overlay on the photo so type stays legible if it overlaps
+        darken = Image.new("RGB", (slab_w, slab_h), BG)
+        hero_cropped = Image.blend(hero_cropped, darken, 0.10)
+        img.paste(hero_cropped, (W - slab_w, 0), mask)
+
+    draw = ImageDraw.Draw(img)
+
+    # 2. Faint amber radial glow upper right (matches site hero gradient)
+    glow = Image.new("RGBA", (W, H), (0, 0, 0, 0))
+    gdraw = ImageDraw.Draw(glow)
+    gdraw.ellipse([(W - 600, -300), (W + 200, 300)], fill=(229, 162, 53, 32))
+    glow = glow.filter(ImageFilter.GaussianBlur(120))
+    img.paste(glow, (0, 0), glow)
+
+    # 3. Type system
+    f_eyebrow = load_font([
+        "C:/Windows/Fonts/consola.ttf",
+        "C:/Windows/Fonts/cour.ttf",
+        "C:/Windows/Fonts/arial.ttf",
+    ], 22)
+    f_brand = load_font([
+        "C:/Windows/Fonts/georgiab.ttf",
+        "C:/Windows/Fonts/timesbd.ttf",
+        "C:/Windows/Fonts/arialbd.ttf",
+    ], 30)
+    f_h1 = load_font([
+        "C:/Windows/Fonts/georgiab.ttf",
+        "C:/Windows/Fonts/timesbd.ttf",
+        "C:/Windows/Fonts/seguibl.ttf",
+        "C:/Windows/Fonts/arialbd.ttf",
+    ], 92)
+    f_phone = load_font([
+        "C:/Windows/Fonts/georgiab.ttf",
+        "C:/Windows/Fonts/timesbd.ttf",
+    ], 36)
+    f_meta = load_font([
+        "C:/Windows/Fonts/consola.ttf",
+        "C:/Windows/Fonts/cour.ttf",
+    ], 18)
+
+    # Top brand line
+    draw.text((80, 60), "ELLIS CAR CARE", fill=INK, font=f_brand)
+
+    # Eyebrow (amber mono)
+    draw.text((80, 200), "BURNS PARK · ANN ARBOR · MICHIGAN", fill=AMBER, font=f_eyebrow)
+
+    # Headline, two lines
+    draw.text((78, 246), "Hand-detailed,", fill=INK, font=f_h1)
+    draw.text((78, 348), "in your driveway.", fill=INK, font=f_h1)
+
+    # Hairline under copy block
+    draw.line([(80, 480), (560, 480)], fill=(242, 238, 230, 60), width=1)
+
+    # Phone, prominent (Fraunces feel via Georgia bold)
+    draw.text((80, 498), "(628) 252-0740", fill=INK, font=f_phone)
+
+    # Bottom meta strip
+    draw.text((80, 568), "TEXT OR CALL · CASH, VENMO, ZELLE", fill=MUTED, font=f_meta)
+
+    img.save(OG, "PNG", optimize=True)
+    print(f"Wrote {OG} ({OG.stat().st_size} bytes)")
 
 
-def draw_bucket(draw, x, y, w, h):
-    """Trapezoid bucket with bubbles spilling out. x,y is top-left of bounding box."""
-    # bubbles
-    bubbles = [(x + 30, y - 10, 22), (x + 70, y - 30, 16), (x + 110, y - 12, 26),
-               (x + 150, y - 36, 14), (x + 178, y - 6, 22)]
-    for bx, by, br in bubbles:
-        draw.ellipse([bx - br, by - br, bx + br, by + br], fill=CREAM_SOFT, outline=NAVY, width=4)
-    # bucket body, slight trapezoid
-    inset = 18
-    body = [(x, y + 30), (x + w, y + 30), (x + w - inset, y + h), (x + inset, y + h)]
-    draw.polygon(body, fill=(47, 169, 184, 60), outline=NAVY)
-    # rim
-    draw.line([(x - 4, y + 30), (x + w + 4, y + 30)], fill=NAVY, width=5)
-    # handle arc
-    handle_box = [(x + 30, y - 18), (x + w - 30, y + 70)]
-    draw.arc(handle_box, start=200, end=340, fill=NAVY, width=4)
+def build_apple_touch():
+    """180x180 dark amber-ringed mark for iOS home screen."""
+    img = Image.new("RGB", (180, 180), BG)
+    draw = ImageDraw.Draw(img)
+    # Amber ring
+    draw.ellipse([(20, 20), (160, 160)], outline=AMBER, width=4)
+    # Amber dot center
+    draw.ellipse([(74, 74), (106, 106)], fill=AMBER)
+    img.save(APPLE, "PNG", optimize=True)
+    print(f"Wrote {APPLE} ({APPLE.stat().st_size} bytes)")
 
 
 def main():
-    W, H = 1200, 630
-    img = Image.new("RGB", (W, H), CREAM)
-    draw = ImageDraw.Draw(img)
-
-    # subtle dotted ground line near bottom
-    for x in range(40, W - 40, 14):
-        draw.ellipse([x, H - 78, x + 4, H - 74], fill=(107, 99, 88, 80))
-
-    # sun in upper right
-    draw_sun(draw, cx=1010, cy=170, r=78)
-
-    # bucket lower right
-    draw_bucket(draw, x=900, y=320, w=200, h=240)
-
-    # display headline
-    display_font = load_font([
-        "C:/Windows/Fonts/Georgia Bold.ttf",
-        "C:/Windows/Fonts/georgiab.ttf",
-        "C:/Windows/Fonts/Cambria.ttc",
-        "C:/Windows/Fonts/seguibl.ttf",
-        "C:/Windows/Fonts/arialbd.ttf",
-    ], 96)
-    body_font = load_font([
-        "C:/Windows/Fonts/segoeui.ttf",
-        "C:/Windows/Fonts/arial.ttf",
-    ], 36)
-    label_font = load_font([
-        "C:/Windows/Fonts/segoeuib.ttf",
-        "C:/Windows/Fonts/arialbd.ttf",
-    ], 28)
-
-    # eyebrow label
-    draw.text((80, 100), "ELLIS CAR CARE", fill=NAVY, font=label_font)
-    # underline
-    draw.line([(80, 142), (340, 142)], fill=SUN, width=6)
-
-    # main headline, two lines
-    draw.text((80, 180), "Hand-detailed", fill=NAVY, font=display_font)
-    draw.text((80, 290), "by a kid from", fill=NAVY, font=display_font)
-    # last line gets a yellow underline highlight, drawn as a fat semi-translucent stroke under the text
-    draw.rectangle([(80, 425), (570, 470)], fill=SUN)
-    draw.text((80, 400), "Burns Park.", fill=NAVY, font=display_font)
-
-    # sub
-    draw.text((80, 525), "Ann Arbor, Michigan. Wash, detail, wax.", fill=(60, 60, 60), font=body_font)
-
-    img.save(OUT, "PNG", optimize=True)
-    print(f"Wrote {OUT} ({OUT.stat().st_size} bytes)")
-
-    # Also produce apple-touch-icon (180x180) by rendering the favicon-style sun
-    apple = Image.new("RGB", (180, 180), CREAM)
-    ad = ImageDraw.Draw(apple)
-    draw_sun(ad, cx=90, cy=90, r=42, sw=5)
-    apple.save(APPLE_TOUCH, "PNG", optimize=True)
-    print(f"Wrote {APPLE_TOUCH}")
+    build_og()
+    build_apple_touch()
 
 
 if __name__ == "__main__":
