@@ -953,6 +953,29 @@ section {
   flex-direction: column;
   gap: var(--s-4);
 }
+.book-confirm {
+  background: var(--surface);
+  padding: clamp(var(--s-6), 1.5rem + 2vw, var(--s-8));
+  border-radius: var(--radius);
+  border: 1px solid var(--line);
+  text-align: left;
+}
+.book-confirm .eyebrow {
+  display: block;
+  margin-bottom: var(--s-3);
+  color: var(--accent);
+}
+.book-confirm .form-title {
+  font-size: clamp(1.4rem, 1rem + 1vw, 1.8rem);
+  margin-bottom: var(--s-3);
+  font-variation-settings: "opsz" 96;
+}
+.book-confirm-lead {
+  color: var(--ink-soft);
+  margin-bottom: var(--s-5);
+  line-height: 1.6;
+  max-width: 50ch;
+}
 .form-title {
   font-family: var(--display);
   font-weight: 600;

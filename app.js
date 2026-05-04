@@ -114,12 +114,14 @@
     if (refHead) refHead.textContent = cfg.referral.headline;
     if (refBody) refBody.textContent = cfg.referral.body;
     if (refShare) {
-      const shareUrl = `sms:?&body=${enc(cfg.referral.shareText + " " + cfg.referral.shareUrl)}`;
-      refShare.setAttribute("href", shareUrl);
+      const liveUrl = (cfg.referral.shareUrl && cfg.referral.shareUrl.trim()) ||
+                      (window.location.origin + "/");
+      const sms = `sms:?&body=${enc(cfg.referral.shareText + " " + liveUrl)}`;
+      refShare.setAttribute("href", sms);
     }
   }
 
-  /* 7. Form: Formspree if configured, otherwise mailto fallback (HTML action is mailto so JS-off works). */
+  /* 7. Form: Formspree if configured, otherwise mailto + inline confirmation. */
 
   const form = $("#bookForm");
   if (form) {
@@ -128,6 +130,7 @@
       form.removeAttribute("enctype");
     } else {
       form.addEventListener("submit", function (ev) {
+        if (!form.checkValidity()) return; // let browser show native validation
         ev.preventDefault();
         const fd = new FormData(form);
         const services = fd.getAll("services").join(", ") || "(not specified)";
@@ -140,7 +143,30 @@
           `Notes: ${fd.get("notes") || ""}`,
         ].join("\n");
         const subject = "Ellis Car Care booking";
-        window.location.href = `mailto:${cfg.contact.email}?subject=${enc(subject)}&body=${enc(lines)}`;
+        const mailto = `mailto:${cfg.contact.email}?subject=${enc(subject)}&body=${enc(lines)}`;
+
+        // Trigger mailto via a hidden anchor click. This works on iOS Safari
+        // without forcing a hard navigation that wipes the page.
+        const a = document.createElement("a");
+        a.href = mailto;
+        a.style.display = "none";
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+
+        // Replace the form with an inline confirmation so the user sees feedback
+        // even if their mail app handled the navigation in a separate context.
+        const confirm = document.createElement("div");
+        confirm.className = "book-confirm";
+        confirm.setAttribute("role", "status");
+        confirm.setAttribute("aria-live", "polite");
+        confirm.innerHTML = `
+          <p class="eyebrow">Sent</p>
+          <h3 class="form-title">Got it. Ellis will text you back.</h3>
+          <p class="book-confirm-lead">Usually inside an hour. If your mail app didn't open, text Ellis directly:</p>
+          <a class="btn btn-primary btn-lg" href="sms:${cfg.contact.phoneHref}">Text ${cfg.contact.phone}</a>
+        `;
+        form.replaceWith(confirm);
       });
     }
   }

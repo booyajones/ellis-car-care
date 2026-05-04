@@ -153,7 +153,9 @@ const CONFIG = {
     headline: "Tell a neighbor.",
     body: "Send a neighbor to Ellis Car Care. When they book, you both get $10 off your next wash.",
     shareText: "Heads up, you should book Ellis Car Care for your car. He details by hand in your driveway. Local, careful, the work is good:",
-    shareUrl: "https://elliscarcare.com",
+    // Empty string means "use the current page URL". Set this to a real domain
+    // (e.g. "https://elliscarcare.com") once the custom domain is live.
+    shareUrl: "",
   },
 };
 
