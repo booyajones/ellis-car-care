@@ -119,11 +119,11 @@ a:hover { color: var(--accent); text-decoration-color: var(--accent); }
   text-wrap: balance;
 }
 h1, .display.h1, .hero-h1 {
-  font-size: clamp(2.8rem, 1.4rem + 5.5vw, 5.6rem);
+  font-size: clamp(3rem, 1.8rem + 6vw, 7rem);
   font-weight: 700;
   font-variation-settings: "opsz" 144;
   letter-spacing: -0.035em;
-  line-height: 0.96;
+  line-height: 0.94;
 }
 h2, .display {
   font-size: clamp(2rem, 1.2rem + 2.8vw, 3.2rem);
@@ -331,10 +331,47 @@ section {
     radial-gradient(700px 500px at 0% 100%, rgba(229, 162, 53, 0.04), transparent 60%),
     var(--bg);
 }
-.hero .container { max-width: 1000px; }
+.hero .container { max-width: var(--maxw); }
+.hero-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: clamp(var(--s-6), 2rem + 2vw, var(--s-8));
+  align-items: center;
+}
+@media (min-width: 960px) {
+  .hero-grid { grid-template-columns: 1.05fr 0.95fr; }
+}
+.hero-copy { min-width: 0; }
 .hero .eyebrow { display: block; margin-bottom: var(--s-5); }
-.hero-h1 { margin-bottom: var(--s-5); max-width: 18ch; }
-.hero-lead { margin-bottom: var(--s-7); max-width: 50ch; }
+.hero-h1 { margin-bottom: var(--s-5); max-width: 14ch; }
+.hero-lead { margin-bottom: var(--s-7); max-width: 46ch; }
+.hero-art {
+  position: relative;
+  aspect-ratio: 3 / 4;
+  overflow: hidden;
+  border-radius: var(--radius);
+  border: 1px solid var(--line);
+  background: var(--surface);
+}
+.hero-art picture, .hero-art img {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+.hero-art img {
+  object-fit: cover;
+  object-position: 50% 50%;
+}
+.hero-art::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, transparent 60%, rgba(14, 16, 20, 0.5) 100%);
+  pointer-events: none;
+}
+@media (max-width: 720px) {
+  .hero-art { aspect-ratio: 4 / 3; max-height: 360px; }
+}
 .hero-phone-block {
   display: flex;
   flex-wrap: wrap;
@@ -415,12 +452,13 @@ section {
 .trust-icon {
   display: inline-grid;
   place-items: center;
-  width: 36px; height: 36px;
+  width: 48px; height: 48px;
   color: var(--accent);
   border: 1px solid var(--line-strong);
   border-radius: var(--radius-sm);
+  background: var(--bg);
 }
-.trust-icon img { width: 22px; height: 22px; filter: brightness(0) saturate(100%) invert(72%) sepia(63%) saturate(395%) hue-rotate(2deg) brightness(95%) contrast(89%); }
+.trust-icon img { width: 28px; height: 28px; filter: brightness(0) saturate(100%) invert(72%) sepia(63%) saturate(395%) hue-rotate(2deg) brightness(95%) contrast(89%); }
 .trust-item strong {
   display: block;
   color: var(--ink);

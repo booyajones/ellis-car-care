@@ -24,7 +24,8 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,500;1,9..144,600&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap">
 
-  <link rel="stylesheet" href="styles.css?v=4">
+  <link rel="preload" as="image" href="images/hero.webp" imagesrcset="images/hero.webp" type="image/webp">
+  <link rel="stylesheet" href="styles.css?v=5">
 
   <script type="application/ld+json">
   {
@@ -77,27 +78,35 @@
 
   <!-- HERO -->
   <section class="hero">
-    <div class="container">
-      <p class="eyebrow">Burns Park · Ann Arbor · Michigan</p>
-      <h1 class="display hero-h1">Hand-detailed, in your driveway.</h1>
-      <p class="lead hero-lead">
-        Two-bucket wash. Full detail. Hand wax. Paint restoration. Done by hand on your block, by Ellis.
-      </p>
+    <div class="container hero-grid">
+      <div class="hero-copy">
+        <p class="eyebrow">Burns Park · Ann Arbor · Michigan</p>
+        <h1 class="display hero-h1">Hand-detailed, in your driveway.</h1>
+        <p class="lead hero-lead">
+          Two-bucket wash. Full detail. Hand wax. Paint restoration. Done by hand on your block, by Ellis.
+        </p>
 
-      <div class="hero-phone-block">
-        <span class="hero-phone-label">Text or call</span>
-        <a class="hero-phone" href="tel:+16282520740" data-tel-link>(628) 252-0740</a>
-      </div>
+        <div class="hero-phone-block">
+          <span class="hero-phone-label">Text or call</span>
+          <a class="hero-phone" href="tel:+16282520740" data-tel-link>(628) 252-0740</a>
+        </div>
 
-      <div class="hero-ctas">
-        <a class="btn btn-primary btn-lg" href="sms:+16282520740" data-sms-link>Text to book</a>
-        <a class="btn btn-ghost btn-lg" href="#menu">See pricing</a>
+        <div class="hero-ctas">
+          <a class="btn btn-primary btn-lg" href="sms:+16282520740" data-sms-link>Text to book</a>
+          <a class="btn btn-ghost btn-lg" href="#menu">See pricing</a>
+        </div>
+        <p class="hero-meta">
+          <span><span class="hero-status-dot" aria-hidden="true"></span><span data-next-available>Booking this week</span></span>
+          <span class="hero-meta-sep" aria-hidden="true">·</span>
+          <span>Replies in under an hour</span>
+        </p>
       </div>
-      <p class="hero-meta">
-        <span><span class="hero-status-dot" aria-hidden="true"></span><span data-next-available>Booking this week</span></span>
-        <span class="hero-meta-sep" aria-hidden="true">·</span>
-        <span>Replies in under an hour</span>
-      </p>
+      <div class="hero-art" aria-hidden="true">
+        <picture>
+          <source srcset="images/hero.webp" type="image/webp">
+          <img src="images/hero.jpg" alt="" width="900" height="1200" fetchpriority="high">
+        </picture>
+      </div>
     </div>
   </section>
 
@@ -278,7 +287,7 @@
         </div>
       </div>
 
-      <form class="book-form" id="bookForm" method="POST" action="mailto:info@elliscarcare.com" enctype="text/plain">
+      <form class="book-form" id="bookForm" method="POST" action="mailto:info@elliscarcare.com?subject=Ellis%20Car%20Care%20booking" enctype="text/plain">
         <h3 class="form-title">Book by form</h3>
         <label>
           <span>Your name</span>
@@ -355,7 +364,7 @@
   <span class="sticky-cta-sub">(628) 252-0740 · Cash, Venmo, Zelle</span>
 </a>
 
-<script src="config.js?v=4"></script>
-<script src="app.js?v=4" defer></script>
+<script src="config.js?v=5"></script>
+<script src="app.js?v=5" defer></script>
 </body>
 </html>
