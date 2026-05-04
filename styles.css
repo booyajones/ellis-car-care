@@ -356,14 +356,8 @@ section { padding-block: clamp(3.5rem, 2rem + 6vw, 7rem); position: relative; }
 }
 .hero-art img { position: absolute; transition: transform 0.5s ease; filter: drop-shadow(0 8px 22px rgba(14, 42, 71, 0.10)); }
 .art-bucket { top: 6%; right: 12%; width: clamp(150px, 18vw, 220px); }
-.art-sponge { bottom: 18%; left: 0; width: clamp(170px, 22vw, 260px); transform: rotate(-6deg); }
-.art-drop { top: 38%; right: 4%; width: clamp(50px, 6vw, 80px); animation: float-bob 5s ease-in-out infinite; }
+.art-sponge { bottom: 18%; left: 0; width: clamp(170px, 22vw, 260px); transform: rotate(-3deg); }
 .art-sedan { bottom: 0; left: 22%; width: clamp(220px, 32vw, 340px); }
-
-@keyframes float-bob {
-  0%, 100% { transform: translateY(0) rotate(-4deg); }
-  50%      { transform: translateY(-8px) rotate(4deg); }
-}
 
 @media (max-width: 540px) {
   .hero-art { min-height: 260px; }
@@ -471,7 +465,7 @@ section { padding-block: clamp(3.5rem, 2rem + 6vw, 7rem); position: relative; }
 }
 .bundle-cta:hover { background: var(--navy); color: var(--cream); }
 
-/* Yellow hand-drawn price sticker */
+/* Price sticker, slight tilt only */
 .sticker {
   position: absolute;
   top: -18px;
@@ -485,11 +479,11 @@ section { padding-block: clamp(3.5rem, 2rem + 6vw, 7rem); position: relative; }
   border-radius: 50%;
   border: 2px solid var(--navy);
   box-shadow: var(--shadow-sm);
-  transform: rotate(8deg);
+  transform: rotate(3deg);
   transition: transform 0.18s ease;
   z-index: 2;
 }
-.bundle:hover .sticker { transform: rotate(2deg) scale(1.05); }
+.bundle:hover .sticker { transform: rotate(0deg) translateY(-1px); }
 .sticker-amount {
   font-family: var(--display);
   font-weight: 700;
@@ -518,7 +512,6 @@ section { padding-block: clamp(3.5rem, 2rem + 6vw, 7rem); position: relative; }
   letter-spacing: 0.12em;
   text-transform: uppercase;
   font-weight: 700;
-  transform: rotate(-3deg);
   box-shadow: var(--shadow-sm);
 }
 
@@ -603,15 +596,15 @@ section { padding-block: clamp(3.5rem, 2rem + 6vw, 7rem); position: relative; }
 .polaroid {
   position: relative;
   background: var(--paper);
-  padding: 1rem 1rem 2.4rem;
-  border-radius: 6px;
+  padding: 1rem 1rem 2.2rem;
+  border-radius: 4px;
   box-shadow: var(--shadow-lg);
-  transform: rotate(-3deg);
+  transform: rotate(-1.2deg);
   max-width: 360px;
   justify-self: center;
   transition: transform 0.3s ease;
 }
-.polaroid:hover { transform: rotate(-1deg) translateY(-3px); }
+.polaroid:hover { transform: rotate(0deg) translateY(-2px); }
 .polaroid-photo {
   background: var(--navy);
   aspect-ratio: 4 / 5;
@@ -642,10 +635,11 @@ section { padding-block: clamp(3.5rem, 2rem + 6vw, 7rem); position: relative; }
 .polaroid-caption {
   margin-top: 0.7rem;
   text-align: center;
-  font-family: var(--display);
-  font-style: italic;
-  color: var(--navy);
-  font-size: 1rem;
+  font-family: var(--body);
+  color: var(--muted);
+  font-size: 0.85rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
 }
 
 .photo-placeholder {

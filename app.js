@@ -1,8 +1,8 @@
 /* ----------------------------------------------------------
    Ellis Car Care, app.js
    Reads CONFIG (from config.js) and renders the dynamic bits.
-   Also wires up sticky CTA hide, scroll-driven sun, form fallback,
-   and the JSON-LD LocalBusiness block.
+   Static JSON-LD lives in index.html. This file only adds the
+   bundle-priced OfferCatalog so prices stay in sync with config.
    ---------------------------------------------------------- */
 
 (function () {
@@ -14,32 +14,23 @@
     return;
   }
 
-  /* ---------- helpers ---------- */
   const $  = (sel, root) => (root || document).querySelector(sel);
   const $$ = (sel, root) => Array.from((root || document).querySelectorAll(sel));
   const fmtPrice = (n) => "$" + n;
   const enc = (s) => encodeURIComponent(s || "");
 
-  /* ---------- 1. Top bar + sticky + book + tel + mail link wiring ---------- */
+  /* 1. SMS, tel, mail link wiring */
 
-  // Pre-fill SMS deep link from config.
-  const smsBody = `Hi Ellis, I'd like to book a detail. My car is a ____. I'm in Burns Park / 48104. Available days: ____.`;
+  const smsBody = `Hi Ellis, I'd like to book a detail. My car is a ____. I'm in Burns Park / 48104. Available: ____.`;
   const smsHref = `sms:${cfg.contact.phoneHref}?&body=${enc(smsBody)}`;
   $$("[data-sms-link]").forEach((a) => { a.setAttribute("href", smsHref); });
 
-  // Tel and mail links.
   $$("[data-tel-link]").forEach((a) => a.setAttribute("href", `tel:${cfg.contact.phoneHref}`));
   $$("[data-tel-display]").forEach((a) => a.textContent = cfg.contact.phone);
   const mailHref = `mailto:${cfg.contact.email}`;
   $$("[data-mailto-link]").forEach((a) => a.setAttribute("href", mailHref));
   $$("[data-mailto-display]").forEach((a) => a.textContent = cfg.contact.email);
 
-  // Parent backup phone fallback line(s).
-  const parentLine = `${cfg.contact.parentName}, ${cfg.contact.parentPhone}`;
-  $$("[data-parent-fallback]").forEach((el) => el.textContent = `${cfg.contact.parentName} (Ellis's dad): ${cfg.contact.parentPhone}`);
-  $$("[data-parent-footer]").forEach((el) => el.textContent = `Adult contact: ${parentLine}`);
-
-  // Next-available pill in hero.
   const avail = $("[data-next-available]");
   if (avail) {
     if (cfg.nextAvailable && cfg.nextAvailable.trim()) {
@@ -49,7 +40,7 @@
     }
   }
 
-  /* ---------- 2. Render bundles ---------- */
+  /* 2. Render bundle cards */
 
   const bundlesEl = $("[data-bundles]");
   if (bundlesEl) {
@@ -70,18 +61,18 @@
         <ul class="bundle-includes">
           ${b.includes.map((i) => `<li>${i}</li>`).join("")}
         </ul>
-        <a class="bundle-cta" href="${bundleSms}">Text to book the ${b.name}</a>
+        <a class="bundle-cta" href="${bundleSms}">Text to book ${b.name}</a>
       `;
       bundlesEl.appendChild(card);
     });
   }
 
-  /* ---------- 3. Render add-on + season pass ---------- */
+  /* 3. Add-on + Season Pass */
 
   const addonEl = $("[data-addon]");
   if (addonEl && cfg.addons && cfg.addons[0]) {
     const a = cfg.addons[0];
-    const priceLine = a.price == null ? "Text Ellis for a quote" : fmtPrice(a.price);
+    const priceLine = a.price == null ? "Text for a quote" : fmtPrice(a.price);
     addonEl.innerHTML = `
       <p class="eyebrow">Add-on</p>
       <h3 class="extra-name">${a.name}</h3>
@@ -101,7 +92,7 @@
     `;
   }
 
-  /* ---------- 4. Render FAQ ---------- */
+  /* 4. FAQ */
 
   const faqEl = $("[data-faq]");
   if (faqEl && cfg.faq) {
@@ -116,7 +107,7 @@
     });
   }
 
-  /* ---------- 5. Referral block ---------- */
+  /* 5. Referral */
 
   const refHead = $("[data-referral-headline]");
   const refBody = $("[data-referral-body]");
@@ -130,14 +121,14 @@
     }
   }
 
-  /* ---------- 6. Form: Formspree or mailto fallback ---------- */
+  /* 6. Form: Formspree if configured, else mailto fallback (HTML form action is also mailto so JS-off works). */
 
   const form = $("#bookForm");
   if (form) {
     if (cfg.formspreeId && cfg.formspreeId.trim()) {
       form.setAttribute("action", `https://formspree.io/f/${cfg.formspreeId.trim()}`);
+      form.removeAttribute("enctype");
     } else {
-      // Build a mailto: that pre-fills based on form values when submitted.
       form.addEventListener("submit", function (ev) {
         ev.preventDefault();
         const fd = new FormData(form);
@@ -152,69 +143,37 @@
         ].join("\n");
         const subject = "Ellis Car Care booking";
         window.location.href = `mailto:${cfg.contact.email}?subject=${enc(subject)}&body=${enc(lines)}`;
-        // After a moment, navigate to thanks.html so the user has a confirmation.
         setTimeout(() => { window.location.href = "thanks.html"; }, 600);
       });
     }
   }
 
-  /* ---------- 7. JSON-LD: LocalBusiness, AutoDetailing ---------- */
+  /* 7. Append OfferCatalog to the existing JSON-LD so prices stay in sync with config.js */
 
-  const ld = {
-    "@context": "https://schema.org",
-    "@type": "AutoDetailing",
-    "name": cfg.business.name,
-    "description": cfg.business.description,
-    "url": "https://elliscarcare.com/",
-    "image": "https://elliscarcare.com/og-image.png",
-    "telephone": cfg.contact.phone,
-    "email": cfg.contact.email,
-    "priceRange": "$",
-    "areaServed": [
-      {
-        "@type": "Place",
-        "name": "Burns Park, Ann Arbor, MI"
-      },
-      {
-        "@type": "PostalCode",
-        "postalCode": "48104"
-      },
-      {
-        "@type": "PostalCode",
-        "postalCode": "48103"
-      }
-    ],
-    "serviceArea": {
-      "@type": "GeoCircle",
-      "geoMidpoint": {
-        "@type": "GeoCoordinates",
-        "latitude": cfg.serviceArea.lat,
-        "longitude": cfg.serviceArea.lng
-      },
-      "geoRadius": String(cfg.serviceArea.radiusMeters)
-    },
-    "hasOfferCatalog": {
-      "@type": "OfferCatalog",
-      "name": "Detailing packages",
-      "itemListElement": cfg.bundles.map((b) => ({
-        "@type": "Offer",
-        "name": b.name,
-        "price": String(b.price),
-        "priceCurrency": "USD",
-        "itemOffered": {
-          "@type": "Service",
+  try {
+    const existing = $('script[type="application/ld+json"]');
+    if (existing) {
+      const parsed = JSON.parse(existing.textContent);
+      parsed.hasOfferCatalog = {
+        "@type": "OfferCatalog",
+        "name": "Detailing packages",
+        "itemListElement": cfg.bundles.map((b) => ({
+          "@type": "Offer",
           "name": b.name,
-          "description": b.includes.join("; ")
-        }
-      }))
+          "price": String(b.price),
+          "priceCurrency": "USD",
+          "itemOffered": {
+            "@type": "Service",
+            "name": b.name,
+            "description": b.includes.join("; ")
+          }
+        }))
+      };
+      existing.textContent = JSON.stringify(parsed);
     }
-  };
-  const ldEl = document.createElement("script");
-  ldEl.type = "application/ld+json";
-  ldEl.textContent = JSON.stringify(ld);
-  document.head.appendChild(ldEl);
+  } catch (e) { /* leave the static JSON-LD alone if parsing fails */ }
 
-  /* ---------- 8. Scroll-driven sun rotation ---------- */
+  /* 8. Scroll-driven sun rotation */
 
   const sun = $(".floating-sun");
   if (sun && !window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
@@ -224,7 +183,7 @@
       last = window.scrollY;
       if (!ticking) {
         window.requestAnimationFrame(() => {
-          const deg = (last * 0.06) % 360; // 1deg per ~16px
+          const deg = (last * 0.08) % 360;
           sun.style.transform = `rotate(${deg}deg)`;
           ticking = false;
         });
@@ -235,21 +194,28 @@
     onScroll();
   }
 
-  /* ---------- 9. Sticky CTA hide when book section is visible ---------- */
+  /* 9. Sticky CTA: hide and remove from a11y tree when book is visible */
 
   const sticky = $(".sticky-cta");
   const book = $("#book");
   if (sticky && book && "IntersectionObserver" in window) {
+    function setHidden(hidden) {
+      sticky.classList.toggle("is-hidden", hidden);
+      if (hidden) {
+        sticky.setAttribute("aria-hidden", "true");
+        sticky.setAttribute("tabindex", "-1");
+      } else {
+        sticky.removeAttribute("aria-hidden");
+        sticky.removeAttribute("tabindex");
+      }
+    }
     const io = new IntersectionObserver((entries) => {
-      entries.forEach((e) => {
-        if (e.isIntersecting) sticky.classList.add("is-hidden");
-        else sticky.classList.remove("is-hidden");
-      });
+      entries.forEach((e) => setHidden(e.isIntersecting));
     }, { threshold: 0.18 });
     io.observe(book);
   }
 
-  /* ---------- 10. Year in footer ---------- */
+  /* 10. Year in footer (also pre-filled in HTML for no-JS) */
 
   const y = $("#year");
   if (y) y.textContent = String(new Date().getFullYear());

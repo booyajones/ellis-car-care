@@ -17,37 +17,31 @@
 const CONFIG = {
   business: {
     name: "Ellis Car Care",
-    tagline: "Hand-detailed by a kid from Burns Park.",
-    sub: "Wash, detail, wax, and paint restoration. In your driveway. By a real local kid.",
-    description: "Local car detailing in Burns Park, Ann Arbor. Hand wash, full detail, wax, and paint restoration by a 14-year-old neighborhood kid.",
+    tagline: "Hand-detailed, in your driveway. Ann Arbor.",
+    sub: "Wash, full detail, hand wax, paint restoration. Done in your driveway, by hand, by Ellis.",
+    description: "Hand auto detailing in Ann Arbor, Michigan. Wash, full detail, wax, and paint restoration, done by hand in your driveway by Ellis, a local detailer based in Burns Park.",
   },
 
   contact: {
-    // Ellis's number (or a parent's phone for booking, your call)
-    phone: "(734) 555-0123",
-    phoneHref: "+17345550123",
-    // Parent backup phone, shown for trust
-    parentName: "Chris",
-    parentPhone: "(734) 555-0124",
-    parentPhoneHref: "+17345550124",
-    email: "ellis@elliscarcare.com",
+    phone: "(628) 252-0740",
+    phoneHref: "+16282520740",
+    email: "info@elliscarcare.com",
     venmo: "@Ellis-CarCare",
   },
 
   serviceArea: {
     primary: "Burns Park, Ann Arbor",
     primaryFree: true,
-    extended: "Other Ann Arbor zip codes (48104, 48103)",
+    extended: "Greater Ann Arbor (48104, 48103, 48105)",
     extendedFee: "$5",
-    // GeoCircle for JSON-LD, ~2km radius around Burns Park centroid
+    // GeoCircle for JSON-LD, ~3km around Burns Park centroid
     lat: 42.2628,
     lng: -83.7281,
-    radiusMeters: 2500,
+    radiusMeters: 4000,
   },
 
-  // Manually edit this when Ellis's calendar changes.
-  // Use a simple human string. If empty, the line is hidden.
-  nextAvailable: "Next opening: Saturday afternoon",
+  // Manually edit when the calendar changes. Empty string hides the pill.
+  nextAvailable: "Booking this week",
 
   // The 3 bundles, in display order.
   bundles: [
@@ -72,7 +66,7 @@ const CONFIG = {
       includes: [
         "Everything in Quick Shine",
         "Interior vacuum (seats, floor, trunk)",
-        "Dashboard + console wipe-down",
+        "Dashboard and console wipe-down",
         "All windows, inside and out",
         "Door jambs",
       ],
@@ -93,68 +87,66 @@ const CONFIG = {
     },
   ],
 
-  // Add-ons (priced separately).
   addons: [
     {
       id: "paint-restoration",
       name: "Paint Restoration",
-      price: null, // null means "text for quote"
-      description: "Light compound and polish for swirls, light scratches, and oxidation. Pricing depends on the car. Send a photo.",
+      price: null,
+      description: "Light compound and polish for swirls, light scratches, and oxidation. Pricing depends on the car. Send a photo for a quote.",
     },
   ],
 
-  // Season pass.
   seasonPass: {
-    name: "Burns Park Season Pass",
+    name: "Season Pass",
     price: 120,
-    description: "Four Quick Shines, use anytime June through August. Saves you $40.",
+    description: "Four Quick Shines for $120. Use them anytime through the season. Saves $40.",
   },
 
-  // What Ellis brings vs needs from you.
   bringingChecklist: [
-    "All soap, microfiber towels, wax, and polish",
+    "Soap, microfiber towels, wax, and polish",
     "Cordless vacuum",
     "Buckets and a hose nozzle",
   ],
   customerProvides: [
     "An outdoor water spigot",
-    "An outdoor electrical outlet (or garage)",
-    "A parking spot in your driveway, ideally in shade",
+    "An outdoor outlet, or a garage",
+    "A driveway spot, ideally in shade",
   ],
 
   faq: [
     {
       q: "What if it rains?",
-      a: "We reschedule, no questions asked. Ellis will text you the night before if rain looks likely, and we lock in a new time.",
+      a: "Reschedule, no charge. I'll text the night before if it's looking likely and we'll lock a new time.",
     },
     {
       q: "How do I pay?",
-      a: "Cash or Venmo (@Ellis-CarCare). Pay after the job, when you're happy with how it looks.",
+      a: "Cash, Venmo (@Ellis-CarCare), or Zelle. Pay after the job, when you're happy with how the car looks.",
     },
     {
       q: "Do you need my keys?",
-      a: "Only if it's a Driveway Detail or Full Reset (interior work). Leave them on the front seat or hand them off when Ellis arrives.",
+      a: "Only for interior work (Driveway Detail or Full Reset). Leave them on the front seat or hand them off on arrival.",
     },
     {
       q: "What if I'm not home?",
-      a: "Totally fine. Just leave the car unlocked if interior work is involved, and Venmo when you see the photos.",
+      a: "Fine. Leave the car unlocked if interior work is involved. I'll text photos when it's done and you can pay then.",
     },
     {
       q: "How do I know it'll be done well?",
-      a: "Ellis sends before-and-after photos every time. If anything is off, he comes back, no charge.",
+      a: "Before-and-after photos every job. If anything isn't right, I come back and fix it. No charge.",
+    },
+    {
+      q: "What if you scratch my car?",
+      a: "I'm careful, I use clean towels for every job, and I work by hand. If something happens, I make it right out of pocket.",
     },
   ],
 
-  // Leave empty to use mailto fallback. To go live with a hosted form,
-  // sign up at formspree.io (free), create a form, and paste the ID here.
-  // Format: "xrgjzpqv" (the part after /f/).
+  // Leave empty to use mailto fallback. Set to a Formspree form ID to enable hosted form submissions.
   formspreeId: "",
 
-  // Manual referral copy (the share link is generated at runtime).
   referral: {
-    headline: "Tell a Burns Park neighbor",
-    body: "Send a neighbor to Ellis Car Care. When they book their first detail, you both get $10 off your next wash.",
-    shareText: "Hey, you should book Ellis Car Care for your car. He's a Burns Park kid who details cars in your driveway. Cheap, hand-done, and his work is great:",
+    headline: "Tell a neighbor",
+    body: "Send a neighbor to Ellis Car Care. When they book, you both get $10 off your next wash.",
+    shareText: "Heads up, you should book Ellis Car Care for your car. He details by hand in your driveway. Local, careful, his work is good:",
     shareUrl: "https://elliscarcare.com",
   },
 };
