@@ -1,22 +1,23 @@
-"""Composite an Ann Arbor star marker onto the AI-generated Michigan silhouette.
+"""Process the AI-generated Michigan silhouette: make white pixels transparent,
+recolor the navy stroke to cream so it reads on dark mode, and overlay an
+amber star at Ann Arbor with a soft glow.
 
-The original line-art PNG has no markers. This script overlays an amber 5-point
-star at the approximate Ann Arbor location (south-central Lower Peninsula).
+Run after regenerating michigan-ai source via build_assets.py.
 """
 
-from PIL import Image, ImageDraw
+from PIL import Image, ImageDraw, ImageFilter
 from pathlib import Path
 import math
 
 ROOT = Path(__file__).parent
 SRC = ROOT / "images" / "michigan-ai.png"
 
-AMBER = (229, 162, 53, 255)
-DARK  = (14, 16, 20, 255)
+AMBER  = (229, 162, 53, 255)
+DARK   = (14, 16, 20, 255)
+CREAM  = (242, 238, 230, 255)
 
 
 def star_polygon(cx, cy, r_outer, r_inner, points=5, rotation_deg=-90):
-    """Return a 5-point star polygon centered on (cx, cy)."""
     coords = []
     rotation = math.radians(rotation_deg)
     for i in range(points * 2):
@@ -26,46 +27,71 @@ def star_polygon(cx, cy, r_outer, r_inner, points=5, rotation_deg=-90):
     return coords
 
 
+def make_white_transparent(img):
+    """Background -> transparent, line strokes -> opaque cream."""
+    img = img.convert("RGBA")
+    pixels = img.load()
+    W, H = img.size
+    for y in range(H):
+        for x in range(W):
+            r, g, b, a = pixels[x, y]
+            lum = int(0.299 * r + 0.587 * g + 0.114 * b)
+            if lum >= 220:
+                # background
+                pixels[x, y] = (0, 0, 0, 0)
+            elif lum <= 120:
+                # solid stroke -> full cream
+                pixels[x, y] = (*CREAM[:3], 255)
+            else:
+                # anti-alias edge: cream with proportional alpha
+                # alpha ramps from 255 (lum=120) -> 0 (lum=220)
+                t = (220 - lum) / (220 - 120)
+                pixels[x, y] = (*CREAM[:3], int(255 * t))
+    return img
+
+
 def main():
     img = Image.open(SRC).convert("RGBA")
     W, H = img.size
 
-    # Approximate Ann Arbor on the AI-rendered Michigan silhouette.
-    # The silhouette is roughly: top y=18% (Mackinaw), bottom y=82% (Toledo),
-    # left x=24% (Lake Mich coast), right x=70% (Detroit/Lake Erie).
-    # Ann Arbor is in the south-central palm, ~ 50% horiz, 73% vert.
+    img = make_white_transparent(img)
+
+    # Star at ~ Ann Arbor (50% horiz, 73% vert of the canvas).
     cx = int(W * 0.50)
     cy = int(H * 0.73)
-    r_outer = int(min(W, H) * 0.045)
+    r_outer = int(min(W, H) * 0.05)
     r_inner = int(r_outer * 0.42)
 
     overlay = Image.new("RGBA", (W, H), (0, 0, 0, 0))
     d = ImageDraw.Draw(overlay)
-
-    # Tiny dark outline around the star for legibility against the line
     star_pts = star_polygon(cx, cy, r_outer, r_inner)
-    d.polygon(star_pts, fill=AMBER, outline=DARK)
+    d.polygon(star_pts, fill=AMBER)
 
-    # A small dark circle behind for contrast (in case the star sits on a line)
-    halo_r = r_outer + 4
-    # Subtle halo: very faint amber glow as a separate filled circle (optional)
+    # Soft amber glow behind the star.
     glow = Image.new("RGBA", (W, H), (0, 0, 0, 0))
     gd = ImageDraw.Draw(glow)
+    halo_r = int(r_outer * 2.4)
     gd.ellipse(
-        [cx - halo_r * 1.6, cy - halo_r * 1.6, cx + halo_r * 1.6, cy + halo_r * 1.6],
-        fill=(229, 162, 53, 70),
+        [cx - halo_r, cy - halo_r, cx + halo_r, cy + halo_r],
+        fill=(229, 162, 53, 90),
     )
-    from PIL import ImageFilter
-    glow = glow.filter(ImageFilter.GaussianBlur(8))
+    glow = glow.filter(ImageFilter.GaussianBlur(14))
 
     out = Image.alpha_composite(img, glow)
     out = Image.alpha_composite(out, overlay)
-    out.convert("RGB").save(SRC, "PNG", optimize=True)
+
+    # Resize down for web (keep aspect, max edge 600px)
+    max_edge = 600
+    w, h = out.size
+    scale = max_edge / max(w, h)
+    if scale < 1:
+        out = out.resize((int(w * scale), int(h * scale)), Image.LANCZOS)
+
+    out.save(SRC, "PNG", optimize=True)   # Keep RGBA
     print(f"Wrote {SRC} ({SRC.stat().st_size} bytes)")
 
-    # Also re-emit the WebP at the same size
     webp = SRC.with_suffix(".webp")
-    out.convert("RGB").save(webp, "WEBP", quality=92, method=6)
+    out.save(webp, "WEBP", quality=88, method=6, lossless=False)
     print(f"Wrote {webp} ({webp.stat().st_size} bytes)")
 
 
