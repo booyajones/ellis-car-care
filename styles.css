@@ -779,6 +779,12 @@ section {
   margin-bottom: var(--s-4);
   line-height: 1.65;
 }
+.about-copy p.about-lead {
+  font-size: clamp(1.1rem, 1rem + 0.5vw, 1.25rem);
+  color: var(--ink);
+  line-height: 1.5;
+  max-width: 56ch;
+}
 .about-sig {
   display: inline-flex;
   flex-wrap: wrap;

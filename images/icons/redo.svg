@@ -1,4 +1,6 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-  <path d="M26 16 a10 10 0 1 1 -3 -7.07"/>
-  <path d="M26 5 V10 H21"/>
+  <!-- Counterclockwise return arrow, centered around (16, 16).
+       Arc spans most of the circle, gap at top-right where the arrow head exits. -->
+  <path d="M22.5 8.5 a9 9 0 1 0 3.5 7.5"/>
+  <path d="M16 7 H22.5 V13.5"/>
 </svg>
