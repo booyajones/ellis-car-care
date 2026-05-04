@@ -449,8 +449,8 @@ section {
   gap: var(--s-4);
   align-items: start;
 }
-.trust-icon {
-  display: inline-flex;
+.trust-item .trust-icon {
+  display: flex;
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
