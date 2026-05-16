@@ -1113,7 +1113,12 @@
       const lines = [];
       if (data.observed_from_photo && photoForUI) lines.push(`From the photo: ${data.observed_from_photo}`);
       if (data.reply) lines.push(data.reply);
-      if (data.next_question && !data.ready_to_recommend) lines.push(data.next_question);
+      // Only append next_question if it's NOT already contained in the reply (model often inlines the question).
+      if (data.next_question && !data.ready_to_recommend) {
+        const replyNorm = (data.reply || "").toLowerCase().replace(/\s+/g, " ").trim();
+        const qNorm = data.next_question.toLowerCase().replace(/\s+/g, " ").trim();
+        if (!replyNorm.includes(qNorm)) lines.push(data.next_question);
+      }
       if (lines.length === 0) lines.push("OK.");
       appendBotMessage(lines);
 
