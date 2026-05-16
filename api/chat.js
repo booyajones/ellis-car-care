@@ -1,15 +1,33 @@
 /* ============================================================
-   /api/chat — Vercel Edge Function
+   /api/chat — Vercel Edge Function (DUAL-PROVIDER)
    ------------------------------------------------------------
-   Proxies the Wash Planner chatbot to Claude Haiku 4.5 (vision).
-   Keeps the API key server-side. Returns a structured JSON
-   payload the client merges into its deterministic state.
+   Routes between Claude Haiku 4.5 (warmer voice, strong on
+   conversational extraction) and Gemini 2.5 Flash (faster,
+   cheaper, stronger at vehicle make/model ID from photos).
+
+   Routing policy:
+     - Photo present in this turn → primary: Gemini, fallback: Claude
+     - Text-only turn             → primary: Claude, fallback: Gemini
+     - Override via ?provider=claude or ?provider=gemini
+
+   Failover triggers (try the fallback):
+     - Upstream timeout (12s per provider)
+     - HTTP 5xx from upstream
+     - JSON parse failure on the response
+     - Empty response
+
+   The client never has to know which provider answered, but we
+   include "provider" in the response payload for observability.
    ============================================================ */
 
 export const config = { runtime: "edge" };
 
-const MODEL = "claude-haiku-4-5";
-const ANTHROPIC_URL = "https://api.anthropic.com/v1/messages";
+const CLAUDE_MODEL = "claude-haiku-4-5";
+const GEMINI_MODEL = "gemini-2.5-flash";
+const CLAUDE_URL  = "https://api.anthropic.com/v1/messages";
+const GEMINI_URL  = (model) => `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent`;
+
+const UPSTREAM_TIMEOUT_MS = 12_000;
 
 const SYSTEM_PROMPT = `You are Ellis Car Care's wash-planning assistant on his static website.
 
@@ -41,7 +59,7 @@ CRITICAL RULES (don't violate these):
   6. If user asks for a service that isn't offered (engine bay detailing, ceramic coating, paint correction beyond polish, machine compound), politely say Ellis can talk about that over text — don't make something up. For paint correction specifically, you can mention "Ellis quotes paint restoration by photo over text" (this matches the actual add-on on the site).
   7. When a specific make/model is named with no ambiguity, infer carType and carSize using your automotive knowledge — don't re-ask. Examples:
        Civic, Corolla, Mazda3, Mini, Golf, Tesla Model 3 → carType:"sedan"/"ev", carSize:"compact"
-       Camry, Accord, Tesla Model Y, Tesla Model 3 (also fine as compact), Maxima → carType:"sedan"/"ev", carSize:"midsize"
+       Camry, Accord, Tesla Model Y, Maxima → carType:"sedan"/"ev", carSize:"midsize"
        Charger, S-Class, 7-Series, Maybach → carType:"sedan", carSize:"fullsize"
        CR-V, RAV4, Forester, Outback → carType:"suv", carSize:"compact"
        Pilot, Highlander, Explorer, Telluride, Atlas → carType:"suv", carSize:"midsize"
@@ -59,10 +77,10 @@ CRITICAL OUTPUT RULE: The "reply" is an acknowledgement + brief observation only
 You must return ONE JSON object per turn — no markdown, no preamble. Exactly this shape:
 
 {
-  "reply": "1–3 short sentences to the user. No markdown.",
+  "reply": "1–2 short acknowledgement sentences to the user. Not a question.",
   "extracted": { ...only fields you learned or confirmed this turn... },
   "observed_from_photo": "if a photo was attached: one short line on what you saw, omitted if none",
-  "next_question": "the next single question, omitted when ready_to_recommend is true",
+  "next_question": "the single next question, omitted when ready_to_recommend is true",
   "quick_replies": ["2 to 5 short tap labels", "..."],
   "ready_to_recommend": false
 }
@@ -94,7 +112,7 @@ If something is unclear or the user is vague, ASK — don't invent. Never halluc
 
 Quick reply guidance:
   - Provide tap-friendly button labels when there's a clear set of choices.
-  - Skip quick_replies (return empty array) when free-form input fits better (e.g. car make/model, free-text notes).
+  - Return empty array when free-form input fits better (e.g. car make/model, free-text notes).
   - Labels stay under ~28 characters each.
 
 Output JSON ONLY. No backticks, no commentary.`;
@@ -127,10 +145,6 @@ export default async function handler(req) {
     return json({ error: "method_not_allowed" }, 405, cors);
   }
 
-  if (!process.env.ANTHROPIC_API_KEY) {
-    return json({ error: "missing_api_key" }, 500, cors);
-  }
-
   let body;
   try { body = await req.json(); }
   catch { return json({ error: "bad_json" }, 400, cors); }
@@ -141,7 +155,6 @@ export default async function handler(req) {
     return json({ error: "invalid_messages" }, 400, cors);
   }
 
-  // Image size guard: payload roughly limited via Vercel default; do a sanity check.
   if (image) {
     if (typeof image.data !== "string" || image.data.length > 1_600_000) {
       return json({ error: "image_too_large" }, 413, cors);
@@ -152,17 +165,76 @@ export default async function handler(req) {
   }
 
   // Normalize messages: enforce role + string content, drop anything weird.
-  const cleaned = messages.map((m, i) => {
-    if (!m || (m.role !== "user" && m.role !== "assistant")) throw new Error("bad role");
-    const text = typeof m.content === "string" ? m.content.slice(0, 4000) : "";
-    return { role: m.role, content: text };
-  }).filter(m => m.content.length > 0 || m.role === "user");
+  let cleaned;
+  try {
+    cleaned = messages.map((m) => {
+      if (!m || (m.role !== "user" && m.role !== "assistant")) throw new Error("bad role");
+      const text = typeof m.content === "string" ? m.content.slice(0, 4000) : "";
+      return { role: m.role, content: text };
+    }).filter(m => m.content.length > 0 || m.role === "user");
+  } catch (e) {
+    return json({ error: "invalid_message_shape" }, 400, cors);
+  }
 
   if (cleaned.length === 0) {
     return json({ error: "empty_messages" }, 400, cors);
   }
 
-  // Attach the image (if any) to the LAST user message only.
+  // Routing: photo → Gemini first; text-only → Claude first.
+  // Optional override via ?provider= query param.
+  const url = new URL(req.url);
+  const override = url.searchParams.get("provider"); // "claude" | "gemini" | null
+
+  let primary, fallback;
+  if (override === "claude") { primary = "claude"; fallback = "gemini"; }
+  else if (override === "gemini") { primary = "gemini"; fallback = "claude"; }
+  else if (image) { primary = "gemini"; fallback = "claude"; }
+  else { primary = "claude"; fallback = "gemini"; }
+
+  // Try primary, then fallback. Capture errors for diagnostics.
+  const attempts = [];
+  for (const provider of [primary, fallback]) {
+    const t0 = Date.now();
+    try {
+      const result = await callProvider(provider, cleaned, image);
+      const dur = Date.now() - t0;
+      const out = sanitizeOutput(result);
+      out.provider = provider;
+      out.latencyMs = dur;
+      out.attempts = attempts.concat([{ provider, ok: true, ms: dur }]);
+      return json(out, 200, cors);
+    } catch (e) {
+      const dur = Date.now() - t0;
+      attempts.push({ provider, ok: false, ms: dur, err: String(e && e.message || e).slice(0, 200) });
+      // Continue to fallback unless it's a hard input error
+      if (e.code === "BAD_INPUT") {
+        return json({ error: "bad_input", detail: String(e.message || e) }, 400, cors);
+      }
+    }
+  }
+
+  return json({ error: "all_providers_failed", attempts }, 502, cors);
+}
+
+// ============================================================
+//  Provider dispatch
+// ============================================================
+async function callProvider(provider, cleaned, image) {
+  if (provider === "claude") {
+    if (!process.env.ANTHROPIC_API_KEY) throw new Error("missing_anthropic_key");
+    return await callClaude(cleaned, image);
+  }
+  if (provider === "gemini") {
+    if (!process.env.GOOGLE_API_KEY) throw new Error("missing_google_key");
+    return await callGemini(cleaned, image);
+  }
+  throw new Error("unknown_provider");
+}
+
+// ============================================================
+//  Claude Haiku 4.5
+// ============================================================
+async function callClaude(cleaned, image) {
   const apiMessages = cleaned.slice(0, -1).map(m => ({ role: m.role, content: m.content }));
   const last = cleaned[cleaned.length - 1];
 
@@ -176,12 +248,11 @@ export default async function handler(req) {
     lastContent = last.content;
   }
   apiMessages.push({ role: "user", content: lastContent });
-
-  // Prefill the assistant turn with "{" to lock JSON output.
+  // JSON prefill
   apiMessages.push({ role: "assistant", content: "{" });
 
-  const anthropicBody = {
-    model: MODEL,
+  const body = {
+    model: CLAUDE_MODEL,
     max_tokens: 700,
     system: [
       { type: "text", text: SYSTEM_PROMPT, cache_control: { type: "ephemeral" } }
@@ -189,70 +260,121 @@ export default async function handler(req) {
     messages: apiMessages,
   };
 
-  // 12-second upstream timeout
-  const controller = new AbortController();
-  const t = setTimeout(() => controller.abort(), 12_000);
+  const data = await postWithTimeout(CLAUDE_URL, {
+    method: "POST",
+    headers: {
+      "x-api-key": process.env.ANTHROPIC_API_KEY,
+      "anthropic-version": "2023-06-01",
+      "content-type": "application/json",
+    },
+    body: JSON.stringify(body),
+  });
 
-  let upstream;
-  try {
-    upstream = await fetch(ANTHROPIC_URL, {
-      method: "POST",
-      headers: {
-        "x-api-key": process.env.ANTHROPIC_API_KEY,
-        "anthropic-version": "2023-06-01",
-        "content-type": "application/json",
-      },
-      body: JSON.stringify(anthropicBody),
-      signal: controller.signal,
-    });
-  } catch (e) {
-    clearTimeout(t);
-    return json({ error: "upstream_timeout", detail: String(e && e.message || e) }, 504, cors);
-  }
-  clearTimeout(t);
-
-  if (!upstream.ok) {
-    let detail;
-    try { detail = await upstream.text(); } catch { detail = ""; }
-    return json({ error: "upstream_error", status: upstream.status, detail: detail.slice(0, 400) }, 502, cors);
-  }
-
-  const data = await upstream.json();
   const raw = data?.content?.[0]?.text ?? "";
-  // Prefilled "{" was stripped from response — rebuild it.
-  const reconstructed = "{" + raw;
+  const parsed = parseJsonLoose("{" + raw);
+  if (!parsed) throw new Error("claude_parse_error");
+  return { ...parsed, _usage: data?.usage };
+}
 
-  let parsed;
-  try {
-    parsed = JSON.parse(reconstructed);
-  } catch (e) {
-    // Best effort: try to find first {...} block
-    const m = reconstructed.match(/\{[\s\S]*\}/);
-    if (m) {
-      try { parsed = JSON.parse(m[0]); } catch { /* still bad */ }
+// ============================================================
+//  Gemini 2.5 Flash
+// ============================================================
+async function callGemini(cleaned, image) {
+  // Map our conversation to Gemini's contents format.
+  // Last user message gets the image attached.
+  const contents = cleaned.map((m, i) => {
+    const role = m.role === "assistant" ? "model" : "user";
+    const isLastUser = i === cleaned.length - 1 && m.role === "user";
+    const parts = [];
+    if (isLastUser && image) {
+      parts.push({ inlineData: { mimeType: image.mediaType, data: image.data } });
     }
-    if (!parsed) {
-      return json({ error: "parse_error", raw: reconstructed.slice(0, 500) }, 502, cors);
-    }
-  }
+    parts.push({ text: m.content || (isLastUser && image ? "Here's a photo of my car." : "") });
+    return { role, parts };
+  });
 
-  // Validate / sanitize
-  const out = {
-    reply: String(parsed.reply || "").slice(0, 1200),
-    extracted: sanitizeExtracted(parsed.extracted),
-    next_question: parsed.next_question ? String(parsed.next_question).slice(0, 240) : "",
-    quick_replies: Array.isArray(parsed.quick_replies) ? parsed.quick_replies.slice(0, 6).map(s => String(s).slice(0, 60)) : [],
-    ready_to_recommend: !!parsed.ready_to_recommend,
-    observed_from_photo: parsed.observed_from_photo ? String(parsed.observed_from_photo).slice(0, 280) : "",
-    usage: {
-      input_tokens: data.usage?.input_tokens ?? null,
-      output_tokens: data.usage?.output_tokens ?? null,
-      cache_read_input_tokens: data.usage?.cache_read_input_tokens ?? null,
-      cache_creation_input_tokens: data.usage?.cache_creation_input_tokens ?? null,
+  const body = {
+    contents,
+    systemInstruction: { parts: [{ text: SYSTEM_PROMPT }] },
+    generationConfig: {
+      responseMimeType: "application/json",
+      maxOutputTokens: 800,
+      temperature: 0.6,
     },
   };
 
-  return json(out, 200, cors);
+  const url = `${GEMINI_URL(GEMINI_MODEL)}?key=${encodeURIComponent(process.env.GOOGLE_API_KEY)}`;
+  const data = await postWithTimeout(url, {
+    method: "POST",
+    headers: { "content-type": "application/json" },
+    body: JSON.stringify(body),
+  });
+
+  // Gemini returns: { candidates: [ { content: { parts: [{ text: "..." }] } } ], usageMetadata: {...} }
+  const raw = data?.candidates?.[0]?.content?.parts?.[0]?.text ?? "";
+  const parsed = parseJsonLoose(raw);
+  if (!parsed) throw new Error("gemini_parse_error");
+  return { ...parsed, _usage: data?.usageMetadata };
+}
+
+// ============================================================
+//  Shared helpers
+// ============================================================
+async function postWithTimeout(url, init) {
+  const controller = new AbortController();
+  const t = setTimeout(() => controller.abort(), UPSTREAM_TIMEOUT_MS);
+  let resp;
+  try {
+    resp = await fetch(url, { ...init, signal: controller.signal });
+  } catch (e) {
+    clearTimeout(t);
+    throw new Error("upstream_timeout:" + (e && e.message || e));
+  }
+  clearTimeout(t);
+
+  if (!resp.ok) {
+    let detail;
+    try { detail = await resp.text(); } catch { detail = ""; }
+    const err = new Error(`http_${resp.status}:${detail.slice(0, 200)}`);
+    err.upstreamStatus = resp.status;
+    throw err;
+  }
+  try {
+    return await resp.json();
+  } catch (e) {
+    throw new Error("response_not_json");
+  }
+}
+
+function parseJsonLoose(raw) {
+  if (!raw || typeof raw !== "string") return null;
+  try { return JSON.parse(raw); } catch {}
+  const m = raw.match(/\{[\s\S]*\}/);
+  if (m) {
+    try { return JSON.parse(m[0]); } catch {}
+  }
+  return null;
+}
+
+function sanitizeOutput(parsed) {
+  return {
+    reply: String(parsed.reply || "").slice(0, 1200),
+    extracted: sanitizeExtracted(parsed.extracted),
+    next_question: parsed.next_question ? String(parsed.next_question).slice(0, 240) : "",
+    quick_replies: Array.isArray(parsed.quick_replies)
+      ? parsed.quick_replies.slice(0, 6).map(s => String(s).slice(0, 60))
+      : [],
+    ready_to_recommend: !!parsed.ready_to_recommend,
+    observed_from_photo: parsed.observed_from_photo
+      ? String(parsed.observed_from_photo).slice(0, 280)
+      : "",
+    usage: {
+      input_tokens: parsed._usage?.input_tokens ?? parsed._usage?.promptTokenCount ?? null,
+      output_tokens: parsed._usage?.output_tokens ?? parsed._usage?.candidatesTokenCount ?? null,
+      cache_read_input_tokens: parsed._usage?.cache_read_input_tokens ?? null,
+      cache_creation_input_tokens: parsed._usage?.cache_creation_input_tokens ?? null,
+    },
+  };
 }
 
 // Strict whitelist of fields and their allowed values
