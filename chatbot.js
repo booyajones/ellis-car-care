@@ -78,6 +78,10 @@
     };
   }
 
+  // ---- AI mode config ----
+  const AI_ENDPOINT = "/api/chat";
+  const AI_MAX_TURNS = 8;
+
   // ---- Conversation graph ----
   // Each step: { id, prompt(state) -> string|string[], options: [{label, value, next?}], input?: {placeholder, key, next}, skip?: state -> bool }
   const STEPS = {
@@ -85,11 +89,20 @@
       id: "intro",
       prompt: () => [
         "Hey! I'm Ellis's wash-planning assistant.",
-        "Answer a few quick questions (about 60 seconds) and I'll match your car to the right package and a quote. Ready?",
+        "Easiest way: snap a photo of your car or just tell me about it in plain English. I'll match you to the right wash.",
       ],
       options: [
-        { label: "Let's go", value: "start", next: () => "carType" },
+        { label: "Snap or describe — smart mode", value: "ai", next: () => "ai" },
+        { label: "Quick form instead", value: "guided", next: () => "carType" },
         { label: "Just show me prices", value: "skip", next: () => "skipToPrices" },
+      ],
+    },
+
+    ai: {
+      id: "ai",
+      isAiMode: true,
+      prompt: () => [
+        "Cool. Drop a photo of your car (front + side is great) or just type — make, condition, what you want. I'll figure out the rest.",
       ],
     },
 
@@ -716,6 +729,10 @@
   function restartChat() {
     clearState();
     state = defaultState();
+    aiHistory = [];
+    aiPendingImage = null;
+    aiTurnCount = 0;
+    aiPending = false;
     log.innerHTML = "";
     controls.innerHTML = "";
     renderStep("intro");
@@ -767,6 +784,11 @@
       const restartBtn = makeButton("Start over", "is-ghost", () => restartChat());
       controls.appendChild(closeBtn);
       controls.appendChild(restartBtn);
+      return;
+    }
+
+    if (step.isAiMode) {
+      renderAiControls();
       return;
     }
 
@@ -888,6 +910,254 @@
     controls.appendChild(makeButton("Plan another car", "is-ghost", () => restartChat()));
   }
 
+  // ============================================================
+  //  AI mode — Claude Haiku 4.5 (vision) via /api/chat
+  // ============================================================
+  let aiHistory = [];          // [{ role:"user"|"assistant", content: string }]
+  let aiPendingImage = null;   // { mediaType, data, dataUrl, filename }
+  let aiTurnCount = 0;
+  let aiPending = false;
+
+  function renderAiControls(quickReplies) {
+    controls.innerHTML = "";
+
+    // Quick reply buttons from server (or none)
+    (quickReplies || []).forEach(label => {
+      const b = makeButton(label, "", () => sendAiMessage(label));
+      controls.appendChild(b);
+    });
+
+    // Always render: free-text input + photo button
+    const form = document.createElement("form");
+    form.className = "chat-input-form ai-form";
+    form.addEventListener("submit", (e) => {
+      e.preventDefault();
+      const val = (input.value || "").trim();
+      if (!val && !aiPendingImage) return;
+      input.value = "";
+      sendAiMessage(val);
+    });
+
+    // Photo button (acts as label for hidden file input)
+    const photoBtn = document.createElement("label");
+    photoBtn.className = "chat-photo-btn";
+    photoBtn.setAttribute("aria-label", "Add a photo of your car");
+    photoBtn.title = "Add a photo";
+    photoBtn.innerHTML = `
+      <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/>
+        <circle cx="12" cy="13" r="4"/>
+      </svg>
+    `;
+    const fileInput = document.createElement("input");
+    fileInput.type = "file";
+    fileInput.accept = "image/jpeg,image/png,image/webp,image/heic,image/heif";
+    fileInput.style.display = "none";
+    fileInput.addEventListener("change", async (e) => {
+      const file = e.target.files && e.target.files[0];
+      if (!file) return;
+      await attachPhoto(file);
+      fileInput.value = "";
+    });
+    photoBtn.appendChild(fileInput);
+
+    const input = document.createElement("input");
+    input.type = "text";
+    input.className = "chat-input";
+    input.placeholder = aiPendingImage ? "Add a note about the photo (optional)…" : "Tell me about your car, or add a photo…";
+    input.setAttribute("aria-label", "Your message");
+    input.maxLength = 600;
+    input.disabled = aiPending;
+
+    const submit = document.createElement("button");
+    submit.type = "submit";
+    submit.className = "chat-input-send";
+    submit.setAttribute("aria-label", "Send");
+    submit.disabled = aiPending;
+    submit.innerHTML = `
+      <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <line x1="22" y1="2" x2="11" y2="13"></line>
+        <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+      </svg>
+    `;
+
+    form.appendChild(photoBtn);
+    form.appendChild(input);
+    form.appendChild(submit);
+    controls.appendChild(form);
+
+    // Show pending photo thumbnail above the input
+    if (aiPendingImage) {
+      const chip = document.createElement("div");
+      chip.className = "chat-photo-chip";
+      chip.innerHTML = `
+        <img src="${aiPendingImage.dataUrl}" alt="Attached photo of your car" />
+        <span class="chat-photo-chip-name">${escapeHtml(aiPendingImage.filename || "photo")}</span>
+        <button type="button" class="chat-photo-chip-remove" aria-label="Remove photo">×</button>
+      `;
+      chip.querySelector(".chat-photo-chip-remove").addEventListener("click", () => {
+        aiPendingImage = null;
+        renderAiControls(quickReplies);
+      });
+      controls.insertBefore(chip, form);
+    }
+
+    // Bottom-line escape: switch to guided form
+    const escape = document.createElement("button");
+    escape.type = "button";
+    escape.className = "chat-mode-switch";
+    escape.textContent = "Switch to quick form";
+    escape.addEventListener("click", () => {
+      appendUserMessage("Switch to quick form");
+      renderStep("carType");
+    });
+    controls.appendChild(escape);
+
+    // Focus the input for fast typing
+    setTimeout(() => { if (!aiPending) input.focus(); }, 30);
+  }
+
+  async function attachPhoto(file) {
+    if (file.size > 12 * 1024 * 1024) {
+      appendBotMessage(["That photo is huge. Anything under 12MB works — try shrinking it or use a smaller one."]);
+      return;
+    }
+    try {
+      const processed = await compressImage(file);
+      aiPendingImage = processed;
+      appendBotMessage(["Got the photo. Add a note if you want, or just hit send."]);
+      renderAiControls();
+    } catch (e) {
+      appendBotMessage(["Couldn't read that photo. Try another, or just type a description."]);
+    }
+  }
+
+  function compressImage(file) {
+    return new Promise((resolve, reject) => {
+      const url = URL.createObjectURL(file);
+      const img = new Image();
+      img.onload = () => {
+        URL.revokeObjectURL(url);
+        // Cap longest side at 1200px, JPEG quality 0.82, target ~400-700KB
+        const MAX = 1200;
+        const scale = Math.min(1, MAX / Math.max(img.width, img.height));
+        const w = Math.round(img.width * scale);
+        const h = Math.round(img.height * scale);
+        const canvas = document.createElement("canvas");
+        canvas.width = w; canvas.height = h;
+        const ctx = canvas.getContext("2d");
+        ctx.drawImage(img, 0, 0, w, h);
+        const dataUrl = canvas.toDataURL("image/jpeg", 0.82);
+        const m = dataUrl.match(/^data:([^;]+);base64,(.+)$/);
+        if (!m) { reject(new Error("encode")); return; }
+        resolve({
+          mediaType: m[1],
+          data: m[2],
+          dataUrl,
+          filename: file.name,
+          byteSize: m[2].length,
+        });
+      };
+      img.onerror = () => { URL.revokeObjectURL(url); reject(new Error("decode")); };
+      img.src = url;
+    });
+  }
+
+  async function sendAiMessage(userText) {
+    if (aiPending) return;
+    if (aiTurnCount >= AI_MAX_TURNS) {
+      appendBotMessage(["I've got plenty to work with. Let me pull the recommendation together."]);
+      finalizeAi();
+      return;
+    }
+
+    const displayText = userText || (aiPendingImage ? "(photo attached)" : "");
+    if (displayText) appendUserMessage(displayText);
+
+    aiHistory.push({ role: "user", content: userText || "(photo attached)" });
+
+    const imagePayload = aiPendingImage;
+    const photoForUI = aiPendingImage;
+    aiPendingImage = null;
+    aiTurnCount += 1;
+    aiPending = true;
+
+    const typing = appendTyping();
+    renderAiControls();
+
+    try {
+      const payload = {
+        messages: aiHistory.slice(-20),
+        image: imagePayload ? { mediaType: imagePayload.mediaType, data: imagePayload.data } : null,
+      };
+      const resp = await fetch(AI_ENDPOINT, {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+      typing.remove();
+      if (!resp.ok) throw new Error("HTTP " + resp.status);
+      const data = await resp.json();
+      if (data.error) throw new Error(data.error);
+
+      // Merge extracted fields into deterministic state
+      if (data.extracted && typeof data.extracted === "object") {
+        Object.entries(data.extracted).forEach(([k, v]) => {
+          if (v !== undefined && v !== null && v !== "") state.answers[k] = v;
+        });
+      }
+
+      const lines = [];
+      if (data.observed_from_photo && photoForUI) lines.push(`From the photo: ${data.observed_from_photo}`);
+      if (data.reply) lines.push(data.reply);
+      if (data.next_question && !data.ready_to_recommend) lines.push(data.next_question);
+      if (lines.length === 0) lines.push("OK.");
+      appendBotMessage(lines);
+
+      aiHistory.push({ role: "assistant", content: data.reply || "" });
+      saveState(state);
+
+      if (data.ready_to_recommend) {
+        finalizeAi();
+      } else {
+        aiPending = false;
+        renderAiControls(data.quick_replies);
+      }
+    } catch (err) {
+      typing.remove();
+      aiPending = false;
+      // Graceful fallback to guided form
+      appendBotMessage([
+        "Hmm, my AI brain isn't responding right now. Let's switch to the quick form — same outcome, just a few tap questions.",
+      ]);
+      setTimeout(() => renderStep("carType"), 500);
+    }
+  }
+
+  function finalizeAi() {
+    aiPending = false;
+    // Backfill any missing required fields with safe defaults so recommend() always works
+    if (!state.answers.scope) state.answers.scope = "both";
+    if (!state.answers.location) state.answers.location = "burns";
+    if (!state.answers.timing) state.answers.timing = "flexible";
+    saveState(state);
+    renderStep("recommend");
+  }
+
+  function appendTyping() {
+    const bubble = document.createElement("div");
+    bubble.className = "msg msg-bot msg-typing";
+    bubble.innerHTML = `<span class="typing-dot"></span><span class="typing-dot"></span><span class="typing-dot"></span>`;
+    bubble.setAttribute("aria-label", "Assistant is typing");
+    log.appendChild(bubble);
+    log.scrollTop = log.scrollHeight;
+    return bubble;
+  }
+
+  function escapeHtml(s) {
+    return String(s).replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c]);
+  }
+
   function appendBotMessage(lines) {
     const arr = Array.isArray(lines) ? lines : [lines];
     arr.forEach((line, i) => {
@@ -944,6 +1214,40 @@
     state = loadState();
     buildShell();
     bindOpeners();
+
+    // Paste-photo support: anywhere on the page while chat is open
+    document.addEventListener("paste", (e) => {
+      if (!isOpen) return;
+      if (state.currentStep !== "ai") return;
+      const items = e.clipboardData && e.clipboardData.items;
+      if (!items) return;
+      for (const it of items) {
+        if (it.kind === "file" && it.type.startsWith("image/")) {
+          const file = it.getAsFile();
+          if (file) {
+            e.preventDefault();
+            attachPhoto(file);
+            return;
+          }
+        }
+      }
+    });
+
+    // Drag-and-drop photos onto the chat panel
+    panel.addEventListener("dragover", (e) => {
+      if (state.currentStep !== "ai") return;
+      e.preventDefault();
+      panel.classList.add("chat-dropping");
+    });
+    panel.addEventListener("dragleave", () => panel.classList.remove("chat-dropping"));
+    panel.addEventListener("drop", (e) => {
+      panel.classList.remove("chat-dropping");
+      if (state.currentStep !== "ai") return;
+      e.preventDefault();
+      const file = e.dataTransfer && e.dataTransfer.files && e.dataTransfer.files[0];
+      if (file && file.type.startsWith("image/")) attachPhoto(file);
+    });
+
     // Expose for QA hooks
     window.EllisChat = {
       open: openChat,
@@ -953,6 +1257,9 @@
       _recommend: recommend,
       _buildSms: buildSmsBody,
       _steps: STEPS,
+      _sendAi: sendAiMessage,
+      _aiHistory: () => aiHistory,
+      _setPendingImage: (img) => { aiPendingImage = img; },
     };
   }
 

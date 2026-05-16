@@ -380,7 +380,143 @@
   color: var(--accent-deep);
 }
 
+/* ============================================================
+   AI mode UI
+   ============================================================ */
+
+/* Photo button next to text input */
+.ai-form {
+  flex-wrap: nowrap;
+}
+.chat-photo-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px; height: 40px;
+  border-radius: 50%;
+  background: var(--surface);
+  border: 1px solid var(--line-strong);
+  color: var(--ink-soft);
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: color 0.16s, border-color 0.16s, background 0.16s, transform 0.12s;
+}
+.chat-photo-btn:hover {
+  color: var(--accent);
+  border-color: var(--accent);
+}
+.chat-photo-btn:active { transform: scale(0.94); }
+.chat-photo-btn:focus-within {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+/* Attached photo chip */
+.chat-photo-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 6px 10px 6px 6px;
+  background: var(--surface);
+  border: 1px solid var(--line-strong);
+  border-radius: 999px;
+  flex: 1 1 100%;
+  margin-bottom: 6px;
+  max-width: 100%;
+}
+.chat-photo-chip img {
+  width: 32px; height: 32px;
+  border-radius: 50%;
+  object-fit: cover;
+  flex-shrink: 0;
+}
+.chat-photo-chip-name {
+  font-size: 0.85rem;
+  color: var(--ink-soft);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  flex: 1;
+  min-width: 0;
+}
+.chat-photo-chip-remove {
+  width: 24px; height: 24px;
+  border-radius: 50%;
+  color: var(--muted);
+  font-size: 1.1rem;
+  line-height: 1;
+  flex-shrink: 0;
+}
+.chat-photo-chip-remove:hover {
+  background: var(--surface-soft);
+  color: var(--ink);
+}
+
+/* Mode switch link */
+.chat-mode-switch {
+  flex: 1 1 100%;
+  text-align: center;
+  background: transparent;
+  border: 0;
+  color: var(--muted);
+  font-size: 0.78rem;
+  letter-spacing: 0.02em;
+  padding: 6px 0 0;
+  cursor: pointer;
+  text-decoration: underline;
+  text-decoration-color: rgba(138, 133, 121, 0.4);
+  text-underline-offset: 3px;
+  transition: color 0.18s;
+}
+.chat-mode-switch:hover {
+  color: var(--ink-soft);
+  text-decoration-color: var(--ink-soft);
+}
+
+/* Typing indicator */
+.msg-typing {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 12px 14px;
+  min-height: 20px;
+}
+.typing-dot {
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  background: var(--muted);
+  animation: typingPulse 1.2s infinite ease-in-out;
+}
+.typing-dot:nth-child(2) { animation-delay: 0.15s; }
+.typing-dot:nth-child(3) { animation-delay: 0.3s; }
+@keyframes typingPulse {
+  0%, 80%, 100% { opacity: 0.3; transform: translateY(0); }
+  40% { opacity: 1; transform: translateY(-2px); }
+}
+
+/* Drag-and-drop visual */
+.chat-panel.chat-dropping {
+  outline: 2px dashed var(--accent);
+  outline-offset: -8px;
+}
+.chat-panel.chat-dropping::after {
+  content: "Drop the photo here";
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(14, 16, 20, 0.85);
+  color: var(--accent);
+  font-family: var(--display);
+  font-size: 1.2rem;
+  font-weight: 600;
+  z-index: 5;
+  pointer-events: none;
+}
+
 /* Reduce motion */
 @media (prefers-reduced-motion: reduce) {
   .chat-panel, .chat-fab, .msg, .chat-btn { transition: none; animation: none; }
+  .typing-dot { animation: none; opacity: 0.6; }
 }
