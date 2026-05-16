@@ -721,12 +721,13 @@
 
   function closeChat() {
     isOpen = false;
+    // Move focus out of the panel BEFORE marking it hidden (a11y: never aria-hidden a focused element)
+    fab.classList.remove("is-hidden");
+    fab.focus();
     panel.setAttribute("aria-hidden", "true");
     panel.classList.remove("is-open");
     fab.setAttribute("aria-expanded", "false");
-    fab.classList.remove("is-hidden");
     document.body.classList.remove("chat-open");
-    fab.focus();
   }
 
   function restartChat() {
