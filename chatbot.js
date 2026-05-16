@@ -707,7 +707,10 @@
 
     if (!openedOnce) {
       openedOnce = true;
-      renderStep(state.currentStep || "intro");
+      // If a renderStep already populated the log (e.g. restart was called pre-open), don't double-render
+      if (log.querySelectorAll(".msg").length === 0) {
+        renderStep(state.currentStep || "intro");
+      }
     }
     // Move focus into the chat for accessibility
     setTimeout(() => {
