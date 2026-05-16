@@ -29,6 +29,7 @@
 
   <link rel="preload" as="image" href="images/hero.webp" imagesrcset="images/hero.webp" type="image/webp">
   <link rel="stylesheet" href="styles.css?v=11">
+  <link rel="stylesheet" href="chatbot.css?v=1">
 
   <script type="application/ld+json">
   {
@@ -96,6 +97,7 @@
 
         <div class="hero-ctas">
           <a class="btn btn-primary btn-lg" href="sms:+16282520740" data-sms-link>Text to book</a>
+          <button type="button" class="btn btn-ghost btn-lg" data-open-chat>Plan your wash</button>
           <a class="btn btn-ghost btn-lg" href="#menu">See pricing</a>
         </div>
         <p class="hero-meta">
@@ -160,6 +162,10 @@
       <div class="extras">
         <div class="extra-card" data-addon></div>
       </div>
+
+      <p class="pricing-helper">
+        Not sure which one? <button type="button" class="link-btn" data-open-chat>Chat to plan your wash →</button>
+      </p>
     </div>
   </section>
 
@@ -372,5 +378,6 @@
 
 <script src="config.js?v=11"></script>
 <script src="app.js?v=11" defer></script>
+<script src="chatbot.js?v=1" defer></script>
 </body>
 </html>
