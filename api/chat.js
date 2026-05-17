@@ -134,6 +134,48 @@ function corsHeaders(origin) {
   };
 }
 
+// ============================================================
+//  Per-IP rate limit — in-memory token bucket
+//  ------------------------------------------------------------
+//  Edge functions reuse module-scope state across invocations
+//  on the same instance. Different regions = different buckets,
+//  which is fine: most attackers hit from one location.
+//  Limit: 20 requests / 5 min per IP. A real user uses 3–8 turns
+//  to plan a wash, so this is generous for humans and tight on
+//  abuse. Returns HTTP 429 with Retry-After when exceeded.
+// ============================================================
+const RATE_LIMIT_MAX     = 20;
+const RATE_LIMIT_WINDOW_MS = 5 * 60 * 1000;
+const ipBuckets = new Map(); // ip -> { count, resetAt }
+const MAX_BUCKETS = 5000;    // simple bounded cache to prevent memory growth
+
+function getClientIp(req) {
+  const xff = req.headers.get("x-forwarded-for") || "";
+  const first = xff.split(",")[0].trim();
+  if (first) return first;
+  return req.headers.get("x-real-ip") || "unknown";
+}
+
+function rateLimitCheck(ip) {
+  const now = Date.now();
+  let b = ipBuckets.get(ip);
+  if (!b || b.resetAt <= now) {
+    // GC stale entries to keep the Map bounded
+    if (ipBuckets.size >= MAX_BUCKETS) {
+      for (const [k, v] of ipBuckets) {
+        if (v.resetAt <= now) ipBuckets.delete(k);
+        if (ipBuckets.size < MAX_BUCKETS * 0.75) break;
+      }
+    }
+    b = { count: 0, resetAt: now + RATE_LIMIT_WINDOW_MS };
+    ipBuckets.set(ip, b);
+  }
+  b.count += 1;
+  const allowed = b.count <= RATE_LIMIT_MAX;
+  const retryAfterSec = Math.ceil((b.resetAt - now) / 1000);
+  return { allowed, count: b.count, limit: RATE_LIMIT_MAX, retryAfterSec };
+}
+
 export default async function handler(req) {
   const origin = req.headers.get("origin") || "";
   const cors = corsHeaders(origin);
@@ -143,6 +185,28 @@ export default async function handler(req) {
   }
   if (req.method !== "POST") {
     return json({ error: "method_not_allowed" }, 405, cors);
+  }
+
+  // Rate-limit gate (per IP)
+  const ip = getClientIp(req);
+  const rl = rateLimitCheck(ip);
+  if (!rl.allowed) {
+    return new Response(JSON.stringify({
+      error: "rate_limited",
+      limit: rl.limit,
+      retry_after_seconds: rl.retryAfterSec,
+    }), {
+      status: 429,
+      headers: {
+        ...cors,
+        "content-type": "application/json",
+        "cache-control": "no-store",
+        "Retry-After": String(rl.retryAfterSec),
+        "X-RateLimit-Limit": String(rl.limit),
+        "X-RateLimit-Remaining": "0",
+        "X-RateLimit-Reset": String(Math.floor(Date.now() / 1000) + rl.retryAfterSec),
+      },
+    });
   }
 
   let body;
