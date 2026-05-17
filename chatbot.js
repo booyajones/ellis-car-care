@@ -455,12 +455,40 @@
     const addonTotal = addons.reduce((sum, a) => sum + (a.price || 0), 0);
     const travel = a.location === "annarbor" ? 5 : 0;
     const travelNote = a.location === "annarbor" ? " (+$5 travel)" : (a.location === "nearby" ? " (Ellis will confirm travel after you text)" : "");
-    const total = base + addonTotal + travel;
+
+    // Bundle discount: if the user is bundling exterior + interior in one visit
+    // (Driveway Detail or Full Reset, NOT just Quick Shine), apply Ellis's
+    // bundle discount. Configurable in config.js (CONFIG.bundleDiscount); default $10.
+    const bundleDiscountAmount = (window.CONFIG && Number(window.CONFIG.bundleDiscount)) || 10;
+    let bundleDiscount = 0;
+    const bundleApplied = !!a._bundleApplied && (pkg === "drivewayDetail" || pkg === "fullReset");
+    if (bundleApplied) bundleDiscount = bundleDiscountAmount;
+
+    const total = base + addonTotal + travel - bundleDiscount;
 
     // If "interior only" the exterior wash is still done (it's bundled in Driveway Detail)
     let scopeNote = "";
     if (scope === "interior") {
       scopeNote = "Driveway Detail is the closest fit — interior is the focus, but the exterior wash is included at no extra cost.";
+    }
+
+    // Bundle offer — only surfaces when user picked exterior-only AND
+    // hasn't already accepted a bundle. The offer is an inline upgrade
+    // path to Driveway Detail (which adds interior) with a real discount.
+    let bundleOffer = null;
+    const userScopeWasExteriorOnly = a.scope === "exterior";
+    if (pkg === "quickShine" && userScopeWasExteriorOnly && !bundleApplied) {
+      const ddBase = PRICES.drivewayDetail;
+      const ddBundled = ddBase - bundleDiscountAmount;
+      const upgradeCost = ddBundled - base; // what they'd pay on top of Quick Shine
+      bundleOffer = {
+        upgradeTo: "drivewayDetail",
+        upgradeLabel: PACKAGE_LABEL.drivewayDetail,
+        normalPrice: ddBase,
+        bundlePrice: ddBundled,
+        savings: bundleDiscountAmount,
+        upgradeCost,
+      };
     }
 
     return {
@@ -472,6 +500,9 @@
       addonTotal,
       travel,
       travelNote,
+      bundleApplied,
+      bundleDiscount,
+      bundleOffer,
       total,
       reasons,
       scopeNote,
@@ -510,9 +541,21 @@
       rec.reasons.forEach(r => lines.push(`• ${r}`));
     }
 
+    if (rec.bundleApplied && rec.bundleDiscount > 0) {
+      lines.push("");
+      lines.push(`Bundle discount: **−$${rec.bundleDiscount}** (interior + exterior together)`);
+    }
+
     lines.push("");
     lines.push(`Estimated total: **$${rec.total}**`);
     lines.push("");
+
+    if (rec.bundleOffer) {
+      // Exterior-only path — pitch the interior add-on with a real discount
+      lines.push(`Want me to do the inside too? You can bundle interior detail for **+$${rec.bundleOffer.upgradeCost}** (saves $${rec.bundleOffer.savings} vs. booking it later). Tap the button below.`);
+      lines.push("");
+    }
+
     lines.push("Sound good? Tap below to send the whole plan to Ellis as a text. He'll confirm timing.");
 
     return lines;
@@ -568,6 +611,9 @@
       });
     }
     if (rec.travel > 0) lines.push(`+ Travel ($${rec.travel})`);
+    if (rec.bundleApplied && rec.bundleDiscount > 0) {
+      lines.push(`- Bundle discount (interior + exterior) (-$${rec.bundleDiscount})`);
+    }
     lines.push(`Estimated total: $${rec.total}`);
     lines.push("");
     lines.push("Address: I'll share over text. Thanks!");
@@ -767,7 +813,34 @@
     controls.innerHTML = "";
 
     if (step.isRecommendation) {
-      const sendBtn = makeButton("Text the plan to Ellis", "is-primary", () => {
+      const rec = state.recommendation;
+
+      // Bundle-accept button — shown first when an offer exists
+      if (rec && rec.bundleOffer) {
+        const offer = rec.bundleOffer;
+        const bundleBtn = makeButton(
+          `Add interior (+$${offer.upgradeCost}, save $${offer.savings})`,
+          "is-primary",
+          () => {
+            state.answers._packageOverride = offer.upgradeTo;
+            state.answers._bundleApplied = true;
+            // Default unset interior fields to "normal/none" so the engine
+            // doesn't accidentally bump to Full Reset on the bundled upgrade
+            if (!state.answers.scope || state.answers.scope === "exterior") {
+              state.answers.scope = "both";
+            }
+            if (!state.answers.interiorCondition) state.answers.interiorCondition = "normal";
+            if (!state.answers.petHair) state.answers.petHair = "none";
+            if (!state.answers.stains) state.answers.stains = "none";
+            saveState(state);
+            appendUserMessage(`Add interior — bundle it`);
+            renderStep("recommend");
+          }
+        );
+        controls.appendChild(bundleBtn);
+      }
+
+      const sendBtn = makeButton("Text the plan to Ellis", rec && rec.bundleOffer ? "is-ghost" : "is-primary", () => {
         const body = buildSmsBody(state);
         openSms(body);
         appendUserMessage("Sent the plan to Ellis ✓");

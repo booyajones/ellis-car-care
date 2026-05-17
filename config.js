@@ -149,6 +149,11 @@ const CONFIG = {
 
   formspreeId: "",
 
+  // Dollar amount off when a customer bundles interior + exterior in one visit
+  // (i.e. accepts the "Add interior" upsell on the chat recommendation screen,
+  // or originally chose "Both inside and out"). Set to 0 to disable the offer.
+  bundleDiscount: 10,
+
   referral: {
     headline: "Tell a neighbor.",
     body: "Send a neighbor to Ellis Car Care. When they book, you both get $10 off your next wash.",
