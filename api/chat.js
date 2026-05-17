@@ -212,6 +212,71 @@ function rateLimitCheck(ip) {
   return { allowed, count: b.count, limit: RATE_LIMIT_MAX, retryAfterSec };
 }
 
+// ============================================================
+//  Per-IP image rate limit — photos cost ~5x text turns at the
+//  provider level, so cap them tighter: 5 images / 5 min per IP.
+// ============================================================
+const IMG_LIMIT_MAX     = 5;
+const IMG_LIMIT_WINDOW_MS = 5 * 60 * 1000;
+const imgBuckets = new Map();
+
+function imageRateLimitCheck(ip) {
+  const now = Date.now();
+  let b = imgBuckets.get(ip);
+  if (!b || b.resetAt <= now) {
+    if (imgBuckets.size >= MAX_BUCKETS) {
+      for (const [k, v] of imgBuckets) {
+        if (v.resetAt <= now) imgBuckets.delete(k);
+        if (imgBuckets.size < MAX_BUCKETS * 0.75) break;
+      }
+    }
+    b = { count: 0, resetAt: now + IMG_LIMIT_WINDOW_MS };
+    imgBuckets.set(ip, b);
+  }
+  b.count += 1;
+  const allowed = b.count <= IMG_LIMIT_MAX;
+  const retryAfterSec = Math.ceil((b.resetAt - now) / 1000);
+  return { allowed, retryAfterSec };
+}
+
+// ============================================================
+//  Daily circuit breaker — total AI conversations per edge
+//  region per day. Resets on a rolling 24h window. At Ellis's
+//  realistic volume (1.7–17/day expected), 200/day per region
+//  is ~12–120x normal traffic — a generous safety net that
+//  catches runaway abuse without ever bothering real users.
+// ============================================================
+const DAILY_CAP = 200;
+const DAILY_WINDOW_MS = 24 * 60 * 60 * 1000;
+let dailyState = { count: 0, resetAt: Date.now() + DAILY_WINDOW_MS };
+
+function dailyCapCheck() {
+  const now = Date.now();
+  if (dailyState.resetAt <= now) {
+    dailyState = { count: 0, resetAt: now + DAILY_WINDOW_MS };
+  }
+  dailyState.count += 1;
+  return {
+    allowed: dailyState.count <= DAILY_CAP,
+    count: dailyState.count,
+    cap: DAILY_CAP,
+    resetAt: dailyState.resetAt,
+  };
+}
+
+// ============================================================
+//  Bypass token — env var ELLIS_BYPASS_TOKEN. Requests sending
+//  X-Ellis-Bypass: <that-token> skip geo, rate, image, and daily
+//  gates. Used by Chris + QA agents; leave unset in prod if you
+//  don't want a bypass.
+// ============================================================
+function isBypass(req) {
+  const want = process.env.ELLIS_BYPASS_TOKEN;
+  if (!want) return false;
+  const got = req.headers.get("x-ellis-bypass") || "";
+  return got && got === want;
+}
+
 export default async function handler(req) {
   const origin = req.headers.get("origin") || "";
   const cors = corsHeaders(origin);
@@ -223,36 +288,62 @@ export default async function handler(req) {
     return json({ error: "method_not_allowed" }, 405, cors);
   }
 
+  // Bypass token short-circuit (for owner/QA testing)
+  const bypassed = isBypass(req);
+
   // Geo gate — US-only at the AI endpoint
-  const geo = geoAllowed(req);
-  if (!geo.allowed) {
-    return json({
-      error: "region_not_supported",
-      country: geo.country,
-      message: "Ellis Car Care serves Ann Arbor, Michigan. AI planning is US-only; you can still use the quick form on the site.",
-    }, 403, cors);
+  if (!bypassed) {
+    const geo = geoAllowed(req);
+    if (!geo.allowed) {
+      return json({
+        error: "region_not_supported",
+        country: geo.country,
+        message: "Ellis Car Care serves Ann Arbor, Michigan. AI planning is US-only; you can still use the quick form on the site.",
+      }, 403, cors);
+    }
   }
 
   // Rate-limit gate (per IP)
   const ip = getClientIp(req);
-  const rl = rateLimitCheck(ip);
-  if (!rl.allowed) {
-    return new Response(JSON.stringify({
-      error: "rate_limited",
-      limit: rl.limit,
-      retry_after_seconds: rl.retryAfterSec,
-    }), {
-      status: 429,
-      headers: {
-        ...cors,
-        "content-type": "application/json",
-        "cache-control": "no-store",
-        "Retry-After": String(rl.retryAfterSec),
-        "X-RateLimit-Limit": String(rl.limit),
-        "X-RateLimit-Remaining": "0",
-        "X-RateLimit-Reset": String(Math.floor(Date.now() / 1000) + rl.retryAfterSec),
-      },
-    });
+  if (!bypassed) {
+    const rl = rateLimitCheck(ip);
+    if (!rl.allowed) {
+      return new Response(JSON.stringify({
+        error: "rate_limited",
+        limit: rl.limit,
+        retry_after_seconds: rl.retryAfterSec,
+      }), {
+        status: 429,
+        headers: {
+          ...cors,
+          "content-type": "application/json",
+          "cache-control": "no-store",
+          "Retry-After": String(rl.retryAfterSec),
+          "X-RateLimit-Limit": String(rl.limit),
+          "X-RateLimit-Remaining": "0",
+          "X-RateLimit-Reset": String(Math.floor(Date.now() / 1000) + rl.retryAfterSec),
+        },
+      });
+    }
+  }
+
+  // Daily circuit breaker (per edge region)
+  if (!bypassed) {
+    const cap = dailyCapCheck();
+    if (!cap.allowed) {
+      return new Response(JSON.stringify({
+        error: "daily_cap_reached",
+        message: "We've hit today's planning limit. The quick form still works — let's use that.",
+      }), {
+        status: 503,
+        headers: {
+          ...cors,
+          "content-type": "application/json",
+          "cache-control": "no-store",
+          "Retry-After": String(Math.ceil((cap.resetAt - Date.now()) / 1000)),
+        },
+      });
+    }
   }
 
   let body;
@@ -260,6 +351,26 @@ export default async function handler(req) {
   catch { return json({ error: "bad_json" }, 400, cors); }
 
   const { messages, image } = body || {};
+
+  // Image-specific rate limit — only triggers when this turn has a photo
+  if (image && !bypassed) {
+    const img = imageRateLimitCheck(ip);
+    if (!img.allowed) {
+      return new Response(JSON.stringify({
+        error: "image_rate_limited",
+        retry_after_seconds: img.retryAfterSec,
+        message: "Hold up on the photos — try again in a few minutes, or describe the car instead.",
+      }), {
+        status: 429,
+        headers: {
+          ...cors,
+          "content-type": "application/json",
+          "cache-control": "no-store",
+          "Retry-After": String(img.retryAfterSec),
+        },
+      });
+    }
+  }
 
   if (!Array.isArray(messages) || messages.length === 0 || messages.length > 24) {
     return json({ error: "invalid_messages" }, 400, cors);
