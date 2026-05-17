@@ -153,6 +153,24 @@ function corsHeaders(origin) {
 }
 
 // ============================================================
+//  Geo gate — US only at the AI endpoint
+//  ------------------------------------------------------------
+//  Vercel sets x-vercel-ip-country on every Edge request. We
+//  block non-US calls at /api/chat to slash bot/abuse exposure
+//  (botnets are overwhelmingly offshore). Foreign legit users
+//  still get the static site and the deterministic guided form
+//  (which uses zero AI quota), so they're never locked out.
+//  If the header is missing (local dev), allow.
+// ============================================================
+const ALLOWED_COUNTRIES = new Set(["US"]);
+
+function geoAllowed(req) {
+  const country = req.headers.get("x-vercel-ip-country") || "";
+  if (!country) return { allowed: true, country: "" }; // missing header → allow (local dev)
+  return { allowed: ALLOWED_COUNTRIES.has(country), country };
+}
+
+// ============================================================
 //  Per-IP rate limit — in-memory token bucket
 //  ------------------------------------------------------------
 //  Edge functions reuse module-scope state across invocations
@@ -203,6 +221,16 @@ export default async function handler(req) {
   }
   if (req.method !== "POST") {
     return json({ error: "method_not_allowed" }, 405, cors);
+  }
+
+  // Geo gate — US-only at the AI endpoint
+  const geo = geoAllowed(req);
+  if (!geo.allowed) {
+    return json({
+      error: "region_not_supported",
+      country: geo.country,
+      message: "Ellis Car Care serves Ann Arbor, Michigan. AI planning is US-only; you can still use the quick form on the site.",
+    }, 403, cors);
   }
 
   // Rate-limit gate (per IP)

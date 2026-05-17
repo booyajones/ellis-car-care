@@ -1101,6 +1101,26 @@
         body: JSON.stringify(payload),
       });
       typing.remove();
+      // Handle known soft failures with friendly messages before throwing
+      if (resp.status === 403) {
+        const errData = await resp.json().catch(() => ({}));
+        aiPending = false;
+        appendBotMessage([
+          errData.message || "AI planning isn't available in your region. Quick form works for everyone — let's use that.",
+        ]);
+        setTimeout(() => renderStep("carType"), 500);
+        return;
+      }
+      if (resp.status === 429) {
+        const errData = await resp.json().catch(() => ({}));
+        aiPending = false;
+        const waitMin = Math.max(1, Math.ceil((errData.retry_after_seconds || 60) / 60));
+        appendBotMessage([
+          `Whoa, lots of activity. Take ${waitMin} min, then we can pick this back up. Or use the quick form — it works right now.`,
+        ]);
+        setTimeout(() => renderStep("carType"), 800);
+        return;
+      }
       if (!resp.ok) throw new Error("HTTP " + resp.status);
       const data = await resp.json();
       if (data.error) throw new Error(data.error);
