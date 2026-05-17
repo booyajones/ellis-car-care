@@ -103,6 +103,7 @@
       isAiMode: true,
       prompt: () => [
         "Cool. Drop a photo of your car (front + side is great) or just type — make, condition, what you want. I'll figure out the rest.",
+        "Heads up: photos are sent to an AI to read the car (paint, headlights, etc.) and aren't stored. Ellis only sees the summary you send him by text.",
       ],
     },
 
