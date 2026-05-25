@@ -1,37 +1,62 @@
 /* ============================================================
-   /api/_email.js — Resend wrapper
+   /api/_email.js — multi-provider email sender
    ------------------------------------------------------------
-   Shared helper used by /api/orders to send:
-     1. Booking confirmation to the customer
-     2. New-order notification to Elion
+   Provider priority (first available wins):
+     1. RESEND_API_KEY                → Resend REST API
+     2. GMAIL_USER + GMAIL_APP_PASSWORD → Gmail SMTP via nodemailer
+     3. (nothing set)                 → soft no-op, order still succeeds
 
-   Configuration (Vercel env):
-     RESEND_API_KEY      — required for emails to send. Without it,
-                           sendEmail() returns { ok:false, skipped:true }
-                           and orders still succeed silently.
-     EMAIL_FROM          — sender address (defaults to onboarding@resend.dev
-                           which works with no domain verification, but shows
-                           "via resend.dev" in some clients).
-     ELION_NOTIFY_EMAIL  — Elion's address to cc on every new order.
+   Sends:
+     - Booking confirmation to the customer (if order.email present)
+     - New-order notification to Elion (if ELION_NOTIFY_EMAIL set)
 
-   To enable in 5 minutes:
-     1. Sign up at https://resend.com (free tier: 3K emails/month, 100/day)
-     2. Generate API key in dashboard
+   To swap to Resend later (better deliverability, branded domain):
+     1. Sign up at https://resend.com (free tier 3K/mo)
+     2. Generate API key
      3. vercel env add RESEND_API_KEY production
-     4. vercel env add ELION_NOTIFY_EMAIL production
-     5. Once elioncarcare.com is bought + DNS wired, add it as a verified
-        domain in Resend and update EMAIL_FROM to book@elioncarcare.com
+     4. Verify elioncarcare.com as a Resend domain
+     5. vercel env add EMAIL_FROM "Elion Car Care <book@elioncarcare.com>"
+   The code automatically prefers Resend over Gmail once the key is set.
    ============================================================ */
+
+import nodemailer from "nodemailer";
 
 const RESEND_URL = "https://api.resend.com/emails";
 
+let _gmailTransporter = null;
+function getGmailTransporter() {
+  if (_gmailTransporter) return _gmailTransporter;
+  if (!process.env.GMAIL_USER || !process.env.GMAIL_APP_PASSWORD) return null;
+  _gmailTransporter = nodemailer.createTransport({
+    host: "smtp.gmail.com",
+    port: 465,
+    secure: true,
+    auth: {
+      user: process.env.GMAIL_USER,
+      pass: process.env.GMAIL_APP_PASSWORD,
+    },
+  });
+  return _gmailTransporter;
+}
+
 export async function sendEmail({ to, subject, html, text, replyTo, from, cc, tags }) {
-  const apiKey = process.env.RESEND_API_KEY;
-  if (!apiKey) {
-    // Soft no-op so the order flow still succeeds while email isn't configured
-    return { ok: false, skipped: true, reason: "RESEND_API_KEY not configured" };
+  // 1. Prefer Resend if configured
+  if (process.env.RESEND_API_KEY) {
+    return sendViaResend({ to, subject, html, text, replyTo, from, cc, tags });
   }
 
+  // 2. Fall back to Gmail SMTP if configured
+  const gmail = getGmailTransporter();
+  if (gmail) {
+    return sendViaGmail({ to, subject, html, text, replyTo, from, cc, transporter: gmail });
+  }
+
+  // 3. No provider configured — soft no-op
+  return { ok: false, skipped: true, reason: "No email provider configured (set RESEND_API_KEY or GMAIL_USER + GMAIL_APP_PASSWORD)" };
+}
+
+async function sendViaResend({ to, subject, html, text, replyTo, from, cc, tags }) {
+  const apiKey = process.env.RESEND_API_KEY;
   const defaultFrom = process.env.EMAIL_FROM || "Elion Car Care <onboarding@resend.dev>";
 
   const body = {
@@ -50,10 +75,7 @@ export async function sendEmail({ to, subject, html, text, replyTo, from, cc, ta
   try {
     const resp = await fetch(RESEND_URL, {
       method: "POST",
-      headers: {
-        "authorization": `Bearer ${apiKey}`,
-        "content-type": "application/json",
-      },
+      headers: { "authorization": `Bearer ${apiKey}`, "content-type": "application/json" },
       body: JSON.stringify(body),
       signal: controller.signal,
     });
@@ -61,13 +83,38 @@ export async function sendEmail({ to, subject, html, text, replyTo, from, cc, ta
     if (!resp.ok) {
       let detail = "";
       try { detail = await resp.text(); } catch {}
-      return { ok: false, status: resp.status, detail: detail.slice(0, 400) };
+      return { ok: false, provider: "resend", status: resp.status, detail: detail.slice(0, 400) };
     }
     const data = await resp.json();
-    return { ok: true, id: data.id };
+    return { ok: true, provider: "resend", id: data.id };
   } catch (e) {
     clearTimeout(t);
-    return { ok: false, error: String(e && e.message || e).slice(0, 200) };
+    return { ok: false, provider: "resend", error: String(e && e.message || e).slice(0, 200) };
+  }
+}
+
+async function sendViaGmail({ to, subject, html, text, replyTo, from, cc, transporter }) {
+  // For Gmail SMTP, the From header must match the authenticated account.
+  // We can set a display name only, but the actual address is the Gmail user.
+  const fromAddr = process.env.GMAIL_USER;
+  const displayName = (process.env.EMAIL_FROM_NAME || "Elion Car Care").replace(/[<>"]/g, "");
+  const fromHeader = from || `${displayName} <${fromAddr}>`;
+
+  const message = {
+    from: fromHeader,
+    to: Array.isArray(to) ? to.join(", ") : to,
+    subject,
+    ...(html ? { html } : {}),
+    ...(text ? { text } : {}),
+    ...(replyTo ? { replyTo } : {}),
+    ...(cc ? { cc: Array.isArray(cc) ? cc.join(", ") : cc } : {}),
+  };
+
+  try {
+    const info = await transporter.sendMail(message);
+    return { ok: true, provider: "gmail", id: info.messageId };
+  } catch (e) {
+    return { ok: false, provider: "gmail", error: String(e && e.message || e).slice(0, 300) };
   }
 }
 
