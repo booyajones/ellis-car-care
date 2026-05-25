@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Dashboard, Elion Car Care</title>
+  <meta name="robots" content="noindex,nofollow">
+  <meta name="theme-color" content="#0E1014">
+  <meta name="color-scheme" content="dark">
+  <link rel="icon" href="favicon.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap">
+  <link rel="stylesheet" href="styles.css?v=12">
+  <link rel="stylesheet" href="book.css?v=1">
+</head>
+<body>
+
+<header class="topbar">
+  <a class="brand" href="/" aria-label="Elion Car Care home">
+    <span class="brand-name">Elion Car Care</span>
+    <span class="brand-mono">DASHBOARD</span>
+  </a>
+  <nav class="topnav">
+    <a href="/">Site</a>
+    <a href="/book">Booking page</a>
+    <button type="button" class="link-btn" data-logout style="background:none;border:0;color:var(--muted);font:inherit;cursor:pointer;">Log out</button>
+  </nav>
+</header>
+
+<main class="admin-page">
+  <div class="container">
+
+    <!-- Login -->
+    <section class="admin-login" id="loginPane" hidden>
+      <h2>Sign in</h2>
+      <p class="muted small">Enter the admin password to see Elion's orders.</p>
+      <form id="loginForm">
+        <label class="field">
+          <span>Password</span>
+          <input type="password" id="adminPwd" required autocomplete="current-password">
+        </label>
+        <button type="submit" class="btn btn-primary btn-lg" style="margin-top: 16px;">Sign in</button>
+        <p class="muted small" id="loginError" style="color: #dc6464; margin-top: 8px;" hidden></p>
+      </form>
+    </section>
+
+    <!-- Dashboard -->
+    <section id="dashboardPane" hidden>
+      <header class="admin-header">
+        <h1>Orders</h1>
+        <div class="admin-stats">
+          <span><strong id="statTotal">0</strong> total</span>
+          <span><strong id="statNew">0</strong> new</span>
+          <span><strong id="statScheduled">0</strong> scheduled</span>
+          <span><strong id="statDone">0</strong> done</span>
+        </div>
+      </header>
+
+      <div class="admin-filters" id="adminFilters">
+        <label class="check"><input type="radio" name="filter" value="all" checked> All</label>
+        <label class="check"><input type="radio" name="filter" value="new"> New</label>
+        <label class="check"><input type="radio" name="filter" value="scheduled"> Scheduled</label>
+        <label class="check"><input type="radio" name="filter" value="in_progress"> In progress</label>
+        <label class="check"><input type="radio" name="filter" value="done"> Done</label>
+        <button type="button" class="btn btn-ghost" id="refreshBtn" style="margin-left: auto;">Refresh</button>
+      </div>
+
+      <div class="order-grid" id="orderGrid"></div>
+
+      <div class="admin-empty" id="emptyState" hidden>
+        <p>No orders yet.</p>
+        <p class="muted small">When customers book through the site, they'll show up here.</p>
+      </div>
+    </section>
+
+  </div>
+</main>
+
+<script src="admin.js?v=1" defer></script>
+</body>
+</html>

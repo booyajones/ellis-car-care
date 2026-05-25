@@ -1,0 +1,9 @@
+{
+  "name": "elion-car-care",
+  "version": "0.8.0",
+  "private": true,
+  "description": "Elion Car Care — static site + Vercel Edge Functions for booking and AI planning.",
+  "dependencies": {
+    "@vercel/blob": "^2.4.0"
+  }
+}
