@@ -144,7 +144,7 @@ async function handleCreate(req, cors) {
   if (!bypass) {
     const cap = dailyCapCheck();
     if (!cap.allowed) {
-      return json({ error: "daily_cap_reached", message: "We've hit today's booking limit. Text Elion at (628) 252-0740." }, 503, cors);
+      return json({ error: "daily_cap_reached", message: "We've hit today's booking limit. Text Ellis at (628) 252-0740." }, 503, cors);
     }
   }
 

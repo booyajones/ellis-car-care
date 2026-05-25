@@ -20,7 +20,7 @@ const CONFIG = {
     name: "Elion Car Care",
     tagline: "Hand-detailed, in your driveway. Ann Arbor.",
     sub: "Wash, ceramic seal, cut and polish. Done by hand on your block.",
-    description: "Hand auto detailing in Ann Arbor, Michigan. Two-bucket wash, ceramic sealant, paint correction, and headlight restoration, done in your driveway by Elion, a local detailer based in Burns Park.",
+    description: "Hand auto detailing in Ann Arbor, Michigan. Two-bucket wash, ceramic sealant, paint correction, and headlight restoration, done in your driveway by Ellis, a local detailer based in Burns Park.",
   },
 
   contact: {
@@ -159,7 +159,7 @@ const CONFIG = {
   referral: {
     headline: "Tell a neighbor.",
     body: "Send a neighbor to Elion Car Care. When they book, you both get $10 off your next wash.",
-    shareText: "Heads up, you should book Elion Car Care for your car. He details by hand in your driveway. Local, careful, the work is good:",
+    shareText: "Heads up, you should book Elion Car Care for your car. Ellis details by hand in your driveway. Local, careful, the work is good:",
     // Now that elioncarcare.com is live, point shares directly at it.
     shareUrl: "https://elioncarcare.com",
   },

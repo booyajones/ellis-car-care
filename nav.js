@@ -19,7 +19,7 @@
   const PHONE = "(628) 252-0740";
   const PHONE_HREF = "+16282520740";
   const SMS_BODY = encodeURIComponent(
-    "Hi Elion, I'd like to book a detail. My car is a ____. I'm in Burns Park / 48104. Available: ____."
+    "Hi Ellis, I'd like to book a detail. My car is a ____. I'm in Burns Park / 48104. Available: ____."
   );
 
   function currentPath() {
@@ -69,7 +69,7 @@
         </nav>
         <div class="nav-drawer-cta">
           <a class="btn btn-primary btn-lg" href="/book">Book online</a>
-          <a class="btn btn-ghost btn-lg" href="sms:${PHONE_HREF}?body=${SMS_BODY}" data-sms-link>Text Elion</a>
+          <a class="btn btn-ghost btn-lg" href="sms:${PHONE_HREF}?body=${SMS_BODY}" data-sms-link>Text Ellis</a>
           <p class="muted small" style="text-align:center;margin:8px 0 0;"><a href="tel:${PHONE_HREF}" data-tel-link>${PHONE}</a></p>
         </div>
       </div>

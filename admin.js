@@ -1,5 +1,5 @@
 /* ============================================================
-   admin.js — Elion's job dashboard
+   admin.js — Ellis's job dashboard
    ------------------------------------------------------------
    - Bearer-token auth (sessionStorage). Password compared
      server-side via X-Elion-Admin header.

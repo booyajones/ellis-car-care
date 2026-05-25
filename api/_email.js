@@ -8,7 +8,7 @@
 
    Sends:
      - Booking confirmation to the customer (if order.email present)
-     - New-order notification to Elion (if ELION_NOTIFY_EMAIL set)
+     - New-order notification to Ellis (if ELION_NOTIFY_EMAIL set)
 
    To swap to Resend later (better deliverability, branded domain):
      1. Sign up at https://resend.com (free tier 3K/mo)
@@ -211,12 +211,12 @@ export function customerConfirmationEmail(order) {
         <h2 style="font-family:Fraunces,Georgia,serif;font-size:18px;color:#0E1014;margin:24px 0 8px;">Where</h2>
         <p style="margin:0 0 16px;">${escapeHtml(order.address)}${order.car ? `<br/>Car: ${escapeHtml(order.car)}` : ""}</p>
 
-        <p style="margin:24px 0 0;color:#666;font-size:13px;">Questions? Text <a href="tel:+16282520740" style="color:#E5A235;">(628) 252-0740</a>.<br/>Elion</p>
+        <p style="margin:24px 0 0;color:#666;font-size:13px;">Questions? Text <a href="tel:+16282520740" style="color:#E5A235;">(628) 252-0740</a>.<br/>Ellis</p>
         </div>
       </div>
     </body></html>
   `;
-  const text = `Booked, thanks ${order.name}!\n\nOrder ${order.id}\n${TIER_LABEL[order.tier]} - $${p.base}\nTotal: $${p.total}\n\nI'll text you at ${order.phone} within an hour to lock in a time.\n\nPay via Venmo @Elion-CarCare after the job: ${venmoUrl}\n\nWhere: ${order.address}\n${order.car ? "Car: " + order.car + "\n" : ""}\nQuestions? Text (628) 252-0740.\nElion`;
+  const text = `Booked, thanks ${order.name}!\n\nOrder ${order.id}\n${TIER_LABEL[order.tier]} - $${p.base}\nTotal: $${p.total}\n\nI'll text you at ${order.phone} within an hour to lock in a time.\n\nPay via Venmo @Elion-CarCare after the job: ${venmoUrl}\n\nWhere: ${order.address}\n${order.car ? "Car: " + order.car + "\n" : ""}\nQuestions? Text (628) 252-0740.\nEllis`;
 
   return { subject: `Booked: ${TIER_LABEL[order.tier]} - $${p.total} (order ${order.id})`, html, text };
 }

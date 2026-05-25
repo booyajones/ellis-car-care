@@ -109,7 +109,7 @@
     intro: {
       id: "intro",
       prompt: () => [
-        "Hey! I'm Elion's wash-planning assistant.",
+        "Hey! I'm Ellis's wash-planning assistant.",
         "Easiest way: snap a photo of your car or just tell me about it in plain English. I'll match you to the right wash.",
       ],
       options: [
@@ -124,7 +124,7 @@
       isAiMode: true,
       prompt: () => [
         "Cool. Drop a photo of your car (front + side is great) or just type — make, condition, what you want. I'll figure out the rest.",
-        "Heads up: photos are sent to an AI to read the car (paint, headlights, etc.) and aren't stored. Elion only sees the summary you send him by text.",
+        "Heads up: photos are sent to an AI to read the car (paint, headlights, etc.) and aren't stored. Ellis only sees the summary you send him by text.",
       ],
     },
 
@@ -141,7 +141,7 @@
       ],
       options: [
         { label: "Help me pick", value: "back", next: () => "carType" },
-        { label: "Text Elion now", value: "textnow", next: () => "doneTextNow" },
+        { label: "Text Ellis now", value: "textnow", next: () => "doneTextNow" },
       ],
     },
 
@@ -347,7 +347,7 @@
         { label: "This week", value: "thisweek" },
         { label: "This weekend", value: "weekend" },
         { label: "Next week", value: "nextweek" },
-        { label: "Flexible — whenever Elion can", value: "flexible" },
+        { label: "Flexible — whenever Ellis can", value: "flexible" },
       ],
       next: () => "location",
       saveTo: "timing",
@@ -367,7 +367,7 @@
 
     notes: {
       id: "notes",
-      prompt: () => "Anything else Elion should know? (Optional.)",
+      prompt: () => "Anything else Ellis should know? (Optional.)",
       input: { placeholder: "e.g. coffee spill on driver seat, hatch needs special care…", key: "notes" },
       options: [
         { label: "Nope, that's it — show me the plan", value: "skip", next: () => "recommend" },
@@ -384,9 +384,9 @@
 
     doneTextNow: {
       id: "doneTextNow",
-      prompt: () => "Opening a text to Elion…",
+      prompt: () => "Opening a text to Ellis…",
       isTerminal: true,
-      onEnter: () => openSms("Hi Elion, can you help me plan a wash? I came in through the site."),
+      onEnter: () => openSms("Hi Ellis, can you help me plan a wash? I came in through the site."),
     },
   };
 
@@ -460,7 +460,7 @@
 
     // Soft suggestion when interior is rough but not yet disaster
     if (wantsInterior && disasterInt) {
-      reasons.push("Disaster-zone interior — Elion will spend extra time, no surcharge unless it's truly hazardous.");
+      reasons.push("Disaster-zone interior — Ellis will spend extra time, no surcharge unless it's truly hazardous.");
     }
 
     // ---- Size note (timing only, no upcharge) ----
@@ -477,7 +477,7 @@
     const travel = a.location === "annarbor" ? 5 : 0;
     const travelNote = a.location === "annarbor"
       ? " (+$5 travel)"
-      : (a.location === "nearby" ? " (Elion will confirm travel after you book)" : "");
+      : (a.location === "nearby" ? " (Ellis will confirm travel after you book)" : "");
 
     // Bundle discount: applies when the customer pairs interior with any
     // paint-treating tier (essential or premium) in one visit. Configurable
@@ -598,7 +598,7 @@
       lines.push("");
     }
 
-    lines.push("Sound good? Tap below to send the whole plan to Elion as a text. He'll confirm timing.");
+    lines.push("Sound good? Tap below to send the whole plan to Ellis as a text. He'll confirm timing.");
 
     return lines;
   }
@@ -615,7 +615,7 @@
     const carDesc = carDescParts.join(" ") || "—";
 
     const lines = [];
-    lines.push("Hi Elion! I planned a wash on your site.");
+    lines.push("Hi Ellis! I planned a wash on your site.");
     lines.push("");
     lines.push(`Car: ${carDesc}`);
     lines.push(`What I need: ${prettyScope(a.scope)}`);
@@ -679,7 +679,7 @@
     return s;
   }
   function prettyScope(s) {
-    return ({ exterior: "Exterior only", interior: "Interior focus", both: "Inside and out", unsure: "Both — open to Elion's call" })[s] || "—";
+    return ({ exterior: "Exterior only", interior: "Interior focus", both: "Inside and out", unsure: "Both — open to Ellis's call" })[s] || "—";
   }
   function prettyInteriorCondition(c) {
     return ({ clean: "pretty clean", normal: "normal daily-driver", rough: "rough", disaster: "disaster zone" })[c] || c;
@@ -758,7 +758,7 @@
           <span class="chat-avatar" aria-hidden="true">E</span>
           <div>
             <p id="chat-title" class="chat-title">Wash Planner</p>
-            <p class="chat-sub">Built by Elion · Burns Park</p>
+            <p class="chat-sub">Built by Ellis · Burns Park</p>
           </div>
         </div>
         <div class="chat-head-actions">
@@ -885,10 +885,10 @@
         controls.appendChild(bundleBtn);
       }
 
-      const sendBtn = makeButton("Text the plan to Elion", rec && rec.bundleOffer ? "is-ghost" : "is-primary", () => {
+      const sendBtn = makeButton("Text the plan to Ellis", rec && rec.bundleOffer ? "is-ghost" : "is-primary", () => {
         const body = buildSmsBody(state);
         openSms(body);
-        appendUserMessage("Sent the plan to Elion ✓");
+        appendUserMessage("Sent the plan to Ellis ✓");
         renderTerminal();
       });
       const altBtn = makeButton("See another option", "is-ghost", () => {
@@ -1010,10 +1010,10 @@
       if (r.isFirstTime && r.firstTimeDiscount > 0) summary.push(`First-time ${r.firstTimeRatePct}% off: −$${r.firstTimeDiscount}`);
       summary.push(`Estimated total: **$${r.total}**`);
       appendBotMessage(summary);
-      const sendBtn = makeButton("Text the plan to Elion", "is-primary", () => {
+      const sendBtn = makeButton("Text the plan to Ellis", "is-primary", () => {
         const body = buildSmsBody(state);
         openSms(body);
-        appendUserMessage("Sent the plan to Elion ✓");
+        appendUserMessage("Sent the plan to Ellis ✓");
         renderTerminal();
       });
       controls.innerHTML = "";
@@ -1030,7 +1030,7 @@
 
   function renderTerminal() {
     controls.innerHTML = "";
-    appendBotMessage(["You're set. If for any reason the text app didn't open, just call or text Elion at (628) 252-0740. He marks orders done in his app, and you'll get a confirmation."]);
+    appendBotMessage(["You're set. If for any reason the text app didn't open, just call or text Ellis at (628) 252-0740. He marks orders done in his app, and you'll get a confirmation."]);
     // Mark the first-time discount used — they've completed a booking
     markFirstTimeUsed();
     controls.appendChild(makeButton("Close", "is-primary", () => closeChat()));

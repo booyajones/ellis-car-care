@@ -171,14 +171,14 @@
 
   function showInlineError(result) {
     const map = {
-      rate_limited: "Hold up, you've sent a lot of requests. Try again in a few minutes, or text Elion at (628) 252-0740.",
-      daily_cap_reached: "We're at today's booking limit. Text Elion at (628) 252-0740 and he'll set it up directly.",
-      region_not_supported: "Online booking is US-only. Text Elion at (628) 252-0740 if you're in Ann Arbor.",
+      rate_limited: "Hold up, you've sent a lot of requests. Try again in a few minutes, or text Ellis at (628) 252-0740.",
+      daily_cap_reached: "We're at today's booking limit. Text Ellis at (628) 252-0740 and he'll set it up directly.",
+      region_not_supported: "Online booking is US-only. Text Ellis at (628) 252-0740 if you're in Ann Arbor.",
       invalid_order: "Something is missing in the form. Check the highlighted fields and try again.",
-      storage_not_configured: "Our booking system is offline. Text Elion at (628) 252-0740.",
-      network: "Lost the connection. Try again, or text Elion.",
+      storage_not_configured: "Our booking system is offline. Text Ellis at (628) 252-0740.",
+      network: "Lost the connection. Try again, or text Ellis.",
     };
-    const msg = map[result.error] || (result.detail ? `Couldn't book: ${result.detail}` : "Couldn't book. Try again or text Elion.");
+    const msg = map[result.error] || (result.detail ? `Couldn't book: ${result.detail}` : "Couldn't book. Try again or text Ellis.");
     alert(msg);
   }
 
@@ -301,10 +301,10 @@
     const today = new Date();
     const days = [];
     // Next 14 days. Skip Sundays. First option is "ASAP".
-    days.push({ key: "asap", label: "ASAP", sub: "Whenever Elion can" });
+    days.push({ key: "asap", label: "ASAP", sub: "Whenever Ellis can" });
     for (let i = 0; i < 14 && days.length < 9; i++) {
       const d = new Date(today.getFullYear(), today.getMonth(), today.getDate() + i);
-      if (d.getDay() === 0) continue; // Sunday — Elion doesn't work
+      if (d.getDay() === 0) continue; // Sunday — Ellis doesn't work
       const isoDate = d.toISOString().slice(0, 10);
       const weekday = d.toLocaleDateString(undefined, { weekday: "short" });
       const monthDay = d.toLocaleDateString(undefined, { month: "short", day: "numeric" });

@@ -20,7 +20,7 @@
 
   /* 1. Wire SMS / tel / mail links */
 
-  const smsBody = `Hi Elion, I'd like to book a detail. My car is a ____. I'm in Burns Park / 48104. Available: ____.`;
+  const smsBody = `Hi Ellis, I'd like to book a detail. My car is a ____. I'm in Burns Park / 48104. Available: ____.`;
   const smsHref = `sms:${cfg.contact.phoneHref}?&body=${enc(smsBody)}`;
   $$("[data-sms-link]").forEach((a) => a.setAttribute("href", smsHref));
   $$("[data-tel-link]").forEach((a) => a.setAttribute("href", `tel:${cfg.contact.phoneHref}`));
@@ -45,7 +45,7 @@
       const card = document.createElement("article");
       card.className = "bundle" + (b.popular ? " popular" : "");
       const popularBadge = b.popular ? '<span class="popular-badge">Most popular</span>' : "";
-      const bundleSmsBody = `Hi Elion, I'd like to book the ${b.name} ($${b.price}). My car is a ____. I'm in ____.`;
+      const bundleSmsBody = `Hi Ellis, I'd like to book the ${b.name} ($${b.price}). My car is a ____. I'm in ____.`;
       const bundleSms = `sms:${cfg.contact.phoneHref}?&body=${enc(bundleSmsBody)}`;
       const summary = b.summary ? `<p class="bundle-summary">${b.summary}</p>` : "";
       card.innerHTML = `
@@ -163,8 +163,8 @@
         confirm.setAttribute("aria-live", "polite");
         confirm.innerHTML = `
           <p class="eyebrow">Sent</p>
-          <h3 class="form-title">Got it. Elion will text you back.</h3>
-          <p class="book-confirm-lead">Usually inside an hour. If your mail app didn't open, text Elion directly:</p>
+          <h3 class="form-title">Got it. Ellis will text you back.</h3>
+          <p class="book-confirm-lead">Usually inside an hour. If your mail app didn't open, text Ellis directly:</p>
           <a class="btn btn-primary btn-lg" href="sms:${cfg.contact.phoneHref}">Text ${cfg.contact.phone}</a>
         `;
         form.replaceWith(confirm);

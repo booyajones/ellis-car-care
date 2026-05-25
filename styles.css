@@ -171,7 +171,34 @@ section {
   position: relative;
 }
 .section-head { max-width: 60ch; margin-bottom: var(--s-7); }
-.section-head .eyebrow { display: block; margin-bottom: var(--s-3); }
+.section-head .eyebrow,
+.hero .eyebrow,
+.story .eyebrow,
+.about-copy .eyebrow,
+.book-copy .eyebrow,
+.process-col .eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: var(--s-3);
+}
+.section-head .eyebrow::before,
+.hero .eyebrow::before,
+.story .eyebrow::before,
+.about-copy .eyebrow::before,
+.book-copy .eyebrow::before,
+.process-col .eyebrow::before {
+  content: "";
+  display: inline-block;
+  width: 20px;
+  height: 14px;
+  flex-shrink: 0;
+  background:
+    linear-gradient(var(--stripe-red),     var(--stripe-red))     0 25%  / 100% 3px no-repeat,
+    linear-gradient(var(--stripe-orange),  var(--stripe-orange))  0 50%  / 100% 3px no-repeat,
+    linear-gradient(var(--stripe-yellow),  var(--stripe-yellow))  0 75%  / 100% 3px no-repeat,
+    linear-gradient(var(--stripe-green),   var(--stripe-green))   0 100% / 100% 3px no-repeat;
+}
 .section-head p { color: var(--ink-soft); margin-top: var(--s-3); }
 
 /* BUTTONS -------------------------------------------------- */
@@ -442,7 +469,8 @@ section {
   .hero-grid { grid-template-columns: 1.05fr 0.95fr; }
 }
 .hero-copy { min-width: 0; }
-.hero .eyebrow { display: block; margin-bottom: var(--s-5); }
+/* .hero .eyebrow: stripe glyph + flex applied via shared rule near top; just extra margin */
+.hero .eyebrow { margin-bottom: var(--s-5); }
 .hero-h1 { margin-bottom: var(--s-5); max-width: 14ch; }
 .hero-lead { margin-bottom: var(--s-7); max-width: 46ch; }
 .hero-art {
@@ -810,7 +838,7 @@ section {
   border-top: 1px solid var(--line);
 }
 @media (min-width: 720px) { .process-grid { grid-template-columns: 1fr 1fr; gap: var(--s-8); } }
-.process-col .eyebrow { display: block; margin-bottom: var(--s-3); }
+/* .process-col .eyebrow: stripe glyph + flex applied via shared rule near top */
 .dash-list {
   list-style: none;
   padding: 0;
@@ -879,7 +907,7 @@ section {
   font-weight: 500;
   text-align: center;
 }
-.about-copy .eyebrow { display: block; margin-bottom: var(--s-3); }
+/* .about-copy .eyebrow: stripe glyph + flex applied via shared rule near top */
 .about-copy h2 { margin-bottom: var(--s-5); }
 .about-copy p {
   max-width: 62ch;
@@ -1014,7 +1042,7 @@ section {
 @media (min-width: 880px) {
   .book-grid { grid-template-columns: 0.95fr 1.05fr; gap: var(--s-8); }
 }
-.book-copy .eyebrow { display: block; margin-bottom: var(--s-3); }
+/* .book-copy .eyebrow: stripe glyph + flex applied via shared rule near top */
 .book-copy h2 { margin-bottom: var(--s-4); }
 .book-copy p { max-width: 50ch; color: var(--ink-soft); margin-bottom: var(--s-5); }
 .book-or {
