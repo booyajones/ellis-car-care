@@ -211,7 +211,10 @@
       const cfg = window.CONFIG || {};
       const slugMap = cfg.calEventBySlug || {};
       const slug = slugMap[order.tier];
-      if (!slug && order.tier) {
+      if (!order.tier) {
+        // No tier on the order — shouldn't happen since the form requires it.
+        console.warn(`[cal] order has no tier; falling back to /elion`);
+      } else if (!slug) {
         // Catch config drift early — a bundle id with no slug map entry means
         // the Cal.com event type wasn't created or the key was misspelled.
         console.warn(`[cal] no calEventBySlug entry for tier "${order.tier}", falling back to /elion`);
@@ -235,6 +238,11 @@
       const tierLabel = (order.tier || "your wash").replace(/^\w/, c => c.toUpperCase());
       const durationMap = cfg.calDurationLabel || {};
       const duration = durationMap[order.tier];
+      if (slug && !duration) {
+        // Slug exists but duration map is missing this tier — the CTA will
+        // still work, but the label loses the "(about 45 min)" suffix.
+        console.warn(`[cal] no calDurationLabel entry for tier "${order.tier}"`);
+      }
       calLink.textContent = duration
         ? `Pick a time for ${tierLabel} (about ${duration})`
         : `Pick a time for ${tierLabel}`;
