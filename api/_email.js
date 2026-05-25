@@ -40,24 +40,45 @@ function getGmailTransporter() {
 }
 
 export async function sendEmail({ to, subject, html, text, replyTo, from, cc, tags }) {
-  // 1. Prefer Resend if configured
-  if (process.env.RESEND_API_KEY) {
-    return sendViaResend({ to, subject, html, text, replyTo, from, cc, tags });
+  // Resend is only fully active once a verified domain is set via EMAIL_FROM.
+  // Without EMAIL_FROM, Resend would route through the onboarding@resend.dev
+  // sandbox which can only deliver to the Resend account owner. So we gate on
+  // both the API key AND a configured EMAIL_FROM.
+  const resendReady = !!process.env.RESEND_API_KEY && !!process.env.EMAIL_FROM;
+  const gmail = getGmailTransporter();
+
+  // 1. Prefer Resend when fully configured. Fall through to Gmail on failure.
+  if (resendReady) {
+    const r = await sendViaResend({ to, subject, html, text, replyTo, from, cc, tags });
+    if (r.ok) return r;
+    if (gmail) {
+      console.warn("[email] resend failed, falling back to gmail:", JSON.stringify(r).slice(0, 300));
+      const g = await sendViaGmail({ to, subject, html, text, replyTo, from, cc, transporter: gmail });
+      if (g.ok) return { ...g, resend_fallback: r };
+      return g;
+    }
+    console.error("[email] resend failed, no gmail fallback configured:", JSON.stringify(r).slice(0, 300));
+    return r;
   }
 
-  // 2. Fall back to Gmail SMTP if configured
-  const gmail = getGmailTransporter();
+  // 2. Gmail SMTP if configured
   if (gmail) {
     return sendViaGmail({ to, subject, html, text, replyTo, from, cc, transporter: gmail });
   }
 
   // 3. No provider configured — soft no-op
-  return { ok: false, skipped: true, reason: "No email provider configured (set RESEND_API_KEY or GMAIL_USER + GMAIL_APP_PASSWORD)" };
+  return { ok: false, skipped: true, reason: "No email provider configured (set EMAIL_FROM + RESEND_API_KEY, or GMAIL_USER + GMAIL_APP_PASSWORD)" };
 }
 
 async function sendViaResend({ to, subject, html, text, replyTo, from, cc, tags }) {
   const apiKey = process.env.RESEND_API_KEY;
-  const defaultFrom = process.env.EMAIL_FROM || "Elion Car Care <onboarding@resend.dev>";
+  // EMAIL_FROM is required. The resendReady gate in sendEmail guarantees it is
+  // set; if a future caller bypasses that gate, fail loudly rather than route
+  // through the resend.dev sandbox (which only delivers to the account owner).
+  const defaultFrom = process.env.EMAIL_FROM;
+  if (!from && !defaultFrom) {
+    return { ok: false, provider: "resend", error: "EMAIL_FROM not set" };
+  }
 
   const body = {
     from: from || defaultFrom,
