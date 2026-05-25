@@ -306,15 +306,21 @@ async function handleDelete(req, url, cors) {
 // =========================================================
 //  Validation + pricing
 // =========================================================
+// Strip control characters (CR, LF, tab, etc.) that could enable header
+// injection in plaintext email bodies or generally muck up rendering.
+function clean(s, max) {
+  return String(s ?? "").replace(/[\x00-\x1F\x7F]/g, " ").trim().slice(0, max);
+}
+
 function validateOrder(b) {
   if (!b || typeof b !== "object") return { error: "missing_body" };
 
   const order = {};
 
   // Customer
-  const name = String(b.name || "").trim().slice(0, 80);
-  const phone = String(b.phone || "").trim().slice(0, 30);
-  const address = String(b.address || "").trim().slice(0, 200);
+  const name = clean(b.name, 80);
+  const phone = clean(b.phone, 30);
+  const address = clean(b.address, 200);
   if (!name)    return { error: "missing_name" };
   if (!phone)   return { error: "missing_phone" };
   if (!address) return { error: "missing_address" };
@@ -323,21 +329,21 @@ function validateOrder(b) {
   order.phone = phone;
   order.address = address;
 
-  // Email (optional, but if present must be valid — used for confirmation)
-  const email = String(b.email || "").trim().slice(0, 120);
-  if (email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return { error: "invalid_email" };
-  if (email) order.email = email;
+  // Email (optional). clean() already stripped control chars.
+  const emailRaw = clean(b.email, 120);
+  if (emailRaw && !/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(emailRaw)) return { error: "invalid_email" };
+  if (emailRaw) order.email = emailRaw;
 
   // Car
-  order.car = String(b.car || "").trim().slice(0, 120);
+  order.car = clean(b.car, 120);
 
   // Tier (required)
-  const tier = String(b.tier || "").trim();
+  const tier = clean(b.tier, 20);
   if (!TIERS.has(tier)) return { error: "invalid_tier" };
   order.tier = tier;
 
   // Scope (drives interior add-on)
-  const scope = String(b.scope || "exterior").trim();
+  const scope = clean(b.scope || "exterior", 20);
   if (!["exterior", "interior", "both"].includes(scope)) return { error: "invalid_scope" };
   order.scope = scope;
 
@@ -346,14 +352,14 @@ function validateOrder(b) {
   order.addons = [...new Set(addons)]; // dedupe
 
   // Notes
-  order.notes = String(b.notes || "").trim().slice(0, 600);
+  order.notes = clean(b.notes, 600);
 
   // Preferred timing
-  const timing = String(b.preferred_timing || "").trim().slice(0, 80);
+  const timing = clean(b.preferred_timing, 80);
   order.preferred_timing = timing;
 
   // Location (for travel fee)
-  const location = String(b.location || "burns").trim();
+  const location = clean(b.location || "burns", 20);
   if (!["burns", "annarbor", "nearby"].includes(location)) return { error: "invalid_location" };
   order.location = location;
 
@@ -537,7 +543,7 @@ function corsHeaders(origin) {
   return {
     "Access-Control-Allow-Origin": allow,
     "Access-Control-Allow-Methods": "GET, POST, PATCH, DELETE, OPTIONS",
-    "Access-Control-Allow-Headers": "content-type, x-elion-admin",
+    "Access-Control-Allow-Headers": "content-type, x-elion-admin, x-elion-bypass, x-ellis-bypass",
     "Access-Control-Max-Age": "86400",
     "Vary": "Origin",
   };

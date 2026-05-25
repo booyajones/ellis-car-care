@@ -58,7 +58,10 @@
           </button>
         </div>
         <nav class="nav-drawer-links" aria-label="Mobile primary">
-          ${PAGES.map(p => `<a href="${p.href}">${p.label}</a>`).join("")}
+          ${PAGES.map(p => {
+            const active = (p.href === here) || (p.href.startsWith("/#") && here === "/");
+            return `<a href="${p.href}"${active ? ' aria-current="page"' : ""}>${p.label}</a>`;
+          }).join("")}
         </nav>
         <div class="nav-drawer-cta">
           <a class="btn btn-primary btn-lg" href="/book">Book online</a>

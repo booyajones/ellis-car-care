@@ -179,7 +179,7 @@ function corsHeaders(origin) {
   return {
     "Access-Control-Allow-Origin": allow,
     "Access-Control-Allow-Methods": "POST, OPTIONS",
-    "Access-Control-Allow-Headers": "content-type",
+    "Access-Control-Allow-Headers": "content-type, x-elion-bypass, x-ellis-bypass",
     "Access-Control-Max-Age": "86400",
     "Vary": "Origin",
   };
