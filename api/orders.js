@@ -12,7 +12,7 @@
    The customer-facing POST is open (geo-gated + rate-limited).
    ============================================================ */
 
-import { put, list } from "@vercel/blob";
+import { put, list, get } from "@vercel/blob";
 
 // Node runtime (not Edge): @vercel/blob 2.x pulls in undici which uses
 // node:stream / node:net / etc. that aren't available on Edge. Booking
@@ -187,11 +187,19 @@ async function handleList(req, cors) {
     const blobs = await blobList("orders/", blobToken);
     // Fetch and parse each. Sort newest first.
     const orders = await Promise.all(
-      blobs.map(b => blobGetText(b.downloadUrl || b.url).then(t => JSON.parse(t)).catch(() => null))
+      blobs.map(async (b) => {
+        try {
+          const text = await blobGetTextByPath(b.pathname, blobToken);
+          return JSON.parse(text);
+        } catch (e) {
+          console.error("order read failed:", b.pathname, String(e && e.message || e));
+          return null;
+        }
+      })
     );
     const valid = orders.filter(Boolean);
     valid.sort((a, b) => (b.created_at || "").localeCompare(a.created_at || ""));
-    return json({ ok: true, count: valid.length, orders: valid }, 200, cors);
+    return json({ ok: true, count: valid.length, orders: valid, listed: blobs.length }, 200, cors);
   } catch (e) {
     return json({ error: "storage_read_failed", detail: String(e && e.message || e).slice(0, 200) }, 502, cors);
   }
@@ -219,7 +227,7 @@ async function handleUpdateStatus(req, url, cors) {
     const list = await blobList("orders/", blobToken);
     const target = list.find(b => b.pathname.endsWith(`__${id}.json`));
     if (!target) return json({ error: "not_found" }, 404, cors);
-    const text = await blobGetText(target.downloadUrl || target.url);
+    const text = await blobGetTextByPath(target.pathname, blobToken);
     const order = JSON.parse(text);
     order.status = body.status;
     if (body.scheduled_for) order.scheduled_for = String(body.scheduled_for).slice(0, 100);
@@ -387,11 +395,26 @@ async function blobList(prefix, token) {
   return all;
 }
 
-async function blobGetText(url) {
-  // Blobs are at unguessable random URLs; fetch directly.
-  const res = await fetch(url);
-  if (!res.ok) throw new Error(`blob get ${res.status}`);
-  return await res.text();
+async function blobGetTextByPath(pathname, token) {
+  // Private blobs require SDK get() — fetching downloadUrl directly
+  // returns a 401 without auth. SDK get() handles the signing.
+  const result = await get(pathname, { access: "private", token });
+  // result has { stream, headers, blob } — convert stream to text
+  if (result.stream) {
+    const reader = result.stream.getReader();
+    const chunks = [];
+    while (true) {
+      const { done, value } = await reader.read();
+      if (done) break;
+      chunks.push(value);
+    }
+    const all = new Uint8Array(chunks.reduce((s, c) => s + c.length, 0));
+    let offset = 0;
+    for (const c of chunks) { all.set(c, offset); offset += c.length; }
+    return new TextDecoder("utf-8").decode(all);
+  }
+  if (result.blob) return await result.blob.text();
+  throw new Error("blob get: no readable body");
 }
 
 // =========================================================
