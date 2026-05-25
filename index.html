@@ -28,8 +28,9 @@
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,500;1,9..144,600&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap">
 
   <link rel="preload" as="image" href="images/hero.webp" imagesrcset="images/hero.webp" type="image/webp">
-  <link rel="stylesheet" href="styles.css?v=12">
+  <link rel="stylesheet" href="styles.css?v=13">
   <link rel="stylesheet" href="chatbot.css?v=3">
+  <link rel="stylesheet" href="nav.css?v=1">
 
   <script type="application/ld+json">
   {
@@ -67,15 +68,39 @@
     <span class="brand-mono">ANN ARBOR · MI</span>
   </a>
   <nav class="topnav" aria-label="Primary">
+    <a href="/book">Book</a>
     <a href="#menu">Pricing</a>
-    <a href="#process">Process</a>
-    <a href="#about">About</a>
-    <a href="/book">Book online</a>
+    <a href="/process">Process</a>
+    <a href="/about">About</a>
   </nav>
   <a class="topbar-phone" href="tel:+16282520740" data-tel-link>(628) 252-0740</a>
-  <a class="topbar-cta" href="sms:+16282520740" data-sms-link aria-label="Text Elion to book">
-    Text to book
-  </a>
+  <button class="hamburger" type="button" aria-label="Open menu" aria-expanded="false" aria-controls="nav-drawer">
+    <span aria-hidden="true"></span><span aria-hidden="true"></span><span aria-hidden="true"></span>
+  </button>
+  <div class="nav-drawer" id="nav-drawer" role="dialog" aria-modal="true" aria-hidden="true" aria-label="Navigation menu">
+    <div class="nav-drawer-head">
+      <a class="brand" href="/" aria-label="Elion Car Care home">
+        <span class="brand-name">Elion Car Care</span>
+        <span class="brand-mono">ANN ARBOR · MI</span>
+      </a>
+      <button class="nav-drawer-close" type="button" aria-label="Close menu">
+        <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line>
+        </svg>
+      </button>
+    </div>
+    <nav class="nav-drawer-links" aria-label="Mobile primary">
+      <a href="/">Home</a>
+      <a href="/book">Book</a>
+      <a href="/about">About</a>
+      <a href="/process">Process</a>
+    </nav>
+    <div class="nav-drawer-cta">
+      <a class="btn btn-primary btn-lg" href="/book">Book online</a>
+      <a class="btn btn-ghost btn-lg" href="sms:+16282520740" data-sms-link>Text Elion</a>
+      <p class="muted small" style="text-align:center;margin:8px 0 0;"><a href="tel:+16282520740" data-tel-link>(628) 252-0740</a></p>
+    </div>
+  </div>
 </header>
 
 <main id="top">
@@ -382,6 +407,7 @@
 
 <script src="config.js?v=13"></script>
 <script src="app.js?v=12" defer></script>
+<script src="nav.js?v=1" defer></script>
 <script src="chatbot.js?v=10" defer></script>
 </body>
 </html>

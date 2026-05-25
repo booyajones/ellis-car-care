@@ -13,6 +13,7 @@
    ============================================================ */
 
 import { put, list, get, del } from "@vercel/blob";
+import { sendEmail, customerConfirmationEmail, elionNotificationEmail } from "./_email.js";
 
 // Node runtime (not Edge): @vercel/blob 2.x pulls in undici which uses
 // node:stream / node:net / etc. that aren't available on Edge. Booking
@@ -175,6 +176,41 @@ async function handleCreate(req, cors) {
     return json({ error: "storage_write_failed", detail: String(e && e.message || e).slice(0, 200) }, 502, cors);
   }
 
+  // Fire-and-forget emails — order success NEVER depends on email delivery.
+  // If RESEND_API_KEY isn't set, sendEmail() returns { skipped: true } and we move on.
+  try {
+    const elionAddr = process.env.ELION_NOTIFY_EMAIL;
+
+    // Customer confirmation (only if they provided a real-looking email — orders POST doesn't
+    // currently require email; we'll add it gracefully if the client started sending one)
+    if (order.email && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(order.email)) {
+      const cust = customerConfirmationEmail(order);
+      sendEmail({
+        to: order.email,
+        subject: cust.subject,
+        html: cust.html,
+        text: cust.text,
+        replyTo: elionAddr || undefined,
+        tags: [{ name: "type", value: "customer_confirmation" }, { name: "order", value: order.id }],
+      }).catch(() => {}); // swallow — already logged in module
+    }
+
+    // Elion notification (only if address is configured)
+    if (elionAddr) {
+      const note = elionNotificationEmail(order);
+      sendEmail({
+        to: elionAddr,
+        subject: note.subject,
+        html: note.html,
+        text: note.text,
+        replyTo: order.email || undefined,
+        tags: [{ name: "type", value: "elion_notification" }, { name: "order", value: order.id }],
+      }).catch(() => {});
+    }
+  } catch (_) {
+    // Email failure must not break order creation
+  }
+
   return json({ ok: true, order }, 200, cors);
 }
 
@@ -286,6 +322,11 @@ function validateOrder(b) {
   order.name = name;
   order.phone = phone;
   order.address = address;
+
+  // Email (optional, but if present must be valid — used for confirmation)
+  const email = String(b.email || "").trim().slice(0, 120);
+  if (email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return { error: "invalid_email" };
+  if (email) order.email = email;
 
   // Car
   order.car = String(b.car || "").trim().slice(0, 120);

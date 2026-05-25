@@ -127,6 +127,7 @@
     const body = {
       name: data.get("name"),
       phone: data.get("phone"),
+      email: data.get("email") || "",
       address: data.get("address"),
       car: data.get("car") || "",
       tier: state.tier,
@@ -293,6 +294,49 @@
     aside.appendChild(applyBtn);
   }
 
+  // ---- Slot picker ----
+  function renderSlotDays() {
+    const container = form.querySelector("[data-slot-days]");
+    if (!container) return;
+    const today = new Date();
+    const days = [];
+    // Next 14 days. Skip Sundays. First option is "ASAP".
+    days.push({ key: "asap", label: "ASAP", sub: "Whenever Elion can" });
+    for (let i = 0; i < 14 && days.length < 9; i++) {
+      const d = new Date(today.getFullYear(), today.getMonth(), today.getDate() + i);
+      if (d.getDay() === 0) continue; // Sunday — Elion doesn't work
+      const isoDate = d.toISOString().slice(0, 10);
+      const weekday = d.toLocaleDateString(undefined, { weekday: "short" });
+      const monthDay = d.toLocaleDateString(undefined, { month: "short", day: "numeric" });
+      const isToday = i === 0;
+      const isTomorrow = i === 1;
+      days.push({
+        key: isoDate,
+        label: isToday ? "Today" : isTomorrow ? "Tomorrow" : weekday,
+        sub: monthDay,
+      });
+    }
+    container.innerHTML = days.map((d, i) => `
+      <label class="slot-chip">
+        <input type="radio" name="slot_day" value="${d.key}"${i === 0 ? " checked" : ""}>
+        ${d.label}
+        <span class="slot-chip-sub">${d.sub}</span>
+      </label>
+    `).join("");
+  }
+
+  function updateSlotFormatted() {
+    const day = form.querySelector('input[name="slot_day"]:checked');
+    const time = form.querySelector('input[name="slot_time"]:checked');
+    const formatted = form.querySelector("[data-slot-formatted]");
+    if (!day || !time || !formatted) return;
+    const dayLabel = day.closest(".slot-chip").childNodes[0]?.textContent?.trim() ||
+                     day.parentElement?.textContent?.trim() ||
+                     day.value;
+    const timeLabel = time.value === "flexible" ? "flexible time" : time.value;
+    formatted.value = day.value === "asap" ? "ASAP / Flexible" : `${dayLabel} ${day.value !== "asap" ? "(" + day.value + ")" : ""} ${timeLabel}`.trim();
+  }
+
   // ---- Init ----
   function init() {
     form = document.getElementById("orderForm");
@@ -314,7 +358,10 @@
       if (banner) banner.hidden = false;
     }
 
-    form.addEventListener("change", renderQuote);
+    // Slot picker
+    renderSlotDays();
+    updateSlotFormatted();
+    form.addEventListener("change", () => { renderQuote(); updateSlotFormatted(); });
     form.addEventListener("input", renderQuote);
     form.addEventListener("submit", submit);
 

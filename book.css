@@ -193,6 +193,57 @@
   .grid-2 { grid-template-columns: 1fr; }
 }
 
+/* Slot picker */
+.slot-pick {
+  border: 0;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.slot-hint {
+  margin: 0 0 var(--s-2);
+  font-size: 0.85rem;
+  color: var(--muted);
+}
+.slot-day-row,
+.slot-time-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(112px, 1fr));
+  gap: 8px;
+}
+.slot-chip {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 10px 12px;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  cursor: pointer;
+  text-align: center;
+  font-size: 0.92rem;
+  color: var(--ink);
+  transition: border-color 0.12s, background 0.12s, color 0.12s;
+}
+.slot-chip:has(input:checked) {
+  border-color: var(--accent);
+  background: var(--surface-soft);
+  color: var(--accent);
+}
+.slot-chip input {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+.slot-chip-sub {
+  font-size: 0.72rem;
+  color: var(--muted);
+  font-family: var(--mono);
+  letter-spacing: 0.02em;
+}
+
 /* Quote box */
 .quote-box {
   background: var(--bg-soft);

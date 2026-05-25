@@ -14,24 +14,14 @@
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&display=swap">
   <link rel="stylesheet" href="styles.css?v=12">
   <link rel="stylesheet" href="chatbot.css?v=3">
-  <link rel="stylesheet" href="book.css?v=1">
+  <link rel="stylesheet" href="book.css?v=2">
+  <link rel="stylesheet" href="nav.css?v=1">
 </head>
 <body>
 
 <a class="skip-link" href="#book-form">Skip to booking</a>
 
-<header class="topbar">
-  <a class="brand" href="/" aria-label="Elion Car Care home">
-    <span class="brand-name">Elion Car Care</span>
-    <span class="brand-mono">ANN ARBOR · MI</span>
-  </a>
-  <nav class="topnav" aria-label="Primary">
-    <a href="/#menu">Pricing</a>
-    <a href="/#about">About</a>
-    <a href="/book" aria-current="page">Book</a>
-  </nav>
-  <a class="topbar-phone" href="tel:+16282520740" data-tel-link>(628) 252-0740</a>
-</header>
+<header class="topbar" data-shared-nav></header>
 
 <main id="book-form" class="book-page">
   <div class="container">
@@ -104,6 +94,11 @@
         </div>
 
         <label class="field">
+          <span>Email (optional, for confirmation)</span>
+          <input type="email" name="email" autocomplete="email" inputmode="email" placeholder="you@example.com">
+        </label>
+
+        <label class="field">
           <span>Address</span>
           <input type="text" name="address" required autocomplete="street-address" placeholder="Street, Ann Arbor">
         </label>
@@ -120,10 +115,18 @@
           <label class="check"><input type="radio" name="location" value="nearby"> Nearby (Elion confirms travel)</label>
         </fieldset>
 
-        <label class="field">
-          <span>Preferred timing</span>
-          <input type="text" name="preferred_timing" placeholder="e.g. Saturday morning, or 'flexible'">
-        </label>
+        <fieldset class="slot-pick">
+          <legend>When works?</legend>
+          <p class="slot-hint">Pick a day and a window. Elion will text to confirm the exact time.</p>
+          <div class="slot-day-row" data-slot-days></div>
+          <div class="slot-time-row" data-slot-times>
+            <label class="slot-chip"><input type="radio" name="slot_time" value="morning"> Morning <span class="slot-chip-sub">9am to noon</span></label>
+            <label class="slot-chip"><input type="radio" name="slot_time" value="afternoon"> Afternoon <span class="slot-chip-sub">noon to 4pm</span></label>
+            <label class="slot-chip"><input type="radio" name="slot_time" value="evening"> Evening <span class="slot-chip-sub">4pm to 7pm</span></label>
+            <label class="slot-chip"><input type="radio" name="slot_time" value="flexible" checked> Flexible <span class="slot-chip-sub">anytime that day</span></label>
+          </div>
+          <input type="hidden" name="preferred_timing" data-slot-formatted>
+        </fieldset>
 
         <label class="field">
           <span>Notes (optional)</span>
@@ -193,21 +196,11 @@
   </div>
 </main>
 
-<footer class="site-footer">
-  <div class="container footer-grid">
-    <div>
-      <p class="footer-brand">Elion Car Care</p>
-      <p class="muted small">Hand-detailed, in your driveway. Ann Arbor.</p>
-    </div>
-    <div>
-      <p><a href="tel:+16282520740" data-tel-link>(628) 252-0740</a></p>
-      <p><a href="mailto:info@elioncarcare.com">info@elioncarcare.com</a></p>
-    </div>
-  </div>
-</footer>
+<footer class="site-footer" data-shared-footer></footer>
 
 <script src="config.js?v=13"></script>
+<script src="nav.js?v=1" defer></script>
 <script src="chatbot.js?v=10" defer></script>
-<script src="book.js?v=1" defer></script>
+<script src="book.js?v=2" defer></script>
 </body>
 </html>
