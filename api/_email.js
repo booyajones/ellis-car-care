@@ -186,7 +186,16 @@ export function customerConfirmationEmail(order) {
 
   const html = `
     <!doctype html><html><body style="margin:0;padding:32px 16px;background:#f4f1ea;font-family:Inter,system-ui,sans-serif;color:#1a1a1a;">
-      <div style="max-width:560px;margin:auto;background:#fff;padding:32px 28px;border-radius:8px;">
+      <div style="max-width:560px;margin:auto;background:#fff;border-radius:8px;overflow:hidden;">
+        <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%" style="border-collapse:collapse;">
+          <tr>
+            <td width="25%" height="6" bgcolor="#D94436" style="background:#D94436;line-height:0;font-size:0;">&nbsp;</td>
+            <td width="25%" height="6" bgcolor="#E89B3A" style="background:#E89B3A;line-height:0;font-size:0;">&nbsp;</td>
+            <td width="25%" height="6" bgcolor="#E4CB42" style="background:#E4CB42;line-height:0;font-size:0;">&nbsp;</td>
+            <td width="25%" height="6" bgcolor="#3CB286" style="background:#3CB286;line-height:0;font-size:0;">&nbsp;</td>
+          </tr>
+        </table>
+        <div style="padding:32px 28px;">
         <h1 style="font-family:Fraunces,Georgia,serif;font-size:28px;margin:0 0 8px;color:#0E1014;">Booked. Thanks, ${escapeHtml(order.name)}.</h1>
         <p style="margin:0 0 16px;color:#666;font-size:13px;">Order ${escapeHtml(order.id)}</p>
 
@@ -202,11 +211,12 @@ export function customerConfirmationEmail(order) {
         <h2 style="font-family:Fraunces,Georgia,serif;font-size:18px;color:#0E1014;margin:24px 0 8px;">Where</h2>
         <p style="margin:0 0 16px;">${escapeHtml(order.address)}${order.car ? `<br/>Car: ${escapeHtml(order.car)}` : ""}</p>
 
-        <p style="margin:24px 0 0;color:#666;font-size:13px;">Questions? Text <a href="tel:+16282520740" style="color:#E5A235;">(628) 252-0740</a>.<br/>— Elion</p>
+        <p style="margin:24px 0 0;color:#666;font-size:13px;">Questions? Text <a href="tel:+16282520740" style="color:#E5A235;">(628) 252-0740</a>.<br/>Elion</p>
+        </div>
       </div>
     </body></html>
   `;
-  const text = `Booked, thanks ${order.name}!\n\nOrder ${order.id}\n${TIER_LABEL[order.tier]} - $${p.base}\nTotal: $${p.total}\n\nI'll text you at ${order.phone} within an hour to lock in a time.\n\nPay via Venmo @Elion-CarCare after the job: ${venmoUrl}\n\nWhere: ${order.address}\n${order.car ? "Car: " + order.car + "\n" : ""}\nQuestions? Text (628) 252-0740.\n- Elion`;
+  const text = `Booked, thanks ${order.name}!\n\nOrder ${order.id}\n${TIER_LABEL[order.tier]} - $${p.base}\nTotal: $${p.total}\n\nI'll text you at ${order.phone} within an hour to lock in a time.\n\nPay via Venmo @Elion-CarCare after the job: ${venmoUrl}\n\nWhere: ${order.address}\n${order.car ? "Car: " + order.car + "\n" : ""}\nQuestions? Text (628) 252-0740.\nElion`;
 
   return { subject: `Booked: ${TIER_LABEL[order.tier]} - $${p.total} (order ${order.id})`, html, text };
 }
@@ -221,7 +231,16 @@ export function elionNotificationEmail(order) {
 
   const html = `
     <!doctype html><html><body style="margin:0;padding:24px 16px;background:#f4f1ea;font-family:Inter,system-ui,sans-serif;color:#1a1a1a;">
-      <div style="max-width:560px;margin:auto;background:#fff;padding:24px;border-radius:8px;">
+      <div style="max-width:560px;margin:auto;background:#fff;border-radius:8px;overflow:hidden;">
+        <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%" style="border-collapse:collapse;">
+          <tr>
+            <td width="25%" height="6" bgcolor="#D94436" style="background:#D94436;line-height:0;font-size:0;">&nbsp;</td>
+            <td width="25%" height="6" bgcolor="#E89B3A" style="background:#E89B3A;line-height:0;font-size:0;">&nbsp;</td>
+            <td width="25%" height="6" bgcolor="#E4CB42" style="background:#E4CB42;line-height:0;font-size:0;">&nbsp;</td>
+            <td width="25%" height="6" bgcolor="#3CB286" style="background:#3CB286;line-height:0;font-size:0;">&nbsp;</td>
+          </tr>
+        </table>
+        <div style="padding:24px;">
         <p style="margin:0 0 4px;color:#666;font-size:12px;">NEW ORDER ${escapeHtml(order.id)}</p>
         <h1 style="font-family:Fraunces,Georgia,serif;font-size:24px;margin:0 0 16px;color:#0E1014;">${escapeHtml(order.name)} - <span style="color:#E5A235;">$${p.total}</span></h1>
 
@@ -239,6 +258,7 @@ export function elionNotificationEmail(order) {
         ${order.first_time ? `<p style="margin:16px 0 0;color:#E5A235;">⭐ First-time customer (25% off applied automatically)</p>` : ""}
 
         <p style="margin:24px 0 0;font-size:13px;color:#666;">Dashboard: <a href="https://elioncarcare.com/admin" style="color:#E5A235;">elioncarcare.com/admin</a></p>
+        </div>
       </div>
     </body></html>
   `;

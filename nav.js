@@ -93,8 +93,17 @@
           <p class="muted small">Greater Ann Arbor served.</p>
         </div>
       </div>
+      <hr class="stripe-rule is-wide" aria-hidden="true">
       <p class="footer-fine muted small">© ${year} ELION CAR CARE · MADE IN ANN ARBOR</p>
     `;
+  }
+
+  function ensureSiteStripeTop() {
+    if (document.querySelector(".site-stripe-top")) return;
+    const bar = document.createElement("div");
+    bar.className = "site-stripe-top";
+    bar.setAttribute("aria-hidden", "true");
+    document.body.insertBefore(bar, document.body.firstChild);
   }
 
   function bindDrawer(host) {
@@ -129,6 +138,7 @@
   }
 
   function init() {
+    ensureSiteStripeTop();
     const navHost = document.querySelector("[data-shared-nav]");
     if (navHost) {
       navHost.innerHTML = buildNav();

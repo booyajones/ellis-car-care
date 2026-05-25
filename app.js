@@ -49,6 +49,7 @@
       const bundleSms = `sms:${cfg.contact.phoneHref}?&body=${enc(bundleSmsBody)}`;
       const summary = b.summary ? `<p class="bundle-summary">${b.summary}</p>` : "";
       card.innerHTML = `
+        <span class="tier-accent" data-tier="${b.id}" aria-hidden="true"></span>
         ${popularBadge}
         <header class="bundle-head">
           <h3 class="bundle-name">${b.name}</h3>

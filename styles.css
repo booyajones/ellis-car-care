@@ -304,6 +304,61 @@ section {
     linear-gradient(var(--stripe-green),   var(--stripe-green))   75% 0 / 25% 100% no-repeat;
   border-radius: 3px;
 }
+.stripe-rule.is-wide {
+  width: min(640px, 92%);
+}
+.stripe-rule.is-full {
+  width: 100%;
+  margin-left: 0;
+  margin-right: 0;
+  border-radius: 0;
+}
+
+/* Site-wide top accent band — first paint, scrolls away, auto-injected by nav.js */
+.site-stripe-top {
+  height: 6px;
+  width: 100%;
+  background:
+    linear-gradient(var(--stripe-red),     var(--stripe-red))     0   0 / 25% 100% no-repeat,
+    linear-gradient(var(--stripe-orange),  var(--stripe-orange))  25% 0 / 25% 100% no-repeat,
+    linear-gradient(var(--stripe-yellow),  var(--stripe-yellow))  50% 0 / 25% 100% no-repeat,
+    linear-gradient(var(--stripe-green),   var(--stripe-green))   75% 0 / 25% 100% no-repeat;
+}
+
+/* Single-color tier accent. Used on bundle cards: basic=green, essential=orange, premium=red.
+   Card is position:relative; accent absolutely positioned at the top edge. */
+.tier-accent {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 5px;
+  width: 100%;
+  border-radius: var(--radius) var(--radius) 0 0;
+  background: var(--stripe-orange);
+  pointer-events: none;
+}
+.tier-accent[data-tier="basic"]     { background: var(--stripe-green); }
+.tier-accent[data-tier="essential"] { background: var(--stripe-orange); }
+.tier-accent[data-tier="premium"]   { background: var(--stripe-red); }
+
+/* Eyebrow with stripe motif beside it (compact, for section heads) */
+.eyebrow-with-stripe {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+}
+.eyebrow-with-stripe::before {
+  content: "";
+  display: inline-block;
+  width: 20px;
+  height: 14px;
+  background:
+    linear-gradient(var(--stripe-red),     var(--stripe-red))     0 25%  / 100% 3px no-repeat,
+    linear-gradient(var(--stripe-orange),  var(--stripe-orange))  0 50%  / 100% 3px no-repeat,
+    linear-gradient(var(--stripe-yellow),  var(--stripe-yellow))  0 75%  / 100% 3px no-repeat,
+    linear-gradient(var(--stripe-green),   var(--stripe-green))   0 100% / 100% 3px no-repeat;
+  flex-shrink: 0;
+}
 
 .topnav { display: none; gap: var(--s-6); margin-left: auto; }
 .topnav a {
