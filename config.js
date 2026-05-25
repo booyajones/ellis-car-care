@@ -1,5 +1,5 @@
 /* ----------------------------------------------------------
-   Ellis Car Care, site config
+   Elion Car Care, site config
 
    Edit any of the values below to update the site.
    No coding needed. Save the file and refresh the page.
