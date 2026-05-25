@@ -53,6 +53,13 @@ const CONFIG = {
     essential: "essential",
     premium: "premium",
   },
+  // Human-readable duration per tier, surfaced on the "Pick a time" CTA in the
+  // confirmation modal. Keep keys aligned with bundle ids + calEventBySlug.
+  calDurationLabel: {
+    basic: "45 min",
+    essential: "1.5 hr",
+    premium: "4 hr",
+  },
 
   bundles: [
     {

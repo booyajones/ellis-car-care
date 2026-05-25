@@ -209,7 +209,13 @@
     const calLink = modal.querySelector("[data-cal-link]");
     if (calLink) {
       const cfg = window.CONFIG || {};
-      const slug = (cfg.calEventBySlug && cfg.calEventBySlug[order.tier]) || order.tier || "basic";
+      const slugMap = cfg.calEventBySlug || {};
+      const slug = slugMap[order.tier];
+      if (!slug && order.tier) {
+        // Catch config drift early — a bundle id with no slug map entry means
+        // the Cal.com event type wasn't created or the key was misspelled.
+        console.warn(`[cal] no calEventBySlug entry for tier "${order.tier}", falling back to /elion`);
+      }
       const calBase = cfg.calBaseUrl || "https://cal.com/elion";
       const notes = [
         `Order ${order.id}`,
@@ -223,9 +229,15 @@
       if (order.phone)   params.set("smsReminderNumber", order.phone);
       if (order.address) params.set("location", order.address);
       if (notes)         params.set("notes", notes);
-      const calUrl = `${calBase}/${slug}?${params.toString()}`;
+      const calUrl = slug ? `${calBase}/${slug}?${params.toString()}` : `${calBase}?${params.toString()}`;
       calLink.href = calUrl;
-      calLink.textContent = `Pick a time for ${(order.tier || "your wash").replace(/^\w/, c => c.toUpperCase())} (${order.pricing?.base ? "about " + (order.tier === "basic" ? "45 min" : order.tier === "essential" ? "1.5 hr" : "4 hr") : "calendar"})`;
+
+      const tierLabel = (order.tier || "your wash").replace(/^\w/, c => c.toUpperCase());
+      const durationMap = cfg.calDurationLabel || {};
+      const duration = durationMap[order.tier];
+      calLink.textContent = duration
+        ? `Pick a time for ${tierLabel} (about ${duration})`
+        : `Pick a time for ${tierLabel}`;
     }
 
     modal.setAttribute("aria-hidden", "false");
