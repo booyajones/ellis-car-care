@@ -169,6 +169,7 @@
         <select class="status-select" data-status-select>
           ${STATUSES.map(s => `<option value="${s.id}" ${s.id === order.status ? "selected" : ""}>${s.label}</option>`).join("")}
         </select>
+        <button type="button" class="status-select" data-delete-btn style="background: transparent; color: var(--muted); border: 1px solid var(--line); padding: 6px 12px;">Delete</button>
       </div>
     `;
 
@@ -187,7 +188,29 @@
       e.target.disabled = false;
     });
 
+    // Wire up delete
+    card.querySelector("[data-delete-btn]").addEventListener("click", async () => {
+      if (!confirm(`Delete order ${order.id} from ${order.name}? This can't be undone.`)) return;
+      const ok = await deleteOrder(order.id);
+      if (ok) {
+        allOrders = allOrders.filter(o => o.id !== order.id);
+        renderAll();
+      } else {
+        alert("Failed to delete. Try refresh.");
+      }
+    });
+
     return card;
+  }
+
+  async function deleteOrder(orderId) {
+    try {
+      const resp = await fetch(`/api/orders?id=${encodeURIComponent(orderId)}`, {
+        method: "DELETE",
+        headers: { "x-elion-admin": getToken() },
+      });
+      return resp.ok;
+    } catch { return false; }
   }
 
   async function updateStatus(orderId, status) {

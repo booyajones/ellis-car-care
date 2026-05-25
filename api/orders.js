@@ -12,7 +12,7 @@
    The customer-facing POST is open (geo-gated + rate-limited).
    ============================================================ */
 
-import { put, list, get } from "@vercel/blob";
+import { put, list, get, del } from "@vercel/blob";
 
 // Node runtime (not Edge): @vercel/blob 2.x pulls in undici which uses
 // node:stream / node:net / etc. that aren't available on Edge. Booking
@@ -102,6 +102,10 @@ export default async function handler(nodeReq, nodeRes) {
     else if (req.method === "PATCH") {
       const url = new URL(req.url, "http://localhost");
       response = await handleUpdateStatus(req, url, cors);
+    }
+    else if (req.method === "DELETE") {
+      const url = new URL(req.url, "http://localhost");
+      response = await handleDelete(req, url, cors);
     }
     else response = json({ error: "method_not_allowed" }, 405, cors);
 
@@ -237,6 +241,29 @@ async function handleUpdateStatus(req, url, cors) {
     return json({ ok: true, order }, 200, cors);
   } catch (e) {
     return json({ error: "update_failed", detail: String(e && e.message || e).slice(0, 200) }, 502, cors);
+  }
+}
+
+// ---------------------------------------------------------
+//  DELETE /api/orders?id=ord_xxxx — admin removes an order
+// ---------------------------------------------------------
+async function handleDelete(req, url, cors) {
+  if (!isAdmin(req)) return json({ error: "unauthorized" }, 401, cors);
+
+  const id = url.searchParams.get("id");
+  if (!id || !/^ord_[A-Za-z0-9]+$/.test(id)) return json({ error: "invalid_id" }, 400, cors);
+
+  const blobToken = process.env.BLOB_READ_WRITE_TOKEN;
+  if (!blobToken) return json({ error: "storage_not_configured" }, 500, cors);
+
+  try {
+    const list = await blobList("orders/", blobToken);
+    const target = list.find(b => b.pathname.endsWith(`__${id}.json`));
+    if (!target) return json({ error: "not_found" }, 404, cors);
+    await del(target.url, { token: blobToken });
+    return json({ ok: true, id }, 200, cors);
+  } catch (e) {
+    return json({ error: "delete_failed", detail: String(e && e.message || e).slice(0, 200) }, 502, cors);
   }
 }
 
@@ -468,7 +495,7 @@ function corsHeaders(origin) {
   const allow = ALLOWED_ORIGINS.has(origin) ? origin : "https://ellis-car-care.vercel.app";
   return {
     "Access-Control-Allow-Origin": allow,
-    "Access-Control-Allow-Methods": "GET, POST, PATCH, OPTIONS",
+    "Access-Control-Allow-Methods": "GET, POST, PATCH, DELETE, OPTIONS",
     "Access-Control-Allow-Headers": "content-type, x-elion-admin",
     "Access-Control-Max-Age": "86400",
     "Vary": "Origin",
