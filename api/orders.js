@@ -12,9 +12,12 @@
    The customer-facing POST is open (geo-gated + rate-limited).
    ============================================================ */
 
-import { put, list, head } from "@vercel/blob";
+import { put, list } from "@vercel/blob";
 
-export const config = { runtime: "edge" };
+// Node runtime (not Edge): @vercel/blob 2.x pulls in undici which uses
+// node:stream / node:net / etc. that aren't available on Edge. Booking
+// latency isn't critical (a form submit), so Node runtime is fine.
+export const config = { runtime: "nodejs" };
 
 const ALLOWED_ORIGINS = new Set([
   "https://ellis-car-care.vercel.app",
