@@ -53,21 +53,65 @@ const TIERS = new Set(["basic", "essential", "premium"]);
 const ADDON_IDS = new Set(Object.keys(ADDON_PRICES));
 
 // =========================================================
-//  Handler
+//  Handler — Node runtime (req: IncomingMessage, res: ServerResponse).
+//  We adapt to a Web-Standards-like shape so the inner functions
+//  can use req.headers.get(...) and return Response-shaped objects.
 // =========================================================
-export default async function handler(req) {
-  const origin = req.headers.get("origin") || "";
+export default async function handler(nodeReq, nodeRes) {
+  // Build a thin Web-like req shim
+  const headers = nodeReq.headers || {};
+  const req = {
+    method: nodeReq.method,
+    url: nodeReq.url,
+    headers: {
+      get: (k) => headers[String(k).toLowerCase()] || "",
+    },
+    json: async () => {
+      // Vercel Node runtime auto-parses JSON; nodeReq.body is the object
+      if (nodeReq.body && typeof nodeReq.body === "object") return nodeReq.body;
+      // Fallback: parse manually
+      const chunks = [];
+      for await (const chunk of nodeReq) chunks.push(chunk);
+      const text = Buffer.concat(chunks).toString("utf8");
+      return text ? JSON.parse(text) : {};
+    },
+  };
+
+  const origin = req.headers.get("origin");
   const cors = corsHeaders(origin);
 
-  if (req.method === "OPTIONS") return new Response(null, { status: 204, headers: cors });
+  // Helper to ship a Web-shaped Response back through nodeRes
+  const ship = async (response) => {
+    if (response && typeof response.text === "function") {
+      // Real Response object (e.g. for 429 we return one)
+      nodeRes.statusCode = response.status;
+      response.headers.forEach((v, k) => nodeRes.setHeader(k, v));
+      const text = await response.text();
+      nodeRes.end(text);
+      return;
+    }
+    // Already-shipped via our helper, do nothing
+  };
 
-  const url = new URL(req.url);
+  try {
+    let response;
+    if (req.method === "OPTIONS") {
+      response = new Response(null, { status: 204, headers: cors });
+    } else if (req.method === "POST")  response = await handleCreate(req, cors);
+    else if (req.method === "GET")     response = await handleList(req, cors);
+    else if (req.method === "PATCH") {
+      const url = new URL(req.url, "http://localhost");
+      response = await handleUpdateStatus(req, url, cors);
+    }
+    else response = json({ error: "method_not_allowed" }, 405, cors);
 
-  if (req.method === "POST") return handleCreate(req, cors);
-  if (req.method === "GET")  return handleList(req, cors);
-  if (req.method === "PATCH") return handleUpdateStatus(req, url, cors);
-
-  return json({ error: "method_not_allowed" }, 405, cors);
+    await ship(response);
+  } catch (e) {
+    nodeRes.statusCode = 500;
+    Object.entries(cors).forEach(([k, v]) => nodeRes.setHeader(k, v));
+    nodeRes.setHeader("content-type", "application/json");
+    nodeRes.end(JSON.stringify({ error: "handler_exception", detail: String(e && e.message || e).slice(0, 300) }));
+  }
 }
 
 // ---------------------------------------------------------
