@@ -326,7 +326,9 @@ section {
 }
 
 /* Single-color tier accent. Used on bundle cards: basic=green, essential=orange, premium=red.
-   Card is position:relative; accent absolutely positioned at the top edge. */
+   Card is position:relative; accent absolutely positioned at the top edge.
+   Base background is transparent so unknown/missing data-tier fails invisibly rather than
+   silently showing orange. */
 .tier-accent {
   position: absolute;
   top: 0;
@@ -334,12 +336,14 @@ section {
   height: 5px;
   width: 100%;
   border-radius: var(--radius) var(--radius) 0 0;
-  background: var(--stripe-orange);
+  background: transparent;
   pointer-events: none;
+  z-index: 1;
 }
 .tier-accent[data-tier="basic"]     { background: var(--stripe-green); }
 .tier-accent[data-tier="essential"] { background: var(--stripe-orange); }
 .tier-accent[data-tier="premium"]   { background: var(--stripe-red); }
+.popular-badge { z-index: 2; } /* sit above the tier accent stripe */
 
 /* Eyebrow with stripe motif beside it (compact, for section heads) */
 .eyebrow-with-stripe {
