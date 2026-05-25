@@ -54,7 +54,7 @@ export async function sendEmail({ to, subject, html, text, replyTo, from, cc, ta
     if (gmail) {
       console.warn("[email] resend failed, falling back to gmail:", JSON.stringify(r).slice(0, 300));
       const g = await sendViaGmail({ to, subject, html, text, replyTo, from, cc, transporter: gmail });
-      if (g.ok) return { ...g, resend_fallback: r };
+      if (g.ok) return { ...g, fallback: true, resend_error: r };
       return g;
     }
     console.error("[email] resend failed, no gmail fallback configured:", JSON.stringify(r).slice(0, 300));
