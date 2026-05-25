@@ -170,11 +170,11 @@ export function elionNotificationEmail(order) {
 
         ${order.first_time ? `<p style="margin:16px 0 0;color:#E5A235;">⭐ First-time customer (25% off applied automatically)</p>` : ""}
 
-        <p style="margin:24px 0 0;font-size:13px;color:#666;">Dashboard: <a href="https://ellis-car-care.vercel.app/admin" style="color:#E5A235;">ellis-car-care.vercel.app/admin</a></p>
+        <p style="margin:24px 0 0;font-size:13px;color:#666;">Dashboard: <a href="https://elioncarcare.com/admin" style="color:#E5A235;">elioncarcare.com/admin</a></p>
       </div>
     </body></html>
   `;
-  const text = `NEW ORDER ${order.id}\n${order.name} - $${p.total}\n\n${TIER_LABEL[order.tier]} (${SCOPE_LABEL[order.scope] || order.scope}) - $${p.base}\n${(p.addons || []).map(a => `+ ${ADDON_LABEL[a.id] || a.id} ($${a.price})`).join("\n")}\nTotal: $${p.total}\n\nContact: ${order.phone} - ${order.address}\n${order.car ? "Car: " + order.car + "\n" : ""}${order.preferred_timing ? "Timing: " + order.preferred_timing + "\n" : ""}${order.notes ? "Notes: " + order.notes + "\n" : ""}${order.first_time ? "* First-time customer\n" : ""}\nDashboard: https://ellis-car-care.vercel.app/admin`;
+  const text = `NEW ORDER ${order.id}\n${order.name} - $${p.total}\n\n${TIER_LABEL[order.tier]} (${SCOPE_LABEL[order.scope] || order.scope}) - $${p.base}\n${(p.addons || []).map(a => `+ ${ADDON_LABEL[a.id] || a.id} ($${a.price})`).join("\n")}\nTotal: $${p.total}\n\nContact: ${order.phone} - ${order.address}\n${order.car ? "Car: " + order.car + "\n" : ""}${order.preferred_timing ? "Timing: " + order.preferred_timing + "\n" : ""}${order.notes ? "Notes: " + order.notes + "\n" : ""}${order.first_time ? "* First-time customer\n" : ""}\nDashboard: https://elioncarcare.com/admin`;
 
   return { subject: `New order: ${order.name} - $${p.total} (${TIER_LABEL[order.tier]})`, html, text };
 }

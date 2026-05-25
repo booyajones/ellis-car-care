@@ -1,4 +1,7 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://elliscarcare.com/sitemap.xml
+Disallow: /admin
+Disallow: /api/
+
+Sitemap: https://elioncarcare.com/sitemap.xml

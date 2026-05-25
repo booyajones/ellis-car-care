@@ -160,9 +160,8 @@ const CONFIG = {
     headline: "Tell a neighbor.",
     body: "Send a neighbor to Elion Car Care. When they book, you both get $10 off your next wash.",
     shareText: "Heads up, you should book Elion Car Care for your car. He details by hand in your driveway. Local, careful, the work is good:",
-    // Empty string means "use the current page URL". Set this to a real domain
-    // (e.g. "https://elioncarcare.com") once the custom domain is live.
-    shareUrl: "",
+    // Now that elioncarcare.com is live, point shares directly at it.
+    shareUrl: "https://elioncarcare.com",
   },
 };
 

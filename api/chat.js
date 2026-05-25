@@ -169,13 +169,15 @@ Quick reply guidance:
 Output JSON ONLY. No backticks, no commentary.`;
 
 const ALLOWED_ORIGINS = new Set([
-  "https://ellis-car-care.vercel.app",
+  "https://elioncarcare.com",
+  "https://www.elioncarcare.com",
+  "https://ellis-car-care.vercel.app",  // legacy alias
   "http://localhost:5180",
   "http://127.0.0.1:5180",
 ]);
 
 function corsHeaders(origin) {
-  const allow = ALLOWED_ORIGINS.has(origin) ? origin : "https://ellis-car-care.vercel.app";
+  const allow = ALLOWED_ORIGINS.has(origin) ? origin : "https://elioncarcare.com";
   return {
     "Access-Control-Allow-Origin": allow,
     "Access-Control-Allow-Methods": "POST, OPTIONS",
