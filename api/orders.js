@@ -118,21 +118,29 @@ export default async function handler(nodeReq, nodeRes) {
 //  POST /api/orders  — customer creates order
 // ---------------------------------------------------------
 async function handleCreate(req, cors) {
-  // Geo gate
-  const country = req.headers.get("x-vercel-ip-country") || "";
-  if (country && !ALLOWED_COUNTRIES.has(country)) {
-    return json({ error: "region_not_supported" }, 403, cors);
+  const bypass = isBypass(req);
+
+  // Geo gate (skipped on bypass)
+  if (!bypass) {
+    const country = req.headers.get("x-vercel-ip-country") || "";
+    if (country && !ALLOWED_COUNTRIES.has(country)) {
+      return json({ error: "region_not_supported" }, 403, cors);
+    }
   }
-  // Rate limit
+  // Rate limit (skipped on bypass)
   const ip = getClientIp(req);
-  const rl = rateLimitCheck(ip);
-  if (!rl.allowed) {
-    return json({ error: "rate_limited", retry_after_seconds: rl.retryAfterSec }, 429, cors);
+  if (!bypass) {
+    const rl = rateLimitCheck(ip);
+    if (!rl.allowed) {
+      return json({ error: "rate_limited", retry_after_seconds: rl.retryAfterSec }, 429, cors);
+    }
   }
-  // Daily cap
-  const cap = dailyCapCheck();
-  if (!cap.allowed) {
-    return json({ error: "daily_cap_reached", message: "We've hit today's booking limit. Text Elion at (628) 252-0740." }, 503, cors);
+  // Daily cap (skipped on bypass)
+  if (!bypass) {
+    const cap = dailyCapCheck();
+    if (!cap.allowed) {
+      return json({ error: "daily_cap_reached", message: "We've hit today's booking limit. Text Elion at (628) 252-0740." }, 503, cors);
+    }
   }
 
   let body;
@@ -335,6 +343,13 @@ function isAdmin(req) {
   const want = process.env.ELION_ADMIN_PASSWORD;
   if (!want) return false; // fail-closed if not configured
   const got = req.headers.get("x-elion-admin") || "";
+  return got && timingSafeEqual(got, want);
+}
+
+function isBypass(req) {
+  const want = process.env.ELION_BYPASS_TOKEN || process.env.ELLIS_BYPASS_TOKEN;
+  if (!want) return false;
+  const got = req.headers.get("x-elion-bypass") || req.headers.get("x-ellis-bypass") || "";
   return got && timingSafeEqual(got, want);
 }
 
