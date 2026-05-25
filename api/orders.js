@@ -187,7 +187,7 @@ async function handleList(req, cors) {
     const blobs = await blobList("orders/", blobToken);
     // Fetch and parse each. Sort newest first.
     const orders = await Promise.all(
-      blobs.map(b => blobGetText(b.url).then(t => JSON.parse(t)).catch(() => null))
+      blobs.map(b => blobGetText(b.downloadUrl || b.url).then(t => JSON.parse(t)).catch(() => null))
     );
     const valid = orders.filter(Boolean);
     valid.sort((a, b) => (b.created_at || "").localeCompare(a.created_at || ""));
@@ -219,7 +219,7 @@ async function handleUpdateStatus(req, url, cors) {
     const list = await blobList("orders/", blobToken);
     const target = list.find(b => b.pathname.endsWith(`__${id}.json`));
     if (!target) return json({ error: "not_found" }, 404, cors);
-    const text = await blobGet(target.url, blobToken);
+    const text = await blobGetText(target.downloadUrl || target.url);
     const order = JSON.parse(text);
     order.status = body.status;
     if (body.scheduled_for) order.scheduled_for = String(body.scheduled_for).slice(0, 100);
@@ -364,10 +364,10 @@ function timingSafeEqual(a, b) {
 //  Blob helpers — wrapping @vercel/blob SDK
 // =========================================================
 async function blobPut(pathname, content, token) {
-  // SDK signature: put(pathname, body, { access, token, contentType, ... })
+  // The store is configured as private. Reads must use the signed
+  // downloadUrl returned by list()/head(), not the raw url.
   return await put(pathname, content, {
-    access: "public",            // private blobs require signed URLs which adds complexity;
-                                  // we keep blobs at unguessable paths instead (cryptographically random ids).
+    access: "private",
     token,
     contentType: "application/json",
     addRandomSuffix: false,
