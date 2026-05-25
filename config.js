@@ -43,6 +43,17 @@ const CONFIG = {
   // Manually edit when the calendar changes. Empty string hides the line.
   nextAvailable: "Booking this week",
 
+  // Cal.com booking URLs per tier. Ellis manages availability in his Cal.com
+  // dashboard at app.cal.com. Each tier event type is configured with the
+  // matching duration (Basic 45m, Essential 90m, Premium 240m) and In-Person
+  // (Attendee Address) location so the customer's address becomes the job site.
+  calBaseUrl: "https://cal.com/elion",
+  calEventBySlug: {
+    basic: "basic",
+    essential: "essential",
+    premium: "premium",
+  },
+
   bundles: [
     {
       id: "basic",

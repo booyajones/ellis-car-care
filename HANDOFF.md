@@ -29,7 +29,7 @@ Then redeploy (just push any commit, or click "Redeploy" in Vercel dashboard).
 1. They fill out the form at `/book` (or chat with the AI helper)
 2. Their order saves and pops up in your `/admin` dashboard
 3. They get a confirmation email
-4. **You get an email** at ellis.w.wyatt@gmail.com (the notification address). To change it: `vercel env rm ELION_NOTIFY_EMAIL production` then `vercel env add ELION_NOTIFY_EMAIL production` and paste the new address.
+4. **You get an email** at elionx24@gmail.com (the notification address). To change it: `vercel env rm ELION_NOTIFY_EMAIL production` then `vercel env add ELION_NOTIFY_EMAIL production` and paste the new address.
 5. **You text them within an hour** to lock in a time
 
 The site already tells them you'll text. They expect it.

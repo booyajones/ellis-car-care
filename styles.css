@@ -746,6 +746,26 @@ section {
   background: var(--accent-deep);
   border-color: var(--accent-deep);
 }
+.bundle-cta-alt {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: var(--s-2);
+  padding: 0.45rem 0.8rem;
+  background: transparent;
+  color: var(--muted);
+  border-radius: 999px;
+  text-decoration: none;
+  font-family: var(--mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  border: 0;
+  transition: color 0.18s;
+}
+.bundle-cta-alt:hover {
+  color: var(--ink);
+}
 
 .popular-badge {
   position: absolute;

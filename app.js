@@ -47,6 +47,9 @@
       const popularBadge = b.popular ? '<span class="popular-badge">Most popular</span>' : "";
       const bundleSmsBody = `Hi Ellis, I'd like to book the ${b.name} ($${b.price}). My car is a ____. I'm in ____.`;
       const bundleSms = `sms:${cfg.contact.phoneHref}?&body=${enc(bundleSmsBody)}`;
+      const calSlug = (cfg.calEventBySlug && cfg.calEventBySlug[b.id]) || b.id;
+      const calBase = cfg.calBaseUrl || "https://cal.com/elion";
+      const calUrl = `${calBase}/${calSlug}`;
       const summary = b.summary ? `<p class="bundle-summary">${b.summary}</p>` : "";
       card.innerHTML = `
         <span class="tier-accent" data-tier="${b.id}" aria-hidden="true"></span>
@@ -60,7 +63,8 @@
         <ul class="bundle-includes">
           ${b.includes.map((i) => `<li>${i}</li>`).join("")}
         </ul>
-        <a class="bundle-cta" href="${bundleSms}">Text to book</a>
+        <a class="bundle-cta" href="${calUrl}" target="_blank" rel="noopener">Pick a time on calendar</a>
+        <a class="bundle-cta-alt" href="${bundleSms}">or text Ellis</a>
       `;
       bundlesEl.appendChild(card);
     });

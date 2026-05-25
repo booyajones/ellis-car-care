@@ -13,7 +13,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&display=swap">
-  <link rel="stylesheet" href="styles.css?v=15">
+  <link rel="stylesheet" href="styles.css?v=16">
   <link rel="stylesheet" href="chatbot.css?v=3">
   <link rel="stylesheet" href="book.css?v=2">
   <link rel="stylesheet" href="nav.css?v=2">
@@ -173,6 +173,12 @@
 
       <div class="confirm-summary" data-confirm-summary></div>
 
+      <h3>Pick your exact time</h3>
+      <p class="muted small" style="margin-top:-8px;">Pick a slot below and you're locked in. Ellis will get a calendar invite and so will you.</p>
+      <div class="cal-embed-wrap" data-cal-embed-wrap>
+        <a class="btn btn-primary btn-lg" data-cal-link href="https://cal.com/elion" target="_blank" rel="noopener">Open the calendar</a>
+      </div>
+
       <h3>Pay Ellis (after the job)</h3>
       <p>Open Venmo and send <strong data-confirm-amount>$0</strong> to <strong>@Elion-CarCare</strong> with note <em data-confirm-venmo-note></em>.</p>
       <div class="confirm-actions">
@@ -182,8 +188,8 @@
 
       <h3>What happens next</h3>
       <ul class="confirm-next">
-        <li>Ellis sees your order in his dashboard right away.</li>
-        <li>He will text you within an hour to lock in a time.</li>
+        <li>Pick your slot above, you'll both get a calendar invite.</li>
+        <li>If you'd rather text to pick a time, that's fine too. Ellis still gets the order in his dashboard.</li>
         <li>Before-and-after photos every job. Anything not right, he comes back.</li>
       </ul>
 
@@ -199,7 +205,7 @@
 
 <footer class="site-footer" data-shared-footer></footer>
 
-<script src="config.js?v=13"></script>
+<script src="config.js?v=14"></script>
 <script src="nav.js?v=2" defer></script>
 <script src="chatbot.js?v=10" defer></script>
 <script src="book.js?v=2" defer></script>

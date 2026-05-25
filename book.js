@@ -205,6 +205,29 @@
     const venmoUrl = `https://venmo.com/Elion-CarCare?txn=pay&amount=${p.total}&note=${encodeURIComponent(venmoNote)}`;
     modal.querySelector("[data-venmo-link]").href = venmoUrl;
 
+    // Cal.com booking link, tier-aware + prefilled with what we already know
+    const calLink = modal.querySelector("[data-cal-link]");
+    if (calLink) {
+      const cfg = window.CONFIG || {};
+      const slug = (cfg.calEventBySlug && cfg.calEventBySlug[order.tier]) || order.tier || "basic";
+      const calBase = cfg.calBaseUrl || "https://cal.com/elion";
+      const notes = [
+        `Order ${order.id}`,
+        order.car ? `Car: ${order.car}` : "",
+        order.scope ? `Scope: ${order.scope}` : "",
+        (order.addons && order.addons.length) ? `Add-ons: ${order.addons.join(", ")}` : "",
+      ].filter(Boolean).join(" | ");
+      const params = new URLSearchParams();
+      if (order.name)    params.set("name", order.name);
+      if (order.email)   params.set("email", order.email);
+      if (order.phone)   params.set("smsReminderNumber", order.phone);
+      if (order.address) params.set("location", order.address);
+      if (notes)         params.set("notes", notes);
+      const calUrl = `${calBase}/${slug}?${params.toString()}`;
+      calLink.href = calUrl;
+      calLink.textContent = `Pick a time for ${(order.tier || "your wash").replace(/^\w/, c => c.toUpperCase())} (${order.pricing?.base ? "about " + (order.tier === "basic" ? "45 min" : order.tier === "essential" ? "1.5 hr" : "4 hr") : "calendar"})`;
+    }
+
     modal.setAttribute("aria-hidden", "false");
     modal.classList.add("is-open");
   }
