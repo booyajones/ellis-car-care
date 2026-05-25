@@ -16,7 +16,7 @@ ADMIN  = os.environ.get("ELION_ADMIN_PASSWORD")
 if not BYPASS or not ADMIN:
     sys.exit("Set ELION_BYPASS_TOKEN and ELION_ADMIN_PASSWORD env vars before running this suite.\n"
              "Get values from: vercel env pull (or 1Password/credstore for production rotation).")
-BASE   = "https://ellis-car-care.vercel.app"
+BASE   = "https://elioncarcare.com"
 
 def http(path, method="GET", body=None, headers=None, timeout=20):
     h = {"content-type": "application/json"}

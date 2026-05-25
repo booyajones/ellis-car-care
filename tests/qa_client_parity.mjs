@@ -12,7 +12,7 @@ import fs from "node:fs";
 import path from "node:path";
 
 const ROOT = process.cwd();
-const BASE = "https://ellis-car-care.vercel.app";
+const BASE = "https://elioncarcare.com";
 const BYPASS = process.env.ELION_BYPASS_TOKEN || process.env.ELLIS_BYPASS_TOKEN;
 if (!BYPASS) { console.error("Set ELION_BYPASS_TOKEN before running this test."); process.exit(1); }
 
