@@ -1,5 +1,5 @@
 /* ----------------------------------------------------------
-   Ellis Car Care, app.js
+   Elion Car Care, app.js
    Reads CONFIG (from config.js) and renders the dynamic bits.
    Static JSON-LD lives in index.html; the OfferCatalog is appended
    here so prices stay in sync with config.
@@ -20,7 +20,7 @@
 
   /* 1. Wire SMS / tel / mail links */
 
-  const smsBody = `Hi Ellis, I'd like to book a detail. My car is a ____. I'm in Burns Park / 48104. Available: ____.`;
+  const smsBody = `Hi Elion, I'd like to book a detail. My car is a ____. I'm in Burns Park / 48104. Available: ____.`;
   const smsHref = `sms:${cfg.contact.phoneHref}?&body=${enc(smsBody)}`;
   $$("[data-sms-link]").forEach((a) => a.setAttribute("href", smsHref));
   $$("[data-tel-link]").forEach((a) => a.setAttribute("href", `tel:${cfg.contact.phoneHref}`));
@@ -45,7 +45,7 @@
       const card = document.createElement("article");
       card.className = "bundle" + (b.popular ? " popular" : "");
       const popularBadge = b.popular ? '<span class="popular-badge">Most popular</span>' : "";
-      const bundleSmsBody = `Hi Ellis, I'd like to book the ${b.name} ($${b.price}). My car is a ____. I'm in ____.`;
+      const bundleSmsBody = `Hi Elion, I'd like to book the ${b.name} ($${b.price}). My car is a ____. I'm in ____.`;
       const bundleSms = `sms:${cfg.contact.phoneHref}?&body=${enc(bundleSmsBody)}`;
       const summary = b.summary ? `<p class="bundle-summary">${b.summary}</p>` : "";
       card.innerHTML = `
@@ -142,7 +142,7 @@
           `Services: ${services}`,
           `Notes: ${fd.get("notes") || ""}`,
         ].join("\n");
-        const subject = "Ellis Car Care booking";
+        const subject = "Elion Car Care booking";
         const mailto = `mailto:${cfg.contact.email}?subject=${enc(subject)}&body=${enc(lines)}`;
 
         // Trigger mailto via a hidden anchor click. This works on iOS Safari
@@ -162,8 +162,8 @@
         confirm.setAttribute("aria-live", "polite");
         confirm.innerHTML = `
           <p class="eyebrow">Sent</p>
-          <h3 class="form-title">Got it. Ellis will text you back.</h3>
-          <p class="book-confirm-lead">Usually inside an hour. If your mail app didn't open, text Ellis directly:</p>
+          <h3 class="form-title">Got it. Elion will text you back.</h3>
+          <p class="book-confirm-lead">Usually inside an hour. If your mail app didn't open, text Elion directly:</p>
           <a class="btn btn-primary btn-lg" href="sms:${cfg.contact.phoneHref}">Text ${cfg.contact.phone}</a>
         `;
         form.replaceWith(confirm);

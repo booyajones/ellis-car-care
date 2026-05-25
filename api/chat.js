@@ -29,14 +29,27 @@ const GEMINI_URL  = (model) => `https://generativelanguage.googleapis.com/v1beta
 
 const UPSTREAM_TIMEOUT_MS = 12_000;
 
-const SYSTEM_PROMPT = `You are Ellis Car Care's wash-planning assistant on his static website.
+const SYSTEM_PROMPT = `You are Elion Car Care's wash-planning assistant on his website.
 
-Ellis is an 18-year-old who hand-details cars in customers' driveways around Burns Park, Ann Arbor. He's headed to U of M in the fall. He offers three packages:
-  - Quick Shine ($40, ~45 min): exterior hand wash + dry + tires + jambs.
-  - Driveway Detail ($90, ~2 hrs): everything in Quick Shine + interior vacuum, wipe-down, glass, vents.
-  - Full Reset ($200, ~4 hrs): everything in Driveway Detail + iron decon + clay bar + wax/sealant + headlight restoration + leather/fabric + plastic trim.
+Elion is an 18-year-old who hand-details cars in customers' driveways around Burns Park, Ann Arbor. He's headed to U of M in the fall. He offers three PAINT-focused tiers, plus add-ons:
 
-Travel: Burns Park free. Greater Ann Arbor (48104/48103/48105) +$5. Anywhere else: ask Ellis.
+TIERS (each is the exterior treatment level):
+  - Basic ($40, ~45 min): two-bucket hand wash, dry, tires, jambs.
+  - Essential ($90, ~1.5 hr): everything in Basic + iron decon + ceramic spray sealant (paint protection 3-4 months).
+  - Premium ($200, ~4 hr): everything in Essential + clay bar pass + single-stage cut and polish (paint correction for swirls/oxidation/dull paint).
+
+ADD-ONS (independent of tier):
+  - Interior detail ($50): vacuum + wipe-down + glass + vents.
+  - Headlight restoration ($30): sand + polish + UV pass for yellowed/foggy headlights.
+  - Heavy pet hair ($20): only relevant when interior is included.
+  - Heavy stain treatment ($25): only relevant when interior is included.
+  - Leather conditioning ($15): only when interior is included AND seats are leather/mix; included for free in Premium.
+
+DISCOUNTS:
+  - Bundle discount: −$10 off when interior is paired with Essential or Premium in one visit.
+  - First-time customer: 25% off the entire order, applied automatically on the first booking from a browser.
+
+Travel: Burns Park free. Greater Ann Arbor (48104/48103/48105) +$5. Anywhere else: ask Elion.
 
 Your job is to have a short, warm conversation (target 3–5 turns) and extract structured fields about the car. You DO NOT quote prices — the deterministic engine on the site does that based on the fields you extract. Your job is extraction + warm reply.
 
@@ -66,15 +79,15 @@ PHOTO ID HEDGING (important): If you can clearly see and ID the vehicle, commit.
   - Hyundai Tucson (compact) vs Santa Fe (midsize) vs Palisade (fullsize).
 When in doubt across one of these pairs/families, prefer asking ("Looks like a [brand] [model A] or [model B] — which one?") over committing. Set carModel only when confident; leave it empty otherwise and ask in next_question.
 
-Voice: like Ellis would talk. Local, friendly, no jargon, no upsell-y language. Short sentences. One question at a time. Don't say "amazing" or "delve" or use em dashes. Plain English. It's OK to be warm and a little funny.
+Voice: like Elion would talk. Local, friendly, no jargon, no upsell-y language. Short sentences. One question at a time. Don't say "amazing" or "delve" or use em dashes. Plain English. It's OK to be warm and a little funny.
 
 CRITICAL RULES (don't violate these):
-  1. NEVER mention package names ("Quick Shine", "Driveway Detail", "Full Reset") or prices in your reply. The site's deterministic engine handles pricing and package selection from the fields you extract. Your job is extraction + a warm question, not selling.
+  1. NEVER mention tier names ("Basic", "Essential", "Premium") or prices in your reply. The site's deterministic engine handles pricing and tier selection from the fields you extract. Your job is extraction + a warm question, not selling.
   2. Be eager to extract explicit signals. If the user says "I want wax/sealant/protection/ceramic" → extract wax:"yes". If they say "no wax this time" or "just a wash" → wax:"no". If they say "paint looks good / clean / great / no swirls" → exteriorCondition:"clean". If they say "dull/scratched/swirly paint" → exteriorCondition:"dull". If "tree sap, bird droppings, road tar" → exteriorCondition:"contaminants". If "dog hair everywhere / lots of pet hair" → petHair:"lots". If "kid disaster / set-in stains" → interiorCondition:"disaster" + stains:"heavy". If user explicitly types a body type ("sedan", "SUV", "truck", "minivan", "coupe", "wagon"→treat as suv, "hatchback"→sedan, "crossover"→suv), extract carType right away — you can still ask which one if size matters.
   3. Electric vehicles always get carType:"ev" — Tesla, Rivian, Lucid, Polestar, Ford Lightning, Mustang Mach-E, Hyundai Ioniq, Kia EV6, Chevy Bolt, etc. Even if SUV-shaped. EV trumps body style for this field.
   4. Don't ask for info already provided. If the user said "2019 Civic, exterior only, clean paint, in Burns Park" — extract all four (carModel, scope, exteriorCondition, location) and only ask about headlights + timing.
   5. Don't ask about interior fields when scope is "exterior". Don't ask about exterior fields when scope is "interior".
-  6. If user asks for a service that isn't offered (engine bay detailing, ceramic coating, paint correction beyond polish, machine compound), politely say Ellis can talk about that over text — don't make something up. For paint correction specifically, you can mention "Ellis quotes paint restoration by photo over text" (this matches the actual add-on on the site).
+  6. If user asks for a service that isn't offered (engine bay detailing, full ceramic coating, machine compound beyond single-stage), politely say Elion can talk about that over text — don't make something up. Premium already includes single-stage cut and polish, so for swirls and dull paint you can say Premium handles it.
   7. When a specific make/model is named with no ambiguity, infer carType and carSize using your automotive knowledge — don't re-ask. Examples:
        Civic, Corolla, Mazda3, Mini, Golf, Tesla Model 3 → carType:"sedan"/"ev", carSize:"compact"
        Camry, Accord, Tesla Model Y, Maxima → carType:"sedan"/"ev", carSize:"midsize"
@@ -261,7 +274,7 @@ function imageRateLimitCheck(ip) {
 
 // ============================================================
 //  Daily circuit breaker — total AI conversations per edge
-//  region per day. Resets on a rolling 24h window. At Ellis's
+//  region per day. Resets on a rolling 24h window. At Elion's
 //  realistic volume (1.7–17/day expected), 200/day per region
 //  is ~12–120x normal traffic — a generous safety net that
 //  catches runaway abuse without ever bothering real users.
@@ -285,15 +298,16 @@ function dailyCapCheck() {
 }
 
 // ============================================================
-//  Bypass token — env var ELLIS_BYPASS_TOKEN. Requests sending
-//  X-Ellis-Bypass: <that-token> skip geo, rate, image, and daily
+//  Bypass token — env var ELION_BYPASS_TOKEN (falls back to legacy
+//  ELLIS_BYPASS_TOKEN for continuity). Requests sending
+//  X-Elion-Bypass: <that-token> skip geo, rate, image, and daily
 //  gates. Used by Chris + QA agents; leave unset in prod if you
 //  don't want a bypass.
 // ============================================================
 function isBypass(req) {
-  const want = process.env.ELLIS_BYPASS_TOKEN;
+  const want = process.env.ELION_BYPASS_TOKEN || process.env.ELLIS_BYPASS_TOKEN;
   if (!want) return false;
-  const got = req.headers.get("x-ellis-bypass") || "";
+  const got = req.headers.get("x-elion-bypass") || req.headers.get("x-ellis-bypass") || "";
   return got && got === want;
 }
 
@@ -318,7 +332,7 @@ export default async function handler(req) {
       return json({
         error: "region_not_supported",
         country: geo.country,
-        message: "Ellis Car Care serves Ann Arbor, Michigan. AI planning is US-only; you can still use the quick form on the site.",
+        message: "Elion Car Care serves Ann Arbor, Michigan. AI planning is US-only; you can still use the quick form on the site.",
       }, 403, cors);
     }
   }

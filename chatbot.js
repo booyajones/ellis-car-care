@@ -1,5 +1,5 @@
 /* ============================================================
-   Ellis Car Care — Wash Planner Chatbot
+   Elion Car Care — Wash Planner Chatbot
    ------------------------------------------------------------
    A guided, deterministic chat assistant that asks a few
    questions about the car, recommends the right package +
@@ -22,37 +22,58 @@
 
   const PHONE_HREF = "+16282520740";
 
-  // ---- Pricing & rules (kept in sync with config.js) ----
+  // ---- Pricing & rules (Elion Car Care, v8 tier model) ----
+  // Tiers are PAINT-focused. Interior is a separate add-on, independent
+  // of which tier the customer picked. Bundle discount applies when a
+  // customer pairs interior detail with any exterior tier (since they're
+  // in one visit, not two).
   const PRICES = {
-    quickShine: 40,
-    drivewayDetail: 90,
-    fullReset: 200,
+    basic:     40,    // wash only
+    essential: 90,    // wash + ceramic seal
+    premium:  200,    // wash + ceramic seal + cut and polish
   };
 
   const ADDONS = {
-    headlightRestore: { id: "headlight", name: "Headlight restoration", price: 30, included: ["fullReset"] },
-    petHair:          { id: "pethair",   name: "Heavy pet hair removal", price: 20, included: [] },
-    heavyStain:       { id: "stain",     name: "Heavy stain treatment",  price: 25, included: [] },
-    interiorShampoo:  { id: "shampoo",   name: "Carpet/seat shampoo",    price: 35, included: [] },
-    leatherCondition: { id: "leather",   name: "Leather conditioning",   price: 15, included: ["fullReset"] },
-    paintCorrection:  { id: "paint",     name: "Paint restoration",      price: null, quoted: true, included: [] },
-    waxSealant:       { id: "wax",       name: "Hand wax / ceramic spray", price: 25, included: ["fullReset"] },
+    interior:    { id: "interior", name: "Interior detail (vacuum + wipe + glass)", price: 50, included: [] },
+    headlight:   { id: "headlight", name: "Headlight restoration",                  price: 30, included: [] },
+    petHair:     { id: "pethair",   name: "Heavy pet hair removal",                 price: 20, included: [], requires: "interior" },
+    heavyStain:  { id: "stain",     name: "Heavy stain treatment",                  price: 25, included: [], requires: "interior" },
+    leather:     { id: "leather",   name: "Leather conditioning",                   price: 15, included: ["premium"], requires: "interior" },
   };
 
   const PACKAGE_LABEL = {
-    quickShine: "Quick Shine",
-    drivewayDetail: "Driveway Detail",
-    fullReset: "Full Reset",
+    basic:     "Basic",
+    essential: "Essential",
+    premium:   "Premium",
   };
 
   const PACKAGE_TIME = {
-    quickShine: "about 45 minutes",
-    drivewayDetail: "about 2 hours",
-    fullReset: "about 4 hours",
+    basic:     "about 45 minutes",
+    essential: "about 1.5 hours",
+    premium:   "about 4 hours",
   };
 
+  const PACKAGE_DESC = {
+    basic:     "hand wash",
+    essential: "wash + ceramic seal",
+    premium:   "wash + seal + cut and polish",
+  };
+
+  // ---- First-time discount tracking ----
+  const FIRSTTIME_KEY = "elion_firsttime_used";
+  function isFirstTimeBrowser() {
+    try { return !localStorage.getItem(FIRSTTIME_KEY); }
+    catch { return true; }
+  }
+  function markFirstTimeUsed() {
+    try { localStorage.setItem(FIRSTTIME_KEY, new Date().toISOString()); }
+    catch {}
+  }
+
   // ---- State ----
-  const STATE_KEY = "ellis_chat_v1";
+  // Bumped to v2 so existing sessions don't try to read the old
+  // quickShine/drivewayDetail/fullReset state shape.
+  const STATE_KEY = "elion_chat_v2";
   function loadState() {
     try {
       const raw = sessionStorage.getItem(STATE_KEY);
@@ -88,7 +109,7 @@
     intro: {
       id: "intro",
       prompt: () => [
-        "Hey! I'm Ellis's wash-planning assistant.",
+        "Hey! I'm Elion's wash-planning assistant.",
         "Easiest way: snap a photo of your car or just tell me about it in plain English. I'll match you to the right wash.",
       ],
       options: [
@@ -103,7 +124,7 @@
       isAiMode: true,
       prompt: () => [
         "Cool. Drop a photo of your car (front + side is great) or just type — make, condition, what you want. I'll figure out the rest.",
-        "Heads up: photos are sent to an AI to read the car (paint, headlights, etc.) and aren't stored. Ellis only sees the summary you send him by text.",
+        "Heads up: photos are sent to an AI to read the car (paint, headlights, etc.) and aren't stored. Elion only sees the summary you send him by text.",
       ],
     },
 
@@ -111,14 +132,16 @@
       id: "skipToPrices",
       prompt: () => [
         "All good. Here's the lineup:",
-        "• Quick Shine — $40, about 45 min. Exterior only.",
-        "• Driveway Detail — $90, about 2 hrs. Inside and out.",
-        "• Full Reset — $200, about 4 hrs. Wax, clay bar, headlight restore, leather/fabric, plastic trim.",
+        "• Basic — $40, about 45 min. Hand wash.",
+        "• Essential — $90, about 1.5 hrs. Wash + ceramic seal.",
+        "• Premium — $200, about 4 hrs. Wash + seal + cut and polish.",
+        "• Add-ons: Interior detail $50 · Headlight restoration $30.",
+        "• First-time customer: 25% off your first order.",
         "Burns Park is free travel. Greater Ann Arbor (48104/48103/48105) adds $5.",
       ],
       options: [
         { label: "Help me pick", value: "back", next: () => "carType" },
-        { label: "Text Ellis now", value: "textnow", next: () => "doneTextNow" },
+        { label: "Text Elion now", value: "textnow", next: () => "doneTextNow" },
       ],
     },
 
@@ -293,9 +316,8 @@
       id: "waxExplain",
       prompt: () => [
         "Quick rundown:",
-        "• Hand wax — classic carnauba, deep glossy look, lasts 6–8 weeks.",
-        "• Ceramic spray sealant — slicker finish, better water beading, lasts 3–4 months.",
-        "Either is included in Full Reset, or I can add it on for $25.",
+        "• Ceramic spray sealant — slicker finish, beads water, lasts 3–4 months.",
+        "Ceramic seal is included in Essential ($90) and Premium ($200).",
       ],
       options: [
         { label: "Add wax/sealant — yes", value: "yes", next: () => "headlights" },
@@ -325,7 +347,7 @@
         { label: "This week", value: "thisweek" },
         { label: "This weekend", value: "weekend" },
         { label: "Next week", value: "nextweek" },
-        { label: "Flexible — whenever Ellis can", value: "flexible" },
+        { label: "Flexible — whenever Elion can", value: "flexible" },
       ],
       next: () => "location",
       saveTo: "timing",
@@ -345,7 +367,7 @@
 
     notes: {
       id: "notes",
-      prompt: () => "Anything else Ellis should know? (Optional.)",
+      prompt: () => "Anything else Elion should know? (Optional.)",
       input: { placeholder: "e.g. coffee spill on driver seat, hatch needs special care…", key: "notes" },
       options: [
         { label: "Nope, that's it — show me the plan", value: "skip", next: () => "recommend" },
@@ -362,138 +384,144 @@
 
     doneTextNow: {
       id: "doneTextNow",
-      prompt: () => "Opening a text to Ellis…",
+      prompt: () => "Opening a text to Elion…",
       isTerminal: true,
-      onEnter: () => openSms("Hi Ellis, can you help me plan a wash? I came in through the site."),
+      onEnter: () => openSms("Hi Elion, can you help me plan a wash? I came in through the site."),
     },
   };
 
-  // ---- Recommendation engine ----
+  // ---- Recommendation engine (Elion v8) ----
+  // Tier choice is PAINT-driven. Interior is an independent add-on.
+  // a = answers; pkgOverride = optional package id to force (alt screen).
   function recommend(a, pkgOverride) {
-    // a = answers; pkgOverride = optional package id to force (used when user picks alternate)
     const scope = a.scope || "both";
-    let pkg;
-    if (scope === "exterior") pkg = "quickShine";
-    else pkg = "drivewayDetail"; // both / interior / unsure
+    const wantsInterior = scope === "interior" || scope === "both" || scope === "unsure" || !!a._addInterior;
 
-    // Gate signals by scope — interior-only shouldn't read exterior answers, etc.
+    // Paint signals (gated by whether exterior is in scope at all)
     const exteriorInScope = scope !== "interior";
-    const interiorInScope = scope !== "exterior";
-
-    const wantsWax     = exteriorInScope && a.wax === "yes";
+    const wantsSeal    = exteriorInScope && a.wax === "yes";           // "wax" field == wants protection
     const dullPaint    = exteriorInScope && a.exteriorCondition === "dull";
+    const swirls       = exteriorInScope && a.exteriorCondition === "swirls";
     const contaminants = exteriorInScope && a.exteriorCondition === "contaminants";
     const foggyHL      = exteriorInScope && a.headlights === "foggy";
-    const heavyStains  = interiorInScope && a.stains === "heavy";
-    const lotsPetHair  = interiorInScope && a.petHair === "lots";
-    const disasterInt  = interiorInScope && a.interiorCondition === "disaster";
 
-    // Full Reset bump rules (any one triggers, because Full Reset is the only
-    // package that includes the required service):
-    //   1. Disaster interior — needs deeper cleaning than Driveway Detail
-    //   2. Contaminants on paint (tree sap/bird/tar) — needs clay bar
-    //   3. Dull paint AND wants wax — needs prep + correction territory
-    //   4. Two or more severe signals in different categories
-    let goFullReset = false;
-    if (disasterInt) goFullReset = true;
-    if (contaminants) goFullReset = true;
-    if (dullPaint && wantsWax) goFullReset = true;
-    const severeCount = [dullPaint, contaminants, disasterInt, (heavyStains && lotsPetHair)].filter(Boolean).length;
-    if (severeCount >= 2) goFullReset = true;
+    // Interior signals (only meaningful if interior is in scope)
+    const heavyStains  = wantsInterior && a.stains === "heavy";
+    const lotsPetHair  = wantsInterior && a.petHair === "lots";
+    const disasterInt  = wantsInterior && a.interiorCondition === "disaster";
 
-    if (goFullReset) pkg = "fullReset";
+    // ---- Tier selection (paint-focused) ----
+    // basic     → just wash (default when nothing exterior-y is going on)
+    // essential → wash + ceramic seal (default when user wants protection
+    //             OR has minor swirls/water spots that the seal helps hide)
+    // premium   → wash + seal + cut and polish (required for dull paint
+    //             or contaminants like tree sap; correction territory)
+    let pkg = "basic";
+    if (dullPaint || contaminants) {
+      pkg = "premium";  // needs the cut + polish (and clay)
+    } else if (wantsSeal || swirls) {
+      pkg = "essential";  // seal protects, minor swirls hide under it
+    }
 
-    // Honor explicit user override (e.g. they picked "Switch to Driveway Detail" on the alt screen)
+    // Honor explicit user override (alt-screen "Switch to X" button)
     if (pkgOverride && PRICES[pkgOverride]) pkg = pkgOverride;
 
-    // Add-ons (only when not already Full Reset — FR includes most of these)
+    // ---- Add-ons ----
     const addons = [];
     const reasons = [];
 
-    if (pkg !== "fullReset") {
-      if (foggyHL) {
-        addons.push({ ...ADDONS.headlightRestore });
-        reasons.push("Foggy headlights — added the $30 restoration pass.");
-      }
-      if (wantsWax) {
-        addons.push({ ...ADDONS.waxSealant });
-        reasons.push("You wanted wax/sealant — added the $25 hand wax.");
-      }
-      if (lotsPetHair) {
-        addons.push({ ...ADDONS.petHair });
-        reasons.push("Heavy pet hair takes extra time — added $20.");
-      }
-      if (heavyStains) {
-        addons.push({ ...ADDONS.heavyStain });
-        reasons.push("Heavy stains need spot treatment — added $25.");
-      }
-      if (dullPaint && !wantsWax) {
-        // Soft suggestion only — paint correction is quoted by photo, not auto-added
-        reasons.push("Paint looks dull — Ellis can quote paint correction by photo if you want it brought back further.");
-      }
-    } else {
-      // Full Reset rationale
-      if (disasterInt) reasons.push("Disaster-zone interior — Full Reset has the depth this needs.");
-      if (contaminants) reasons.push("Tree sap or bird drops need a clay bar pass, which is included in Full Reset.");
-      if (dullPaint && wantsWax) reasons.push("Dull paint plus wax means prep + sealant — Full Reset bundles both.");
-      if (foggyHL) reasons.push("Full Reset includes the headlight restoration at no extra charge.");
-      if (heavyStains && lotsPetHair) reasons.push("Heavy stains plus pet hair — Full Reset's deep interior handles it.");
+    // Interior detail — the big one. Auto-added when scope includes interior,
+    // OR when user explicitly opted in via _addInterior flag.
+    if (wantsInterior) {
+      addons.push({ ...ADDONS.interior });
+      if (scope === "interior") reasons.push("Interior detail is the focus.");
     }
 
-    // Size uplift — full-size and heavy-duty get +15-20% time, occasionally a small surcharge
+    // Headlight restoration — independent of tier
+    if (foggyHL) {
+      addons.push({ ...ADDONS.headlight });
+      reasons.push("Foggy headlights — added the $30 restoration pass.");
+    }
+
+    // Interior-dependent add-ons (only if interior is being done)
+    if (wantsInterior && lotsPetHair) {
+      addons.push({ ...ADDONS.petHair });
+      reasons.push("Heavy pet hair takes extra time — added $20.");
+    }
+    if (wantsInterior && heavyStains) {
+      addons.push({ ...ADDONS.heavyStain });
+      reasons.push("Heavy stains need spot treatment — added $25.");
+    }
+    if (wantsInterior && (a.seats === "leather" || a.seats === "mix") && pkg !== "premium") {
+      // Leather conditioning is included in Premium, otherwise it's a $15 add
+      addons.push({ ...ADDONS.leather });
+      reasons.push("Leather seats — added a $15 conditioning pass.");
+    }
+
+    // Soft suggestion when interior is rough but not yet disaster
+    if (wantsInterior && disasterInt) {
+      reasons.push("Disaster-zone interior — Elion will spend extra time, no surcharge unless it's truly hazardous.");
+    }
+
+    // ---- Size note (timing only, no upcharge) ----
     let sizeNote = "";
-    if (a.carSize === "fullsize" && pkg === "quickShine") {
-      sizeNote = " (allow about an hour for full-size)";
-    } else if (a.carSize === "fullsize" && pkg === "drivewayDetail") {
-      sizeNote = " (about 2.5 hours on a full-size)";
-    } else if (a.carSize === "fullsize" && pkg === "fullReset") {
-      sizeNote = " (about 4.5–5 hours on a full-size)";
+    if (a.carSize === "fullsize") {
+      if (pkg === "basic") sizeNote = " (allow about an hour for full-size)";
+      else if (pkg === "essential") sizeNote = " (about 2 hours on a full-size)";
+      else if (pkg === "premium") sizeNote = " (about 4.5–5 hours on a full-size)";
     }
 
-    // Total
+    // ---- Pricing ----
     const base = PRICES[pkg];
-    const addonTotal = addons.reduce((sum, a) => sum + (a.price || 0), 0);
+    const addonTotal = addons.reduce((sum, ad) => sum + (ad.price || 0), 0);
     const travel = a.location === "annarbor" ? 5 : 0;
-    const travelNote = a.location === "annarbor" ? " (+$5 travel)" : (a.location === "nearby" ? " (Ellis will confirm travel after you text)" : "");
+    const travelNote = a.location === "annarbor"
+      ? " (+$5 travel)"
+      : (a.location === "nearby" ? " (Elion will confirm travel after you book)" : "");
 
-    // Bundle discount: if the user is bundling exterior + interior in one visit
-    // (Driveway Detail or Full Reset, NOT just Quick Shine), apply Ellis's
-    // bundle discount. Configurable in config.js (CONFIG.bundleDiscount); default $10.
+    // Bundle discount: applies when the customer pairs interior with any
+    // paint-treating tier (essential or premium) in one visit. Configurable
+    // via CONFIG.bundleDiscount; default $10.
     const bundleDiscountAmount = (window.CONFIG && Number(window.CONFIG.bundleDiscount)) || 10;
-    let bundleDiscount = 0;
-    const bundleApplied = !!a._bundleApplied && (pkg === "drivewayDetail" || pkg === "fullReset");
-    if (bundleApplied) bundleDiscount = bundleDiscountAmount;
+    const bundleApplied = wantsInterior && (pkg === "essential" || pkg === "premium");
+    const bundleDiscount = bundleApplied ? bundleDiscountAmount : 0;
 
-    const total = base + addonTotal + travel - bundleDiscount;
+    // First-time customer discount — % off the subtotal. Tracked in
+    // localStorage; once a customer confirms an order, they don't see this
+    // again. Configurable via CONFIG.firstTimeDiscount; default 25%.
+    const firstTimeRate = (window.CONFIG && Number(window.CONFIG.firstTimeDiscount)) || 0;
+    const isFirstTime = firstTimeRate > 0 && isFirstTimeBrowser();
+    const preFirstTimeTotal = base + addonTotal + travel - bundleDiscount;
+    const firstTimeDiscount = isFirstTime ? Math.round(preFirstTimeTotal * firstTimeRate) : 0;
+    const total = preFirstTimeTotal - firstTimeDiscount;
 
-    // If "interior only" the exterior wash is still done (it's bundled in Driveway Detail)
+    // ---- Interior-add upsell (only when exterior-only and customer hasn't already added it) ----
+    let bundleOffer = null;
+    if (!wantsInterior && (pkg === "essential" || pkg === "premium" || pkg === "basic")) {
+      // Cost of adding interior post-hoc: interior $50 minus bundle discount
+      // (assuming the tier becomes a "paint+interior" combo, qualifying for the bundle)
+      const intCost = ADDONS.interior.price;
+      // Bundle discount only fires when tier is essential/premium
+      const qualifiesForBundle = pkg === "essential" || pkg === "premium";
+      const effectiveCost = qualifiesForBundle ? intCost - bundleDiscountAmount : intCost;
+      bundleOffer = {
+        addonId: "interior",
+        addonName: ADDONS.interior.name,
+        addonCost: intCost,
+        effectiveCost,
+        savings: qualifiesForBundle ? bundleDiscountAmount : 0,
+      };
+    }
+
     let scopeNote = "";
     if (scope === "interior") {
-      scopeNote = "Driveway Detail is the closest fit — interior is the focus, but the exterior wash is included at no extra cost.";
-    }
-
-    // Bundle offer — only surfaces when user picked exterior-only AND
-    // hasn't already accepted a bundle. The offer is an inline upgrade
-    // path to Driveway Detail (which adds interior) with a real discount.
-    let bundleOffer = null;
-    const userScopeWasExteriorOnly = a.scope === "exterior";
-    if (pkg === "quickShine" && userScopeWasExteriorOnly && !bundleApplied) {
-      const ddBase = PRICES.drivewayDetail;
-      const ddBundled = ddBase - bundleDiscountAmount;
-      const upgradeCost = ddBundled - base; // what they'd pay on top of Quick Shine
-      bundleOffer = {
-        upgradeTo: "drivewayDetail",
-        upgradeLabel: PACKAGE_LABEL.drivewayDetail,
-        normalPrice: ddBase,
-        bundlePrice: ddBundled,
-        savings: bundleDiscountAmount,
-        upgradeCost,
-      };
+      scopeNote = "Interior-focused job — exterior gets a courtesy wipe-down but no full wash unless you add a tier.";
     }
 
     return {
       pkg,
       pkgLabel: PACKAGE_LABEL[pkg],
+      pkgDesc: PACKAGE_DESC[pkg],
       pkgTime: PACKAGE_TIME[pkg] + sizeNote,
       base,
       addons,
@@ -503,9 +531,14 @@
       bundleApplied,
       bundleDiscount,
       bundleOffer,
+      isFirstTime,
+      firstTimeDiscount,
+      firstTimeRatePct: Math.round(firstTimeRate * 100),
+      preFirstTimeTotal,
       total,
       reasons,
       scopeNote,
+      wantsInterior,
     };
   }
 
@@ -515,7 +548,7 @@
     saveState(state);
 
     const lines = [];
-    lines.push(`Based on your answers, I'd recommend **${rec.pkgLabel}** — $${rec.base}.`);
+    lines.push(`Based on your answers, I'd recommend **${rec.pkgLabel}** (${rec.pkgDesc}) — $${rec.base}.`);
     lines.push(`Time: ${rec.pkgTime}.`);
     if (rec.scopeNote) lines.push(rec.scopeNote);
 
@@ -543,7 +576,12 @@
 
     if (rec.bundleApplied && rec.bundleDiscount > 0) {
       lines.push("");
-      lines.push(`Bundle discount: **−$${rec.bundleDiscount}** (interior + exterior together)`);
+      lines.push(`Bundle discount: **−$${rec.bundleDiscount}** (interior + tier together)`);
+    }
+
+    if (rec.isFirstTime && rec.firstTimeDiscount > 0) {
+      lines.push("");
+      lines.push(`First-time customer: **${rec.firstTimeRatePct}% off** (−$${rec.firstTimeDiscount}) — applied once per browser.`);
     }
 
     lines.push("");
@@ -551,12 +589,16 @@
     lines.push("");
 
     if (rec.bundleOffer) {
-      // Exterior-only path — pitch the interior add-on with a real discount
-      lines.push(`Want me to do the inside too? You can bundle interior detail for **+$${rec.bundleOffer.upgradeCost}** (saves $${rec.bundleOffer.savings} vs. booking it later). Tap the button below.`);
+      // Exterior-only path — pitch the interior add-on
+      const off = rec.bundleOffer;
+      const savingsLine = off.savings > 0
+        ? ` (saves $${off.savings} when bundled with your tier)`
+        : "";
+      lines.push(`Want the inside too? Add interior detail for **+$${off.effectiveCost}**${savingsLine}. Tap the button below.`);
       lines.push("");
     }
 
-    lines.push("Sound good? Tap below to send the whole plan to Ellis as a text. He'll confirm timing.");
+    lines.push("Sound good? Tap below to send the whole plan to Elion as a text. He'll confirm timing.");
 
     return lines;
   }
@@ -573,12 +615,12 @@
     const carDesc = carDescParts.join(" ") || "—";
 
     const lines = [];
-    lines.push("Hi Ellis! I planned a wash on your site.");
+    lines.push("Hi Elion! I planned a wash on your site.");
     lines.push("");
     lines.push(`Car: ${carDesc}`);
     lines.push(`What I need: ${prettyScope(a.scope)}`);
 
-    if (a.scope !== "exterior") {
+    if (rec.wantsInterior) {
       const intParts = [];
       if (a.interiorCondition) intParts.push(prettyInteriorCondition(a.interiorCondition));
       if (a.petHair && a.petHair !== "none") intParts.push(`${prettyPetHair(a.petHair)} pet hair`);
@@ -590,7 +632,7 @@
     if (a.scope !== "interior") {
       const extParts = [];
       if (a.exteriorCondition) extParts.push(prettyExteriorCondition(a.exteriorCondition));
-      if (a.wax === "yes") extParts.push("wants wax/sealant");
+      if (a.wax === "yes") extParts.push("wants ceramic seal");
       if (a.headlights && a.headlights !== "clear") extParts.push(`headlights: ${prettyHeadlights(a.headlights)}`);
       if (extParts.length) lines.push(`Exterior: ${extParts.join(", ")}`);
     }
@@ -604,7 +646,7 @@
     }
 
     lines.push("");
-    lines.push(`Recommended: ${rec.pkgLabel} — $${rec.base}`);
+    lines.push(`Recommended: ${rec.pkgLabel} (${rec.pkgDesc}) — $${rec.base}`);
     if (rec.addons.length) {
       rec.addons.forEach(ad => {
         lines.push(`+ ${ad.name}${ad.price ? ` ($${ad.price})` : ""}`);
@@ -612,7 +654,10 @@
     }
     if (rec.travel > 0) lines.push(`+ Travel ($${rec.travel})`);
     if (rec.bundleApplied && rec.bundleDiscount > 0) {
-      lines.push(`- Bundle discount (interior + exterior) (-$${rec.bundleDiscount})`);
+      lines.push(`- Bundle discount (-$${rec.bundleDiscount})`);
+    }
+    if (rec.isFirstTime && rec.firstTimeDiscount > 0) {
+      lines.push(`- First-time customer ${rec.firstTimeRatePct}% off (-$${rec.firstTimeDiscount})`);
     }
     lines.push(`Estimated total: $${rec.total}`);
     lines.push("");
@@ -634,7 +679,7 @@
     return s;
   }
   function prettyScope(s) {
-    return ({ exterior: "Exterior only", interior: "Interior focus", both: "Inside and out", unsure: "Both — open to Ellis's call" })[s] || "—";
+    return ({ exterior: "Exterior only", interior: "Interior focus", both: "Inside and out", unsure: "Both — open to Elion's call" })[s] || "—";
   }
   function prettyInteriorCondition(c) {
     return ({ clean: "pretty clean", normal: "normal daily-driver", rough: "rough", disaster: "disaster zone" })[c] || c;
@@ -713,7 +758,7 @@
           <span class="chat-avatar" aria-hidden="true">E</span>
           <div>
             <p id="chat-title" class="chat-title">Wash Planner</p>
-            <p class="chat-sub">Built by Ellis · Burns Park</p>
+            <p class="chat-sub">Built by Elion · Burns Park</p>
           </div>
         </div>
         <div class="chat-head-actions">
@@ -815,35 +860,35 @@
     if (step.isRecommendation) {
       const rec = state.recommendation;
 
-      // Bundle-accept button — shown first when an offer exists
+      // Interior-add button — shown when the recommendation doesn't yet include interior
       if (rec && rec.bundleOffer) {
         const offer = rec.bundleOffer;
+        const labelSavings = offer.savings > 0 ? `, save $${offer.savings}` : "";
         const bundleBtn = makeButton(
-          `Add interior (+$${offer.upgradeCost}, save $${offer.savings})`,
+          `Add interior (+$${offer.effectiveCost}${labelSavings})`,
           "is-primary",
           () => {
-            state.answers._packageOverride = offer.upgradeTo;
-            state.answers._bundleApplied = true;
-            // Default unset interior fields to "normal/none" so the engine
-            // doesn't accidentally bump to Full Reset on the bundled upgrade
+            state.answers._addInterior = true;
+            // Flip scope so the engine knows interior is in play
             if (!state.answers.scope || state.answers.scope === "exterior") {
               state.answers.scope = "both";
             }
+            // Safe defaults so engine doesn't over-trigger
             if (!state.answers.interiorCondition) state.answers.interiorCondition = "normal";
             if (!state.answers.petHair) state.answers.petHair = "none";
             if (!state.answers.stains) state.answers.stains = "none";
             saveState(state);
-            appendUserMessage(`Add interior — bundle it`);
+            appendUserMessage("Add interior detail");
             renderStep("recommend");
           }
         );
         controls.appendChild(bundleBtn);
       }
 
-      const sendBtn = makeButton("Text the plan to Ellis", rec && rec.bundleOffer ? "is-ghost" : "is-primary", () => {
+      const sendBtn = makeButton("Text the plan to Elion", rec && rec.bundleOffer ? "is-ghost" : "is-primary", () => {
         const body = buildSmsBody(state);
         openSms(body);
-        appendUserMessage("Sent the plan to Ellis ✓");
+        appendUserMessage("Sent the plan to Elion ✓");
         renderTerminal();
       });
       const altBtn = makeButton("See another option", "is-ghost", () => {
@@ -926,24 +971,25 @@
   }
 
   function renderAlternative() {
-    // Offer to bump to next tier up or down
+    // Walk the tier ladder (basic → essential → premium, or premium → essential → basic)
     const rec = state.recommendation;
     let altPkg;
-    if (rec.pkg === "quickShine") altPkg = "drivewayDetail";
-    else if (rec.pkg === "drivewayDetail") altPkg = "fullReset";
-    else altPkg = "drivewayDetail";
+    if (rec.pkg === "basic") altPkg = "essential";
+    else if (rec.pkg === "essential") altPkg = "premium";
+    else altPkg = "essential";
 
     const altBase = PRICES[altPkg];
     const altTime = PACKAGE_TIME[altPkg];
+    const altDesc = PACKAGE_DESC[altPkg];
     const lines = [
       `Here's another option:`,
-      `**${PACKAGE_LABEL[altPkg]}** — $${altBase}, ${altTime}.`,
-      altPkg === "fullReset"
-        ? "Full Reset includes clay bar, wax/sealant, headlight restore, leather/fabric, and plastic trim. The works."
-        : altPkg === "drivewayDetail"
-          ? "Driveway Detail adds the interior to a Quick Shine — vacuum, wipe-down, glass, vents."
-          : "Quick Shine is exterior-only — fast, two-bucket wash, dry, tires, jambs.",
-      "Want this one instead, or stick with the original recommendation?",
+      `**${PACKAGE_LABEL[altPkg]}** (${altDesc}) — $${altBase}, ${altTime}.`,
+      altPkg === "premium"
+        ? "Premium adds the cut and polish on top of the ceramic seal — the right call for dull paint or visible swirls."
+        : altPkg === "essential"
+          ? "Essential adds a ceramic seal — beads water, protects for 3–4 months. Big jump over just a wash."
+          : "Basic is a thorough hand wash without the seal — quick and clean.",
+      "Want this one instead, or stick with the original?",
     ];
     appendBotMessage(lines);
 
@@ -953,7 +999,6 @@
       // Re-run recommendation with the explicit package — re-derives correct add-ons for that tier
       state.recommendation = recommend(state.answers, altPkg);
       appendUserMessage(`Switch to ${PACKAGE_LABEL[altPkg]}`);
-      // Show updated plan inline
       const r = state.recommendation;
       const summary = [`Switched to **${r.pkgLabel}** — $${r.base}.`];
       if (r.addons.length) {
@@ -961,12 +1006,14 @@
         r.addons.forEach(a => summary.push(`• ${a.name} — ${a.price ? `$${a.price}` : "quoted"}`));
       }
       if (r.travel > 0) summary.push(`Travel: +$${r.travel}`);
+      if (r.bundleApplied && r.bundleDiscount > 0) summary.push(`Bundle: −$${r.bundleDiscount}`);
+      if (r.isFirstTime && r.firstTimeDiscount > 0) summary.push(`First-time ${r.firstTimeRatePct}% off: −$${r.firstTimeDiscount}`);
       summary.push(`Estimated total: **$${r.total}**`);
       appendBotMessage(summary);
-      const sendBtn = makeButton("Text the plan to Ellis", "is-primary", () => {
+      const sendBtn = makeButton("Text the plan to Elion", "is-primary", () => {
         const body = buildSmsBody(state);
         openSms(body);
-        appendUserMessage("Sent the plan to Ellis ✓");
+        appendUserMessage("Sent the plan to Elion ✓");
         renderTerminal();
       });
       controls.innerHTML = "";
@@ -983,7 +1030,9 @@
 
   function renderTerminal() {
     controls.innerHTML = "";
-    appendBotMessage(["You're set. If for any reason the text app didn't open, just call or text Ellis at (628) 252-0740."]);
+    appendBotMessage(["You're set. If for any reason the text app didn't open, just call or text Elion at (628) 252-0740. He marks orders done in his app, and you'll get a confirmation."]);
+    // Mark the first-time discount used — they've completed a booking
+    markFirstTimeUsed();
     controls.appendChild(makeButton("Close", "is-primary", () => closeChat()));
     controls.appendChild(makeButton("Plan another car", "is-ghost", () => restartChat()));
   }
@@ -1352,7 +1401,7 @@
     });
 
     // Expose for QA hooks
-    window.EllisChat = {
+    const api = {
       open: openChat,
       close: closeChat,
       restart: restartChat,
@@ -1363,7 +1412,12 @@
       _sendAi: sendAiMessage,
       _aiHistory: () => aiHistory,
       _setPendingImage: (img) => { aiPendingImage = img; },
+      _isFirstTime: isFirstTimeBrowser,
+      _clearFirstTime: () => { try { localStorage.removeItem(FIRSTTIME_KEY); } catch {} },
     };
+    window.ElionChat = api;
+    // Back-compat alias so old QA / test scripts still work
+    window.EllisChat = api;
   }
 
   if (document.readyState === "loading") {

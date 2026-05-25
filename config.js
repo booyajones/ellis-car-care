@@ -17,17 +17,17 @@
 
 const CONFIG = {
   business: {
-    name: "Ellis Car Care",
+    name: "Elion Car Care",
     tagline: "Hand-detailed, in your driveway. Ann Arbor.",
-    sub: "Wash, full detail, hand wax, paint restoration. Done by hand on your block, by Ellis.",
-    description: "Hand auto detailing in Ann Arbor, Michigan. Two-bucket wash, full detail, hand wax, and paint restoration, done in your driveway by Ellis, a local detailer based in Burns Park.",
+    sub: "Wash, ceramic seal, cut and polish. Done by hand on your block.",
+    description: "Hand auto detailing in Ann Arbor, Michigan. Two-bucket wash, ceramic sealant, paint correction, and headlight restoration, done in your driveway by Elion, a local detailer based in Burns Park.",
   },
 
   contact: {
     phone: "(628) 252-0740",
     phoneHref: "+16282520740",
-    email: "info@elliscarcare.com",
-    venmo: "@Ellis-CarCare",
+    email: "info@elioncarcare.com",
+    venmo: "@Elion-CarCare",
   },
 
   serviceArea: {
@@ -45,11 +45,11 @@ const CONFIG = {
 
   bundles: [
     {
-      id: "quick-shine",
-      name: "Quick Shine",
+      id: "basic",
+      name: "Basic",
       price: 40,
       time: "about 45 minutes",
-      summary: "Exterior only.",
+      summary: "Hand wash, done right.",
       includes: [
         "Two-bucket exterior hand wash, grit guards in both",
         "Hand dry with fresh microfiber, no water spots",
@@ -59,33 +59,31 @@ const CONFIG = {
       popular: false,
     },
     {
-      id: "driveway-detail",
-      name: "Driveway Detail",
+      id: "essential",
+      name: "Essential",
       price: 90,
-      time: "about 2 hours",
-      summary: "Inside and out.",
+      time: "about 1.5 hours",
+      summary: "Wash + ceramic seal. Paint stays protected for months.",
       includes: [
-        "Everything in Quick Shine",
-        "Interior vacuum: seats, floor, trunk, mats out",
-        "Dashboard, console, and door panel wipe-down",
-        "All glass cleaned, inside and out",
-        "Air vents and crevices detailed",
+        "Everything in Basic",
+        "Iron decontamination prep on the paint",
+        "Ceramic spray sealant — beads water, lasts 3-4 months",
+        "Plastic trim refreshed",
       ],
       popular: true,
     },
     {
-      id: "full-reset",
-      name: "Full Reset",
+      id: "premium",
+      name: "Premium",
       price: 200,
       time: "about 4 hours",
-      summary: "The works. Brings paint and interior back to life.",
+      summary: "Wash + ceramic seal + cut and polish. Brings paint back.",
       includes: [
-        "Everything in Driveway Detail",
-        "Iron decontamination and clay bar pass",
-        "Hand wax or ceramic spray sealant, your choice",
-        "Headlight clean and UV pass",
+        "Everything in Essential",
+        "Clay bar pass to remove embedded contaminants",
+        "Single-stage cut and polish for swirls, light scratches, oxidation",
+        "Interior deep clean: vacuum, wipe-down, glass, vents",
         "Leather conditioner or fabric protectant on seats",
-        "Plastic trim restored",
       ],
       popular: false,
     },
@@ -93,12 +91,16 @@ const CONFIG = {
 
   addons: [
     {
-      id: "paint-restoration",
-      name: "Paint Restoration",
-      price: null,
-      description: "Single-stage compound and polish for swirls, light scratches, and oxidation. Quoted by car. Send a photo and I'll come back with a number.",
+      id: "headlight-restoration",
+      name: "Headlight Restoration",
+      price: 30,
+      description: "Sand + polish + UV pass to bring yellowed or foggy headlights back to clear. Adds about 30 minutes.",
     },
   ],
+
+  // First-time customer discount. Applied automatically the first time a
+  // browser confirms an order (tracked in localStorage). Set to 0 to disable.
+  firstTimeDiscount: 0.25,
 
   // Process notes (used in the "Process" section).
   process: {
@@ -123,11 +125,11 @@ const CONFIG = {
     },
     {
       q: "How do I pay?",
-      a: "Cash, Venmo (@Ellis-CarCare), or Zelle. Pay after the job, when you're happy with how the car looks.",
+      a: "Cash, Venmo (@Elion-CarCare), or Zelle. Pay after the job, when you're happy with how the car looks.",
     },
     {
       q: "Do you need my keys?",
-      a: "Only for interior work (Driveway Detail or Full Reset). Leave them on the front seat or hand them off when I arrive.",
+      a: "Only if I'm doing interior work. Leave them on the front seat or hand them off when I arrive.",
     },
     {
       q: "What if I'm not home?",
@@ -156,10 +158,10 @@ const CONFIG = {
 
   referral: {
     headline: "Tell a neighbor.",
-    body: "Send a neighbor to Ellis Car Care. When they book, you both get $10 off your next wash.",
-    shareText: "Heads up, you should book Ellis Car Care for your car. He details by hand in your driveway. Local, careful, the work is good:",
+    body: "Send a neighbor to Elion Car Care. When they book, you both get $10 off your next wash.",
+    shareText: "Heads up, you should book Elion Car Care for your car. He details by hand in your driveway. Local, careful, the work is good:",
     // Empty string means "use the current page URL". Set this to a real domain
-    // (e.g. "https://elliscarcare.com") once the custom domain is live.
+    // (e.g. "https://elioncarcare.com") once the custom domain is live.
     shareUrl: "",
   },
 };
