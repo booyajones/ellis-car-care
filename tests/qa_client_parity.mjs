@@ -13,7 +13,8 @@ import path from "node:path";
 
 const ROOT = process.cwd();
 const BASE = "https://ellis-car-care.vercel.app";
-const BYPASS = "1a1b5ade9970aa8966497f8e11ed1b14c02f645235a6825b";
+const BYPASS = process.env.ELION_BYPASS_TOKEN || process.env.ELLIS_BYPASS_TOKEN;
+if (!BYPASS) { console.error("Set ELION_BYPASS_TOKEN before running this test."); process.exit(1); }
 
 // Load book.html
 const html = fs.readFileSync(path.join(ROOT, "book.html"), "utf8");
@@ -129,6 +130,24 @@ for (const c of cases) {
   if (ok) pass++;
   else { fail++; failures.push({ name: c.name, client: ct, server: st, breakdown: sr.full }); }
   console.log(`${ok ? "PASS" : "FAIL"}  ${c.name}  -- client $${ct}  server $${st}${ok ? "" : "  MISMATCH"}`);
+}
+
+// Teardown — delete every order this run created
+const ADMIN_PWD = process.env.ELION_ADMIN_PASSWORD;
+async function delById(id) {
+  if (!ADMIN_PWD || !id) return;
+  try { await fetch(BASE + `/api/orders?id=${encodeURIComponent(id)}`, { method: "DELETE", headers: { "x-elion-admin": ADMIN_PWD }}); } catch {}
+}
+const created = [];
+// We didn't save IDs — fetch and delete by created_at after our window
+if (ADMIN_PWD) {
+  try {
+    const r = await fetch(BASE + "/api/orders", { headers: { "x-elion-admin": ADMIN_PWD }});
+    const d = await r.json();
+    const recent = (d.orders || []).filter(o => o.name === "x");
+    for (const o of recent) await delById(o.id);
+    console.log(`Teardown: removed ${recent.length} stub orders`);
+  } catch {}
 }
 
 console.log(`\n=== ${pass}/${pass+fail} parity PASS ===`);

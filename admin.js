@@ -209,7 +209,8 @@
         method: "DELETE",
         headers: { "x-elion-admin": getToken() },
       });
-      return resp.ok;
+      // 200 = deleted, 404 = already gone (double-tap race) — both are success from UX standpoint
+      return resp.ok || resp.status === 404;
     } catch { return false; }
   }
 

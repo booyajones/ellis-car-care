@@ -15,9 +15,13 @@ import path from "node:path";
 
 const ROOT = process.cwd();
 const BASE = "https://ellis-car-care.vercel.app";
-const ADMIN_PWD = "d17ea0fa47c2677c34f0687041ed351f";
+const ADMIN_PWD = process.env.ELION_ADMIN_PASSWORD;
 const WRONG_PWD = "wrong";
-const BYPASS = "1a1b5ade9970aa8966497f8e11ed1b14c02f645235a6825b";
+const BYPASS    = process.env.ELION_BYPASS_TOKEN || process.env.ELLIS_BYPASS_TOKEN;
+if (!ADMIN_PWD || !BYPASS) {
+  console.error("Set ELION_ADMIN_PASSWORD and ELION_BYPASS_TOKEN before running this test.");
+  process.exit(1);
+}
 
 // First, plant an order with XSS-ish content to verify escaping on render.
 const xssName    = `<script>window.PWNED=1</script>Bad Actor`;
@@ -221,6 +225,19 @@ await new Promise(r => setTimeout(r, 200));
 check("logout reveals login pane", !$("#loginPane").hidden);
 check("logout hides dashboard", $("#dashboardPane").hidden);
 check("logout clears sessionStorage token", !window.sessionStorage.getItem("elion_admin_token"));
+
+// Teardown: clean up the planted XSS test order so it doesn't pollute the dashboard
+if (plantedId) {
+  try {
+    const delResp = await fetch(BASE + `/api/orders?id=${encodeURIComponent(plantedId)}`, {
+      method: "DELETE",
+      headers: { "x-elion-admin": ADMIN_PWD },
+    });
+    console.log(`Teardown: deleted planted order ${plantedId} (${delResp.status})`);
+  } catch (e) {
+    console.log(`Teardown: delete failed: ${e.message}`);
+  }
+}
 
 console.log(`\n=== ${pass}/${pass+fail} admin E2E PASS ===`);
 if (failures.length) {

@@ -12,7 +12,8 @@ import path from "node:path";
 
 const ROOT = process.cwd();
 const BASE = "https://ellis-car-care.vercel.app";
-const BYPASS = "1a1b5ade9970aa8966497f8e11ed1b14c02f645235a6825b";
+const BYPASS = process.env.ELION_BYPASS_TOKEN || process.env.ELLIS_BYPASS_TOKEN;
+if (!BYPASS) { console.error("Set ELION_BYPASS_TOKEN before running this test."); process.exit(1); }
 
 const html = fs.readFileSync(path.join(ROOT, "book.html"), "utf8");
 const dom = new JSDOM(html, {
@@ -139,6 +140,20 @@ if (opened) {
   $(".confirm-close").click();
   check("Modal closes on X click",
     !$("#confirmModal").classList.contains("is-open"));
+}
+
+// Teardown — delete the booked test order
+const ADMIN_PWD = process.env.ELION_ADMIN_PASSWORD;
+if (ADMIN_PWD) {
+  try {
+    const r = await fetch(BASE + "/api/orders", { headers: { "x-elion-admin": ADMIN_PWD }});
+    const d = await r.json();
+    const ours = (d.orders || []).find(o => o.name === "Auto E2E Test");
+    if (ours) {
+      await fetch(BASE + `/api/orders?id=${encodeURIComponent(ours.id)}`, { method: "DELETE", headers: { "x-elion-admin": ADMIN_PWD }});
+      console.log(`Teardown: removed test order ${ours.id}`);
+    }
+  } catch {}
 }
 
 console.log(`\n=== ${pass}/${pass+fail} PASS ===`);

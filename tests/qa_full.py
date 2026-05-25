@@ -10,12 +10,19 @@ import json, sys, time, urllib.request, urllib.error, ssl
 sys.stdout.reconfigure(encoding='utf-8')
 ctx = ssl.create_default_context()
 
-BYPASS = "1a1b5ade9970aa8966497f8e11ed1b14c02f645235a6825b"
-ADMIN  = "d17ea0fa47c2677c34f0687041ed351f"  # ELION_ADMIN_PASSWORD (also in Vercel prod env)
+import os
+BYPASS = os.environ.get("ELION_BYPASS_TOKEN") or os.environ.get("ELLIS_BYPASS_TOKEN")
+ADMIN  = os.environ.get("ELION_ADMIN_PASSWORD")
+if not BYPASS or not ADMIN:
+    sys.exit("Set ELION_BYPASS_TOKEN and ELION_ADMIN_PASSWORD env vars before running this suite.\n"
+             "Get values from: vercel env pull (or 1Password/credstore for production rotation).")
 BASE   = "https://ellis-car-care.vercel.app"
 
 def http(path, method="GET", body=None, headers=None, timeout=20):
     h = {"content-type": "application/json"}
+    # Always bypass-mode for tests so rate limits don't poison the run
+    if path.startswith("/api/"):
+        h["x-elion-bypass"] = BYPASS
     if headers: h.update(headers)
     data = json.dumps(body).encode() if body is not None else None
     req = urllib.request.Request(BASE + path, method=method, data=data, headers=h)
@@ -40,11 +47,22 @@ def http_raw(path, method="POST", raw=b"", headers=None, timeout=20):
         return -1, str(e)
 
 results = []
+created_order_ids = []  # for teardown — accumulate every POST'd order id
+
 def check(name, condition, detail=""):
     ok = bool(condition)
     results.append((name, ok, detail))
     print(f"{'PASS' if ok else 'FAIL'}  {name}  {('-- ' + detail) if detail else ''}")
     return ok
+
+def track_created(body_text):
+    """Extract order id from a successful POST response and remember for teardown."""
+    try:
+        d = json.loads(body_text)
+        oid = d.get("order", {}).get("id")
+        if oid: created_order_ids.append(oid)
+    except Exception:
+        pass
 
 # ============================================================
 # 1) AI chatbot regression
@@ -108,6 +126,7 @@ if code == 200:
     parsed = json.loads(body)
     stored_notes = parsed.get("order", {}).get("notes", "")
     check("XSS payload stored verbatim", stored_notes == xss, f"stored: {stored_notes!r}")
+    track_created(body)
 
 # Oversized fields
 huge = "y" * 100000
@@ -117,6 +136,7 @@ if code == 200:
     p = json.loads(body)
     n = p.get("order", {}).get("name", "")
     check("name clipped to <= 80 chars", len(n) <= 80, f"len={len(n)}")
+    track_created(body)
 
 # PATCH path traversal
 code, body = http("/api/orders?id=../../../etc/passwd", "PATCH", {"status":"new"}, {"x-elion-admin": ADMIN})
@@ -160,8 +180,9 @@ matrix = [
    {"tier":"basic","scope":"exterior","first_time":True}, 30, 10, 0, 0),
   ("Basic + headlight, no FT",
    {"tier":"basic","scope":"exterior","addons":["headlight"],"first_time":False}, 70, 0, 0, 1),
+  # Server rounds the DISCOUNT first ($33 off), then subtracts. $130-$33=$97.
   ("Essential + interior + FT (bundle + 25%)",
-   {"tier":"essential","scope":"both","first_time":True}, 98, 33, 10, 1),
+   {"tier":"essential","scope":"both","first_time":True}, 97, 33, 10, 1),
   ("Essential + interior + headlight + FT",
    {"tier":"essential","scope":"both","addons":["headlight"],"first_time":True}, 120, 40, 10, 2),
   ("Premium + interior + leather (free w/ Premium)",
@@ -183,6 +204,7 @@ for label, body, want_total, want_ft, want_bundle, want_addon in matrix:
     if code != 200:
         check(f"pricing[{label}]", False, f"http {code}: {resp[:120]}")
         continue
+    track_created(resp)
     d = json.loads(resp)
     p = d.get("order", {}).get("pricing", {})
     got = (p.get("total",-1), p.get("first_time_discount",-1), p.get("bundle_discount",-1), len(p.get("addons",[])))
@@ -213,6 +235,16 @@ for p in ["/", "/book", "/admin", "/thanks"]:
     # Check Elion is present where expected
     if p in ["/", "/book", "/thanks"]:
         check(f"rebrand: Elion present on {p}", "Elion" in body, "missing")
+
+# ============================================================
+# Teardown — delete every order this run created
+# ============================================================
+print(f"\n=== TEARDOWN: deleting {len(created_order_ids)} test orders ===")
+deleted = 0
+for oid in created_order_ids:
+    code, _ = http(f"/api/orders?id={oid}", "DELETE", headers={"x-elion-admin": ADMIN})
+    if code in (200, 404): deleted += 1
+print(f"Teardown: deleted {deleted}/{len(created_order_ids)} orders")
 
 # ============================================================
 # Summary
