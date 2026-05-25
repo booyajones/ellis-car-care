@@ -1,26 +1,32 @@
 /* ========================================================
-   Ellis Car Care, styles.css (v4, modern dark)
+   Elion Car Care, styles.css (v5, retro stripe identity)
    ======================================================== */
 
 /* TOKENS --------------------------------------------------- */
 :root {
-  --bg:           #0E1014;
-  --bg-soft:      #14171D;
-  --surface:      #181C24;
-  --surface-soft: #1F242E;
+  --bg:           #2A2D33;
+  --bg-soft:      #34373E;
+  --surface:      #3A3E46;
+  --surface-soft: #43474F;
   --paper:        #FFFFFF;
 
-  --ink:          #F2EEE6;
-  --ink-soft:     #C5C0B7;
-  --muted:        #8A8579;
-  --muted-soft:   #66625A;
+  --ink:          #F4ECD8;
+  --ink-soft:     #DCD3BB;
+  --muted:        #968F7E;
+  --muted-soft:   #6C6759;
 
-  --accent:       #E5A235;
-  --accent-deep:  #C88420;
-  --accent-soft:  rgba(229, 162, 53, 0.12);
+  /* Retro stripe palette (from the printed flyer) */
+  --stripe-red:    #D94436;
+  --stripe-orange: #E89B3A;
+  --stripe-yellow: #E4CB42;
+  --stripe-green:  #3CB286;
 
-  --line:         rgba(242, 238, 230, 0.08);
-  --line-strong:  rgba(242, 238, 230, 0.18);
+  --accent:       #E89B3A;
+  --accent-deep:  #C97D24;
+  --accent-soft:  rgba(232, 155, 58, 0.14);
+
+  --line:         rgba(244, 236, 216, 0.10);
+  --line-strong:  rgba(244, 236, 216, 0.22);
 
   --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.4), 0 2px 6px rgba(0, 0, 0, 0.25);
   --shadow-md: 0 6px 18px rgba(0, 0, 0, 0.45), 0 1px 4px rgba(0, 0, 0, 0.25);
@@ -245,24 +251,59 @@ section {
   text-decoration: none;
   color: var(--ink);
   display: inline-flex;
-  align-items: baseline;
-  gap: var(--s-2);
+  align-items: center;
+  gap: 10px;
+  line-height: 1;
 }
 .brand-name {
-  font-family: var(--display);
-  font-weight: 600;
-  font-size: 1.05rem;
-  letter-spacing: -0.01em;
+  font-family: var(--body);
+  font-weight: 800;
+  font-size: 1.4rem;
+  letter-spacing: -0.02em;
+  color: var(--ink);
+  line-height: 0.95;
 }
 .brand-mono {
-  font-family: var(--mono);
-  font-size: 0.7rem;
-  letter-spacing: 0.18em;
+  font-family: var(--body);
+  font-size: 0.55rem;
+  letter-spacing: 0.22em;
   text-transform: uppercase;
-  color: var(--muted);
-  display: none;
+  color: var(--ink);
+  font-weight: 700;
+  display: block;
+  margin-top: 4px;
+  opacity: 0.85;
 }
-@media (min-width: 600px) { .brand-mono { display: inline; } }
+.brand-stack {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+.brand-stripe {
+  display: inline-block;
+  width: 28px;
+  height: 22px;
+  background:
+    linear-gradient(var(--stripe-red),     var(--stripe-red))     0 25% / 100% 4px no-repeat,
+    linear-gradient(var(--stripe-orange),  var(--stripe-orange))  0 50% / 100% 4px no-repeat,
+    linear-gradient(var(--stripe-yellow),  var(--stripe-yellow))  0 75% / 100% 4px no-repeat,
+    linear-gradient(var(--stripe-green),   var(--stripe-green))   0 100% / 100% 4px no-repeat;
+  flex-shrink: 0;
+}
+
+/* Page section divider — the four-stripe motif as a horizontal rule */
+.stripe-rule {
+  height: 6px;
+  border: 0;
+  margin: var(--s-6) auto;
+  width: min(360px, 80%);
+  background:
+    linear-gradient(var(--stripe-red),     var(--stripe-red))     0   0 / 25% 100% no-repeat,
+    linear-gradient(var(--stripe-orange),  var(--stripe-orange))  25% 0 / 25% 100% no-repeat,
+    linear-gradient(var(--stripe-yellow),  var(--stripe-yellow))  50% 0 / 25% 100% no-repeat,
+    linear-gradient(var(--stripe-green),   var(--stripe-green))   75% 0 / 25% 100% no-repeat;
+  border-radius: 3px;
+}
 
 .topnav { display: none; gap: var(--s-6); margin-left: auto; }
 .topnav a {

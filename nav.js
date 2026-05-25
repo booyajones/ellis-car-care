@@ -13,6 +13,7 @@
     { href: "/book",     label: "Book" },
     { href: "/#menu",    label: "Pricing" },
     { href: "/process",  label: "Process" },
+    { href: "/gallery",  label: "Gallery" },
     { href: "/about",    label: "About" },
   ];
   const PHONE = "(628) 252-0740";
@@ -34,8 +35,11 @@
 
     return `
       <a class="brand" href="/" aria-label="Elion Car Care home">
-        <span class="brand-name">Elion Car Care</span>
-        <span class="brand-mono">ANN ARBOR · MI</span>
+        <span class="brand-stripe" aria-hidden="true"></span>
+        <span class="brand-stack">
+          <span class="brand-name">Elion</span>
+          <span class="brand-mono">Car Care · Ann Arbor</span>
+        </span>
       </a>
       <nav class="topnav" aria-label="Primary">${navItems}</nav>
       <a class="topbar-phone" href="tel:${PHONE_HREF}" data-tel-link>${PHONE}</a>

@@ -12,9 +12,9 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap">
-  <link rel="stylesheet" href="styles.css?v=13">
+  <link rel="stylesheet" href="styles.css?v=14">
   <link rel="stylesheet" href="chatbot.css?v=3">
-  <link rel="stylesheet" href="nav.css?v=1">
+  <link rel="stylesheet" href="nav.css?v=2">
 </head>
 <body>
 
@@ -24,10 +24,12 @@
   <div class="container">
     <article class="story">
       <p class="eyebrow">About</p>
-      <h1 class="display">Elion. Burns Park kid. Now eighteen.</h1>
+      <h1 class="display">Hi, I'm Ellis. The business is Elion.</h1>
+
+      <hr class="stripe-rule" aria-hidden="true">
 
       <p class="story-lead">
-        I just turned eighteen. I grew up two blocks from where you probably live. My parents are both from Michigan, and I'm headed to U of M in the fall, so I'm not going far.
+        I just turned eighteen. I grew up two blocks from where you probably live. My parents are both from Michigan, and I'm headed to U of M in the fall, so I'm not going far. I run a hand-detailing operation in your driveway under the name Elion Car Care.
       </p>
 
       <picture class="story-portrait">
@@ -56,6 +58,18 @@
         <li>I work in your driveway. I bring everything. You don't need anything but a hose, an outlet, and a spot in the shade.</li>
       </ul>
 
+      <h2>Where I work</h2>
+      <p>
+        Burns Park is free travel. Greater Ann Arbor (48104, 48103, 48105) is +$5. Anywhere further out, text me and we'll figure it out.
+      </p>
+      <figure class="service-map">
+        <img src="https://staticmap.openstreetmap.de/staticmap.php?center=42.2628,-83.7281&amp;zoom=13&amp;size=640x320&amp;markers=42.2628,-83.7281,red-pushpin"
+             alt="Map of Burns Park, Ann Arbor service area"
+             width="640" height="320" loading="lazy"
+             onerror="this.parentElement.classList.add('service-map-fallback'); this.remove();">
+        <figcaption>Burns Park, Ann Arbor, MI</figcaption>
+      </figure>
+
       <h2>If you'd rather just talk to me</h2>
       <p>
         Text <a href="sms:+16282520740" data-sms-link>(628) 252-0740</a> or call. I usually reply in under an hour.
@@ -72,7 +86,7 @@
 <footer class="site-footer" data-shared-footer></footer>
 
 <script src="config.js?v=13"></script>
-<script src="nav.js?v=1" defer></script>
+<script src="nav.js?v=2" defer></script>
 <script src="chatbot.js?v=10" defer></script>
 </body>
 </html>

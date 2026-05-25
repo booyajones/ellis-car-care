@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 160" fill="none" aria-label="Elion Car Care">
+  <!-- Cream "Elion" wordmark, condensed bold -->
+  <text x="200" y="74" font-family="Inter, system-ui, sans-serif" font-weight="800"
+        font-size="76" letter-spacing="-3" fill="#F4ECD8" text-anchor="middle">Elion</text>
+
+  <!-- CAR CARE subtitle, smaller, tracked out -->
+  <text x="200" y="106" font-family="Inter, system-ui, sans-serif" font-weight="700"
+        font-size="22" letter-spacing="5" fill="#F4ECD8" text-anchor="middle">CAR CARE</text>
+
+  <!-- Four-color retro stripe pattern (Z-step shape matching the flyer) -->
+  <!-- Each stripe is its own path, offset by 6px stride; matched stroke widths.
+       The step happens at x=145 (down-and-right) on the inbound side. -->
+  <g stroke-width="5" stroke-linecap="round" fill="none">
+    <path d="M 30 130 L 145 130 L 175 140 L 370 140" stroke="#D94436"/>
+    <path d="M 30 138 L 140 138 L 175 148 L 370 148" stroke="#E89B3A"/>
+    <path d="M 30 146 L 135 146 L 175 156 L 370 156" stroke="#E4CB42" opacity="0.95"/>
+  </g>
+</svg>

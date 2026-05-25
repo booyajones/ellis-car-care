@@ -195,3 +195,94 @@ body.nav-drawer-open { overflow: hidden; }
   border-radius: 999px;
   vertical-align: middle;
 }
+
+/* Service area map */
+.service-map {
+  margin: var(--s-5) 0;
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  border: 1px solid var(--line-strong);
+  background: var(--surface);
+}
+.service-map img {
+  display: block;
+  width: 100%;
+  height: auto;
+  filter: saturate(0.85);
+}
+.service-map figcaption {
+  padding: 10px 14px;
+  font-size: 0.85rem;
+  color: var(--muted);
+  font-family: var(--mono);
+  letter-spacing: 0.04em;
+  text-align: center;
+}
+.service-map-fallback {
+  padding: 60px var(--s-4);
+  text-align: center;
+}
+.service-map-fallback::before {
+  content: "📍 Burns Park, Ann Arbor, MI";
+  display: block;
+  font-family: var(--display);
+  font-size: 1.2rem;
+  color: var(--ink-soft);
+}
+
+/* ============================================================
+   Photo gallery (/gallery)
+   ============================================================ */
+.gallery-page {
+  padding: var(--s-7) 0 var(--s-9);
+}
+.gallery-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: var(--s-3);
+  margin: var(--s-5) 0;
+}
+.gallery-card {
+  position: relative;
+  aspect-ratio: 4/3;
+  background: var(--surface-soft);
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--muted);
+  font-family: var(--mono);
+  font-size: 0.85rem;
+  letter-spacing: 0.04em;
+  text-align: center;
+  padding: var(--s-3);
+}
+.gallery-card img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.gallery-card-caption {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(to top, rgba(42, 45, 51, 0.95), transparent);
+  color: var(--ink);
+  padding: var(--s-4) var(--s-3) var(--s-3);
+  font-family: var(--body);
+  font-size: 0.9rem;
+  text-align: left;
+}
+.gallery-empty {
+  grid-column: 1 / -1;
+  padding: var(--s-7) var(--s-4);
+  text-align: center;
+  border: 2px dashed var(--line-strong);
+  border-radius: var(--radius-lg);
+  color: var(--muted);
+}
