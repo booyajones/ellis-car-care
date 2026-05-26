@@ -445,8 +445,18 @@
     modal.querySelector("[data-copy-handle]").addEventListener("click", (e) => {
       const handle = (window.CONFIG && window.CONFIG.contact && window.CONFIG.contact.venmo) || "@Elion-CarCare";
       navigator.clipboard?.writeText(handle);
-      e.target.textContent = "Copied ✓";
-      setTimeout(() => e.target.innerHTML = `Copy <span data-venmo-handle>${handle}</span>`, 1500);
+      const btn = e.currentTarget;
+      btn.textContent = "Copied ✓";
+      setTimeout(() => {
+        // Rebuild label using DOM nodes (no innerHTML) — handle is config-controlled
+        // today but this guards against ever sourcing it from somewhere injectable.
+        btn.replaceChildren();
+        btn.appendChild(document.createTextNode("Copy "));
+        const span = document.createElement("span");
+        span.setAttribute("data-venmo-handle", "");
+        span.textContent = handle;
+        btn.appendChild(span);
+      }, 1500);
     });
     document.addEventListener("keydown", (e) => {
       if (e.key === "Escape" && modal.classList.contains("is-open")) closeConfirm();
