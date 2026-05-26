@@ -83,6 +83,9 @@ a:hover { color: var(--accent); text-decoration-color: var(--accent); }
   outline: 2px solid var(--accent);
   outline-offset: 3px;
   border-radius: 3px;
+  /* Belt-and-suspenders ring: if any descendant rule clobbers outline-style,
+     the box-shadow ring still renders. WCAG 2.4.7 requires visible focus. */
+  box-shadow: 0 0 0 4px rgba(229, 162, 53, 0.25);
 }
 
 /* Skip link, properly visually-hidden until focused */
@@ -444,7 +447,7 @@ section {
   transition: background 0.15s, transform 0.15s;
 }
 .topbar-cta:hover { background: var(--accent-deep); transform: translateY(-1px); }
-.topbar-cta:focus-visible { outline-color: var(--ink); outline-offset: 4px; }
+.topbar-cta:focus-visible { outline: 2px solid var(--ink); outline-offset: 4px; }
 @media (min-width: 720px) { .topbar-cta { margin-left: 0; } }
 @media (min-width: 860px) { .topnav { display: inline-flex; } }
 
@@ -1252,7 +1255,7 @@ section {
 .referral-card .eyebrow { color: rgba(14, 16, 20, 0.7); }
 .referral-copy h2 { color: var(--bg); font-size: clamp(1.5rem, 1.2rem + 1vw, 2.2rem); margin-bottom: var(--s-3); }
 .referral-copy p { color: rgba(14, 16, 20, 0.8); max-width: 56ch; }
-.referral-card .btn-on-light:focus-visible { outline-color: var(--bg); outline-offset: 4px; }
+.referral-card .btn-on-light:focus-visible { outline: 2px solid var(--bg); outline-offset: 4px; }
 
 /* PROCESS PAGE INLINE PHOTOS ------------------------------- */
 .process-photo {
@@ -1357,7 +1360,7 @@ section {
   box-shadow: var(--shadow-lg);
   transition: opacity 0.25s ease, transform 0.25s ease;
 }
-.sticky-cta:focus-visible { outline-color: var(--ink); outline-offset: 4px; }
+.sticky-cta:focus-visible { outline: 2px solid var(--ink); outline-offset: 4px; }
 .sticky-cta-sub {
   display: block;
   font-family: var(--mono);
