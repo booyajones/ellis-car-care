@@ -45,30 +45,30 @@
         <p class="cal-fast-sub">Booking lands on Ellis's calendar with a confirmation. About 30 seconds.</p>
       </div>
       <div class="cal-fast-tiers" role="tablist" aria-label="Wash tier">
-        <button type="button" class="cal-tier-btn" data-cal-tier="basic" role="tab" aria-selected="false" aria-controls="cal-embed-frame">
+        <button type="button" class="cal-tier-btn" data-cal-tier="basic" role="tab" aria-selected="false" aria-controls="cal-embed-panel">
           <span class="cal-tier-name">Basic</span>
           <span class="cal-tier-meta"><span>$40</span><span>45 min</span></span>
           <span class="cal-tier-desc">Hand wash, dry, tires, jambs.</span>
         </button>
-        <button type="button" class="cal-tier-btn is-popular" data-cal-tier="essential" role="tab" aria-selected="true" aria-controls="cal-embed-frame">
+        <button type="button" class="cal-tier-btn is-popular" data-cal-tier="essential" role="tab" aria-selected="true" aria-controls="cal-embed-panel">
           <span class="cal-tier-popular">Most popular</span>
           <span class="cal-tier-name">Essential</span>
           <span class="cal-tier-meta"><span>$90</span><span>1.5 hr</span></span>
           <span class="cal-tier-desc">Wash + ceramic seal. Paint protected 3-4 months.</span>
         </button>
-        <button type="button" class="cal-tier-btn" data-cal-tier="premium" role="tab" aria-selected="false" aria-controls="cal-embed-frame">
+        <button type="button" class="cal-tier-btn" data-cal-tier="premium" role="tab" aria-selected="false" aria-controls="cal-embed-panel">
           <span class="cal-tier-name">Premium</span>
           <span class="cal-tier-meta"><span>$200</span><span>4 hr</span></span>
           <span class="cal-tier-desc">Wash + seal + single-stage cut and polish.</span>
         </button>
       </div>
-      <div class="cal-embed-wrap">
+      <div class="cal-embed-wrap" id="cal-embed-panel" role="tabpanel" aria-label="Time slot picker">
         <iframe
           id="cal-embed-frame"
           title="Pick a time slot for your wash"
           src="https://cal.com/elion/essential?embed=true"
           loading="lazy"
-          allow="payment *; clipboard-write *"
+          allow="payment https://cal.com https://app.cal.com; clipboard-write https://cal.com https://app.cal.com"
           referrerpolicy="strict-origin-when-cross-origin"></iframe>
       </div>
       <p class="cal-fast-note">
