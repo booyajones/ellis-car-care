@@ -202,7 +202,7 @@
     modal.querySelector("[data-confirm-venmo-note]").textContent = venmoNote;
 
     // Venmo deep link + handle (single source of truth: config.js)
-    const venmoHandle = (window.CONFIG && window.CONFIG.contact && window.CONFIG.contact.venmo) || "@Elion-CarCare";
+    const venmoHandle = (window.CONFIG && window.CONFIG.contact && window.CONFIG.contact.venmo) || "@Ellis-Wyatt-2";
     const venmoSlug = (window.CONFIG && window.CONFIG.contact && window.CONFIG.contact.venmoSlug) || venmoHandle.replace(/^@/, "");
     modal.querySelectorAll("[data-venmo-handle]").forEach(el => { el.textContent = venmoHandle; });
     const venmoUrl = `https://venmo.com/${venmoSlug}?txn=pay&amount=${p.total}&note=${encodeURIComponent(venmoNote)}`;
@@ -443,7 +443,7 @@
     modal.querySelector(".confirm-close").addEventListener("click", closeConfirm);
     modal.querySelector("[data-confirm-close]").addEventListener("click", closeConfirm);
     modal.querySelector("[data-copy-handle]").addEventListener("click", (e) => {
-      const handle = (window.CONFIG && window.CONFIG.contact && window.CONFIG.contact.venmo) || "@Elion-CarCare";
+      const handle = (window.CONFIG && window.CONFIG.contact && window.CONFIG.contact.venmo) || "@Ellis-Wyatt-2";
       navigator.clipboard?.writeText(handle);
       const btn = e.currentTarget;
       btn.textContent = "Copied ✓";

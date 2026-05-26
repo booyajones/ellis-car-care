@@ -32,8 +32,8 @@ const CONFIG = {
     // copy-handle button, Venmo deep-link URL builder.
     // SERVER SIDE: also update VENMO_HANDLE constant at top of
     // api/_email.js (the email templates run in Node, no window.CONFIG).
-    venmo: "@Elion-CarCare",
-    venmoSlug: "Elion-CarCare", // URL form, without the @
+    venmo: "@Ellis-Wyatt-2",
+    venmoSlug: "Ellis-Wyatt-2", // URL form, without the @
   },
 
   serviceArea: {
@@ -149,7 +149,7 @@ const CONFIG = {
     },
     {
       q: "How do I pay?",
-      a: "Cash, Venmo ({{VENMO}}), or Zelle. Pay after the job, when you're happy with how the car looks.",
+      a: "Venmo ({{VENMO}}) or cash. Pay after the job, when you're happy with how the car looks.",
     },
     {
       q: "Do you need my keys?",

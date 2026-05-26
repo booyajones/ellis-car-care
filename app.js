@@ -110,8 +110,8 @@
   function fillTokens(s) {
     if (!s) return s;
     return s
-      .replace(/\{\{VENMO\}\}/g,     escapeHtml((cfg.contact && cfg.contact.venmo)     || "@Elion-CarCare"))
-      .replace(/\{\{VENMO_SLUG\}\}/g,escapeHtml((cfg.contact && cfg.contact.venmoSlug) || "Elion-CarCare"))
+      .replace(/\{\{VENMO\}\}/g,     escapeHtml((cfg.contact && cfg.contact.venmo)     || "@Ellis-Wyatt-2"))
+      .replace(/\{\{VENMO_SLUG\}\}/g,escapeHtml((cfg.contact && cfg.contact.venmoSlug) || "Ellis-Wyatt-2"))
       .replace(/\{\{PHONE\}\}/g,     escapeHtml((cfg.contact && cfg.contact.phone)     || "(628) 252-0740"));
   }
 

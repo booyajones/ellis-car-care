@@ -29,8 +29,8 @@ const RESEND_URL = "https://api.resend.com/emails";
 // If you change one, change BOTH (they're loaded in different runtimes:
 // config.js runs in the browser, this file runs in the Vercel Node fn).
 // ============================================================
-const VENMO_HANDLE = "@Elion-CarCare";     // displayed in copy
-const VENMO_SLUG   = "Elion-CarCare";      // URL form, no @
+const VENMO_HANDLE = "@Ellis-Wyatt-2";     // displayed in copy
+const VENMO_SLUG   = "Ellis-Wyatt-2";      // URL form, no @
 
 let _gmailTransporter = null;
 function getGmailTransporter() {

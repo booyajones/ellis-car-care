@@ -51,7 +51,7 @@ Refresh in the top right pulls latest orders.
 
 ## Getting paid
 
-Customer's confirmation email has a Venmo deep link with the right amount pre-filled. They pay AFTER the job, when they're happy. Your Venmo handle is `@Elion-CarCare` (controlled by `config.js` → `contact.venmo` and `contact.venmoSlug` for the client side, plus `VENMO_HANDLE` / `VENMO_SLUG` at the top of `api/_email.js` for the email templates). If you change your Venmo handle, change BOTH places, then push.
+Customer's confirmation email has a Venmo deep link with the right amount pre-filled. They pay AFTER the job, when they're happy. Your Venmo handle is `@Ellis-Wyatt-2` (controlled by `config.js` → `contact.venmo` and `contact.venmoSlug` for the client side, plus `VENMO_HANDLE` / `VENMO_SLUG` at the top of `api/_email.js` for the email templates). If you change your Venmo handle, change BOTH places, then push.
 
 ## When you finish a job
 
