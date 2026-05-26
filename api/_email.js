@@ -23,6 +23,15 @@ import nodemailer from "nodemailer";
 
 const RESEND_URL = "https://api.resend.com/emails";
 
+// ============================================================
+// Venmo handle — SERVER-SIDE single source of truth.
+// Mirror the value in config.js (contact.venmo + contact.venmoSlug).
+// If you change one, change BOTH (they're loaded in different runtimes:
+// config.js runs in the browser, this file runs in the Vercel Node fn).
+// ============================================================
+const VENMO_HANDLE = "@Elion-CarCare";     // displayed in copy
+const VENMO_SLUG   = "Elion-CarCare";      // URL form, no @
+
 let _gmailTransporter = null;
 function getGmailTransporter() {
   if (_gmailTransporter) return _gmailTransporter;
@@ -182,7 +191,7 @@ function renderSummaryHtml(o) {
 export function customerConfirmationEmail(order) {
   const p = order.pricing || {};
   const venmoNote = `Elion Car Care order ${String(order.id).replace(/^ord_/, "")}`;
-  const venmoUrl = `https://venmo.com/Elion-CarCare?txn=pay&amount=${p.total}&note=${encodeURIComponent(venmoNote)}`;
+  const venmoUrl = `https://venmo.com/${VENMO_SLUG}?txn=pay&amount=${p.total}&note=${encodeURIComponent(venmoNote)}`;
 
   const html = `
     <!doctype html><html><body style="margin:0;padding:32px 16px;background:#f4f1ea;font-family:Inter,system-ui,sans-serif;color:#1a1a1a;">
@@ -205,7 +214,7 @@ export function customerConfirmationEmail(order) {
         ${renderSummaryHtml(order)}
 
         <h2 style="font-family:Fraunces,Georgia,serif;font-size:18px;color:#0E1014;margin:24px 0 8px;">Pay after the job</h2>
-        <p style="margin:0 0 12px;">When you're happy with how the car looks, send <strong>$${p.total}</strong> to <strong>@Elion-CarCare</strong> on Venmo with the note "${escapeHtml(venmoNote)}".</p>
+        <p style="margin:0 0 12px;">When you're happy with how the car looks, send <strong>$${p.total}</strong> to <strong>${escapeHtml(VENMO_HANDLE)}</strong> on Venmo with the note "${escapeHtml(venmoNote)}".</p>
         <p style="margin:0 0 16px;"><a href="${venmoUrl}" style="display:inline-block;background:#E5A235;color:#0E1014;padding:12px 20px;border-radius:999px;text-decoration:none;font-weight:600;">Open Venmo (when ready to pay)</a></p>
 
         <h2 style="font-family:Fraunces,Georgia,serif;font-size:18px;color:#0E1014;margin:24px 0 8px;">Where</h2>
@@ -216,7 +225,7 @@ export function customerConfirmationEmail(order) {
       </div>
     </body></html>
   `;
-  const text = `Booked, thanks ${order.name}!\n\nOrder ${order.id}\n${TIER_LABEL[order.tier]} - $${p.base}\nTotal: $${p.total}\n\nI'll text you at ${order.phone} within an hour to lock in a time.\n\nPay via Venmo @Elion-CarCare after the job: ${venmoUrl}\n\nWhere: ${order.address}\n${order.car ? "Car: " + order.car + "\n" : ""}\nQuestions? Text (628) 252-0740.\nEllis`;
+  const text = `Booked, thanks ${order.name}!\n\nOrder ${order.id}\n${TIER_LABEL[order.tier]} - $${p.base}\nTotal: $${p.total}\n\nI'll text you at ${order.phone} within an hour to lock in a time.\n\nPay via Venmo ${VENMO_HANDLE} after the job: ${venmoUrl}\n\nWhere: ${order.address}\n${order.car ? "Car: " + order.car + "\n" : ""}\nQuestions? Text (628) 252-0740.\nEllis`;
 
   return { subject: `Booked: ${TIER_LABEL[order.tier]} - $${p.total} (order ${order.id})`, html, text };
 }

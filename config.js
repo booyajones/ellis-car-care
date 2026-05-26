@@ -27,7 +27,13 @@ const CONFIG = {
     phone: "(628) 252-0740",
     phoneHref: "+16282520740",
     email: "info@elioncarcare.com",
+    // SINGLE SOURCE OF TRUTH for Venmo handle. Change here, the whole
+    // client side updates: home FAQ, book.html confirmation modal,
+    // copy-handle button, Venmo deep-link URL builder.
+    // SERVER SIDE: also update VENMO_HANDLE constant at top of
+    // api/_email.js (the email templates run in Node, no window.CONFIG).
     venmo: "@Elion-CarCare",
+    venmoSlug: "Elion-CarCare", // URL form, without the @
   },
 
   serviceArea: {
@@ -143,7 +149,7 @@ const CONFIG = {
     },
     {
       q: "How do I pay?",
-      a: "Cash, Venmo (@Elion-CarCare), or Zelle. Pay after the job, when you're happy with how the car looks.",
+      a: "Cash, Venmo ({{VENMO}}), or Zelle. Pay after the job, when you're happy with how the car looks.",
     },
     {
       q: "Do you need my keys?",

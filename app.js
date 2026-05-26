@@ -97,14 +97,24 @@
 
   /* 5. FAQ */
 
+  // Token substitution for config-driven strings. Keeps the Venmo handle
+  // (and any future tokens) in one place at contact.venmo.
+  function fillTokens(s) {
+    if (!s) return s;
+    return s
+      .replace(/\{\{VENMO\}\}/g,     (cfg.contact && cfg.contact.venmo)     || "@Elion-CarCare")
+      .replace(/\{\{VENMO_SLUG\}\}/g,(cfg.contact && cfg.contact.venmoSlug) || "Elion-CarCare")
+      .replace(/\{\{PHONE\}\}/g,     (cfg.contact && cfg.contact.phone)     || "(628) 252-0740");
+  }
+
   const faqEl = $("[data-faq]");
   if (faqEl && cfg.faq) {
     cfg.faq.forEach((item) => {
       const d = document.createElement("details");
       d.className = "faq-item";
       d.innerHTML = `
-        <summary>${item.q}</summary>
-        <div class="faq-answer">${item.a}</div>
+        <summary>${fillTokens(item.q)}</summary>
+        <div class="faq-answer">${fillTokens(item.a)}</div>
       `;
       faqEl.appendChild(d);
     });

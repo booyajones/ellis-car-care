@@ -201,8 +201,11 @@
     const venmoNote = `Elion Car Care order ${order.id.replace(/^ord_/, "")}`;
     modal.querySelector("[data-confirm-venmo-note]").textContent = venmoNote;
 
-    // Venmo deep link
-    const venmoUrl = `https://venmo.com/Elion-CarCare?txn=pay&amount=${p.total}&note=${encodeURIComponent(venmoNote)}`;
+    // Venmo deep link + handle (single source of truth: config.js)
+    const venmoHandle = (window.CONFIG && window.CONFIG.contact && window.CONFIG.contact.venmo) || "@Elion-CarCare";
+    const venmoSlug = (window.CONFIG && window.CONFIG.contact && window.CONFIG.contact.venmoSlug) || venmoHandle.replace(/^@/, "");
+    modal.querySelectorAll("[data-venmo-handle]").forEach(el => { el.textContent = venmoHandle; });
+    const venmoUrl = `https://venmo.com/${venmoSlug}?txn=pay&amount=${p.total}&note=${encodeURIComponent(venmoNote)}`;
     modal.querySelector("[data-venmo-link]").href = venmoUrl;
 
     // Cal.com booking link, tier-aware + prefilled with what we already know
@@ -440,9 +443,10 @@
     modal.querySelector(".confirm-close").addEventListener("click", closeConfirm);
     modal.querySelector("[data-confirm-close]").addEventListener("click", closeConfirm);
     modal.querySelector("[data-copy-handle]").addEventListener("click", (e) => {
-      navigator.clipboard?.writeText("@Elion-CarCare");
+      const handle = (window.CONFIG && window.CONFIG.contact && window.CONFIG.contact.venmo) || "@Elion-CarCare";
+      navigator.clipboard?.writeText(handle);
       e.target.textContent = "Copied ✓";
-      setTimeout(() => e.target.textContent = "Copy @Elion-CarCare", 1500);
+      setTimeout(() => e.target.innerHTML = `Copy <span data-venmo-handle>${handle}</span>`, 1500);
     });
     document.addEventListener("keydown", (e) => {
       if (e.key === "Escape" && modal.classList.contains("is-open")) closeConfirm();
