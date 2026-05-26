@@ -552,6 +552,22 @@ section {
   color: var(--muted);
   font-weight: 500;
 }
+.hero-discount {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0 0 var(--s-4);
+  padding: 6px 14px 6px 12px;
+  background: rgba(232, 155, 58, 0.12);
+  border: 1px solid rgba(232, 155, 58, 0.35);
+  border-radius: 999px;
+  color: var(--accent);
+  font-family: var(--mono);
+  font-size: 0.78rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+}
+.hero-discount span { color: var(--accent); }
 .hero-meta-sep { color: var(--line-strong); }
 .hero-status-dot {
   display: inline-block;
