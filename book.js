@@ -380,8 +380,36 @@
     formatted.value = day.value === "asap" ? "ASAP / Flexible" : `${dayLabel} ${day.value !== "asap" ? "(" + day.value + ")" : ""} ${timeLabel}`.trim();
   }
 
+  // ---- Cal.com fast-path tier switcher ----
+  // The /book page now leads with an inline Cal.com embed.
+  // Clicking a tier button swaps the iframe src to the matching event type.
+  function initCalFastPath() {
+    const buttons = document.querySelectorAll("[data-cal-tier]");
+    const frame = document.getElementById("cal-embed-frame");
+    if (!buttons.length || !frame) return;
+
+    const cfg = window.CONFIG || {};
+    const slugMap = cfg.calEventBySlug || { basic: "basic", essential: "essential", premium: "premium" };
+    const calBase = cfg.calBaseUrl || "https://cal.com/elion";
+
+    function selectTier(tier) {
+      const slug = slugMap[tier] || tier;
+      // embed=true tells Cal.com to render the compact embedded view
+      frame.src = `${calBase}/${slug}?embed=true`;
+      buttons.forEach(b => {
+        b.setAttribute("aria-selected", b.dataset.calTier === tier ? "true" : "false");
+      });
+    }
+
+    buttons.forEach(b => {
+      b.addEventListener("click", () => selectTier(b.dataset.calTier));
+    });
+  }
+
   // ---- Init ----
   function init() {
+    initCalFastPath();
+
     form = document.getElementById("orderForm");
     submitBtn = form.querySelector("[data-submit-btn]");
     modal = document.getElementById("confirmModal");
