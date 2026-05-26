@@ -1,15 +1,38 @@
 /* ============================================================
-   gallery.js — auto-load before/after photos from images/jobs/
+   gallery.js — renders the public gallery page
    ------------------------------------------------------------
-   Ellis just drops .jpg or .webp files into images/jobs/ named
-   like job-01-before.jpg / job-01-after.jpg / job-01.jpg,
-   bumps JOBS_COUNT in config.js, and they appear here.
+   Two sections, both optional:
 
-   If no JOBS_COUNT is set in config.js, the page renders 6
-   placeholder slots so it never looks broken on first deploy.
+   1. "In the wild" — process photos from images/process/wash-NN-*.
+      Currently 12 hand-curated shots of Ellis foam-washing cars
+      in actual Burns Park driveways. Lives in WASH_PHOTOS (below).
+
+   2. "Recent jobs" — before/after pairs from images/jobs/, driven
+      by CONFIG.JOBS_COUNT. Empty by default until Ellis starts
+      shooting before/afters.
+
+   If both lists are empty, an "in progress" placeholder renders so
+   the page never looks broken.
    ============================================================ */
 (function () {
   "use strict";
+
+  // Curated 12, ordered for visual rhythm: wide shots, then close-ups,
+  // then variety. See scripts/process-wash-photos.py for source mapping.
+  const WASH_PHOTOS = [
+    { id: "01", alt: "Ellis rinsing a dark SUV in a Burns Park driveway, water arc visible" },
+    { id: "02", alt: "Foam cannon applying suds to the side panel of a black SUV" },
+    { id: "03", alt: "Dark SUV fully foamed up before rinse, side profile" },
+    { id: "04", alt: "Front three-quarter shot of a car covered in fresh foam, garage in background" },
+    { id: "05", alt: "Foam over the rear taillight cluster of a black car, close detail" },
+    { id: "06", alt: "Foam cannon coating the hood of a black sedan, top-down view" },
+    { id: "07", alt: "Foam covering the rear hatch of a black Mazda CX-5" },
+    { id: "08", alt: "Rear corner of a Mazda CX-5 with foam mist spraying onto the trunk" },
+    { id: "09", alt: "Foam cannon spraying the side panel of a black SUV, mid-application" },
+    { id: "10", alt: "Side foam mist on a black SUV in a driveway" },
+    { id: "11", alt: "Water rinsing the roof and windshield of a dark sedan, neighborhood backdrop" },
+    { id: "12", alt: "Close-up of foam suds running off the wheel and side panel of a black SUV" },
+  ];
 
   function tryImage(src) {
     return new Promise(resolve => {
@@ -20,49 +43,20 @@
     });
   }
 
-  async function init() {
-    const grid = document.querySelector("[data-gallery]");
-    if (!grid) return;
-
-    const count = Number(window.CONFIG?.JOBS_COUNT) || 0;
-
-    if (count > 0) {
-      // Try to load each numbered job. Prefer before/after pair; fall back to single.
-      for (let i = 1; i <= count; i++) {
-        const padded = String(i).padStart(2, "0");
-        const beforeWebp = `images/jobs/job-${padded}-before.webp`;
-        const afterWebp  = `images/jobs/job-${padded}-after.webp`;
-        const singleWebp = `images/jobs/job-${padded}.webp`;
-        const beforeJpg  = `images/jobs/job-${padded}-before.jpg`;
-        const afterJpg   = `images/jobs/job-${padded}-after.jpg`;
-        const singleJpg  = `images/jobs/job-${padded}.jpg`;
-
-        const [hasBeforeW, hasAfterW, hasSingleW, hasBeforeJ, hasAfterJ, hasSingleJ] =
-          await Promise.all([
-            tryImage(beforeWebp), tryImage(afterWebp), tryImage(singleWebp),
-            tryImage(beforeJpg),  tryImage(afterJpg),  tryImage(singleJpg),
-          ]);
-
-        if (hasBeforeW && hasAfterW) {
-          grid.appendChild(renderPair(beforeWebp, afterWebp, i, true));
-        } else if (hasBeforeJ && hasAfterJ) {
-          grid.appendChild(renderPair(beforeJpg, afterJpg, i, false));
-        } else if (hasSingleW) {
-          grid.appendChild(renderSingle(singleWebp, i));
-        } else if (hasSingleJ) {
-          grid.appendChild(renderSingle(singleJpg, i));
-        }
-      }
-    }
-
-    // If nothing got rendered, show placeholders so the page reads as
-    // "we're building this out" instead of broken.
-    if (grid.children.length === 0) {
-      grid.appendChild(emptyState());
-    }
+  function renderWashCard(p) {
+    const card = document.createElement("div");
+    card.className = "gallery-card";
+    card.innerHTML = `
+      <picture>
+        <source srcset="images/process/wash-${p.id}-400.webp 400w, images/process/wash-${p.id}-900.webp 900w, images/process/wash-${p.id}-1600.webp 1600w" sizes="(max-width: 720px) 100vw, (max-width: 1100px) 50vw, 33vw" type="image/webp">
+        <source srcset="images/process/wash-${p.id}-400.jpg 400w, images/process/wash-${p.id}-900.jpg 900w, images/process/wash-${p.id}-1600.jpg 1600w" sizes="(max-width: 720px) 100vw, (max-width: 1100px) 50vw, 33vw" type="image/jpeg">
+        <img src="images/process/wash-${p.id}-900.jpg" alt="${p.alt}" loading="lazy" width="900" height="675">
+      </picture>
+    `;
+    return card;
   }
 
-  function renderPair(before, after, jobNum, isWebp) {
+  function renderJobPair(before, after, jobNum) {
     const wrap = document.createElement("div");
     wrap.className = "gallery-card";
     wrap.innerHTML = `
@@ -72,7 +66,7 @@
     return wrap;
   }
 
-  function renderSingle(src, jobNum) {
+  function renderJobSingle(src, jobNum) {
     const wrap = document.createElement("div");
     wrap.className = "gallery-card";
     wrap.innerHTML = `
@@ -98,6 +92,59 @@
       </p>
     `;
     return wrap;
+  }
+
+  async function renderJobs(jobGrid) {
+    const count = Number(window.CONFIG?.JOBS_COUNT) || 0;
+    if (count <= 0) return 0;
+    let rendered = 0;
+    for (let i = 1; i <= count; i++) {
+      const padded = String(i).padStart(2, "0");
+      const beforeWebp = `images/jobs/job-${padded}-before.webp`;
+      const afterWebp  = `images/jobs/job-${padded}-after.webp`;
+      const singleWebp = `images/jobs/job-${padded}.webp`;
+      const beforeJpg  = `images/jobs/job-${padded}-before.jpg`;
+      const afterJpg   = `images/jobs/job-${padded}-after.jpg`;
+      const singleJpg  = `images/jobs/job-${padded}.jpg`;
+
+      const [hasBeforeW, hasAfterW, hasSingleW, hasBeforeJ, hasAfterJ, hasSingleJ] =
+        await Promise.all([
+          tryImage(beforeWebp), tryImage(afterWebp), tryImage(singleWebp),
+          tryImage(beforeJpg),  tryImage(afterJpg),  tryImage(singleJpg),
+        ]);
+
+      if (hasBeforeW && hasAfterW)        { jobGrid.appendChild(renderJobPair(beforeWebp, afterWebp, i)); rendered++; }
+      else if (hasBeforeJ && hasAfterJ)   { jobGrid.appendChild(renderJobPair(beforeJpg, afterJpg, i));   rendered++; }
+      else if (hasSingleW)                { jobGrid.appendChild(renderJobSingle(singleWebp, i));          rendered++; }
+      else if (hasSingleJ)                { jobGrid.appendChild(renderJobSingle(singleJpg, i));           rendered++; }
+    }
+    return rendered;
+  }
+
+  async function init() {
+    const washGrid = document.querySelector("[data-gallery-wash]");
+    const jobGrid = document.querySelector("[data-gallery-jobs]");
+    const jobSection = document.querySelector("[data-gallery-jobs-section]");
+
+    // 1. Wash photos — these are always present
+    if (washGrid) {
+      WASH_PHOTOS.forEach(p => washGrid.appendChild(renderWashCard(p)));
+    }
+
+    // 2. Before/after jobs — only if any exist
+    let jobsRendered = 0;
+    if (jobGrid) {
+      jobsRendered = await renderJobs(jobGrid);
+    }
+    if (jobSection && jobsRendered === 0) {
+      jobSection.hidden = true;
+    }
+
+    // 3. If somehow nothing rendered (no wash grid + no jobs), show placeholder
+    const anyRendered = (washGrid && washGrid.children.length > 0) || jobsRendered > 0;
+    if (!anyRendered && washGrid) {
+      washGrid.appendChild(emptyState());
+    }
   }
 
   if (document.readyState === "loading") {

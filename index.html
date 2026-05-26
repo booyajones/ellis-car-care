@@ -27,8 +27,8 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,500;1,9..144,600&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap">
 
-  <link rel="preload" as="image" href="images/hero.webp" imagesrcset="images/hero.webp" type="image/webp">
-  <link rel="stylesheet" href="styles.css?v=16">
+  <link rel="preload" as="image" href="images/process/wash-01-1600.webp" imagesrcset="images/process/wash-01-900.webp 900w, images/process/wash-01-1600.webp 1600w" imagesizes="(max-width: 720px) 100vw, 50vw" type="image/webp">
+  <link rel="stylesheet" href="styles.css?v=17">
   <link rel="stylesheet" href="chatbot.css?v=3">
   <link rel="stylesheet" href="nav.css?v=2">
 
@@ -139,8 +139,9 @@
       </div>
       <div class="hero-art">
         <picture>
-          <source srcset="images/hero.webp" type="image/webp">
-          <img src="images/hero.jpg" alt="Water beading on a freshly waxed black car panel, golden hour light." width="900" height="1200" fetchpriority="high">
+          <source srcset="images/process/wash-01-900.webp 900w, images/process/wash-01-1600.webp 1600w" sizes="(max-width: 720px) 100vw, 50vw" type="image/webp">
+          <source srcset="images/process/wash-01-900.jpg 900w, images/process/wash-01-1600.jpg 1600w" sizes="(max-width: 720px) 100vw, 50vw" type="image/jpeg">
+          <img src="images/process/wash-01-1600.jpg" alt="Ellis rinsing a dark SUV in a Burns Park driveway, water arc visible." width="1600" height="1200" fetchpriority="high">
         </picture>
       </div>
     </div>
@@ -201,6 +202,37 @@
       <p class="pricing-helper">
         Not sure which one? <button type="button" class="link-btn" data-open-chat>Chat to plan your wash →</button>
       </p>
+    </div>
+  </section>
+
+  <!-- IN THE WILD STRIP -->
+  <section class="wild-strip" aria-label="Recent washes">
+    <div class="container">
+      <header class="section-head" style="text-align:center;margin-left:auto;margin-right:auto;">
+        <p class="eyebrow" style="justify-content:center;">In the wild</p>
+        <h2 class="display">Cars I've washed on your block.</h2>
+      </header>
+      <div class="wild-grid">
+        <a href="/gallery" aria-label="See more washes">
+          <picture>
+            <source srcset="images/process/wash-02-900.webp" type="image/webp">
+            <img src="images/process/wash-02-900.jpg" alt="Foam cannon on the side of a black SUV in a driveway" loading="lazy" width="900" height="675">
+          </picture>
+        </a>
+        <a href="/gallery" aria-label="See more washes">
+          <picture>
+            <source srcset="images/process/wash-05-900.webp" type="image/webp">
+            <img src="images/process/wash-05-900.jpg" alt="Foam covering the rear taillight of a black car" loading="lazy" width="900" height="675">
+          </picture>
+        </a>
+        <a href="/gallery" aria-label="See more washes">
+          <picture>
+            <source srcset="images/process/wash-04-900.webp" type="image/webp">
+            <img src="images/process/wash-04-900.jpg" alt="Front three-quarter shot of a foam-covered car in a driveway" loading="lazy" width="900" height="675">
+          </picture>
+        </a>
+      </div>
+      <p class="wild-cta"><a class="btn btn-ghost btn-lg" href="/gallery">See all the washes →</a></p>
     </div>
   </section>
 
@@ -425,7 +457,7 @@
   <span class="sticky-cta-sub">(628) 252-0740 · Cash, Venmo, Zelle</span>
 </a>
 
-<script src="config.js?v=15"></script>
+<script src="config.js?v=16"></script>
 <script src="app.js?v=12" defer></script>
 <script src="nav.js?v=2" defer></script>
 <script src="chatbot.js?v=10" defer></script>
