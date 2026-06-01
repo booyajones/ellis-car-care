@@ -42,10 +42,40 @@ Manage all bookings, availability, and reschedules in your **Cal.com dashboard**
 
 - **Diablo wheel scrub** +$10 (Basic & Essential; included in Premium)
 - **Clay bar** +$20 (Basic & Essential; included in Premium)
-- **Interior** $40 on Basic, $35 on Essential (deep interior quoted; Premium interior quoted)
+- **Interior** $40 on Basic, $35 on Essential (heavy pet hair or set-in stains are quoted; on Premium the whole interior is quoted)
+- **Steam clean** +$20 (only paired with Interior, it's a steam upgrade to the interior detail)
 - **Headlight restoration** +$30 (any package)
 
 If you change an add-on price, update it in **two places**: `config.js` (the website) AND the Cal.com event-type booking question label (the booking form). Keep them matched.
+
+### TODO: finish the Cal.com add-on checkboxes (5 min, your account)
+
+The booking questions currently live on the **Basic** event. Add the same checkboxes to **Essential** and **Premium** so customers can pick add-ons there too. In app.cal.com → Event Types → (open Essential, then Premium) → **Advanced → Booking questions → Add a question**, add a checkbox/boolean question for each:
+
+- Diablo wheel scrub (+$10)
+- Clay bar (+$20)
+- Interior (+$40 / +$35)
+- **Steam clean (+$20, with interior)**
+- Headlight restoration (+$30)
+
+Until then the site copy already says "add-ons are options in the booking, or just ask Ellis," so nothing is broken if a customer just tells you. The website reads whatever labels are on the booking, so as long as the words "diablo / clay / interior / steam / headlight" appear, your notification email tags them automatically.
+
+## Punch card + first-time discount (automatic)
+
+Customers earn a free Essential after **4 completed washes** (buy four, get one free). It runs itself, you don't track anything on paper.
+
+How it works:
+
+1. When a customer books, Cal.com pings the site and you get a **notification email** with their punch-card status (e.g. "punch 2 of 5") and two one-tap buttons.
+2. After you finish their wash, tap **"Mark this wash done"** in that email. That adds their punch. (That's the only step you do.)
+3. When their card fills up, your booking email shows a **FREE ESSENTIAL** banner and a **"Redeem free wash"** button. Tap it when you give them the free one.
+4. **First-time customers**: the email flags **"first-timer, take 25% off"** automatically, you just knock 25% off their total. It's tied to their email, so they can't farm it by re-booking under a cleared browser.
+
+Customers can check their own card at **https://elioncarcare.com/rewards** (they type their email, it shows the punches). It's read-only, only your email buttons can change anything.
+
+Nothing here charges a card. You still settle up in person by Venmo or cash.
+
+> Behind the scenes: the Cal.com webhook is live (fires on booking created, canceled, and meeting ended) and the links in your email are signed and time-limited, so a forwarded email can't redeem a free wash months later.
 
 ## Getting paid
 
@@ -55,7 +85,7 @@ They pay AFTER the job, when they're happy, by Venmo or cash. Your Venmo handle 
 
 1. Take a before/after photo with your phone
 2. Text them the after photo
-3. Mark the booking done in your Cal.com dashboard
+3. Tap **"Mark this wash done"** in the booking notification email (this adds their punch card credit), and mark the booking done in your Cal.com dashboard
 4. If you took good photos, save the `.jpg` files to `images/jobs/` in the repo with names like:
    - `job-01-before.jpg`
    - `job-01-after.jpg`
@@ -113,8 +143,8 @@ Your dad and Claude built this together. If you need code help, paste the error 
 
 When you're at U of M and Elion is on pause for the summer, you can:
 
-- Lower the daily cap so you don't get spammed: search for `DAILY_CAP` in `api/orders.js`, change `200` to `5`.
-- Or just remove the booking form entirely by editing `index.html`'s topnav (`href="/book"` => remove).
+- Soft pause: set `nextAvailable` in `config.js` to something like `"Back in the fall"`.
+- Or pull the **Book** link from the nav: edit the `PAGES` list at the top of `nav.js` (the nav is shared across every page now, so one edit hides it everywhere).
 - Or hand the dashboard password to whoever takes over.
 
 ---
