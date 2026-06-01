@@ -116,12 +116,17 @@ export default async function handler(nodeReq, nodeRes) {
 
   if (trigger === "BOOKING_CREATED") {
     const firstTimeEligible = !rec.firstTimeDiscountUsed; // before we flip it
+    // If a terminal status already exists for this uid (e.g. Ellis tapped
+    // "mark done" before the CREATED webhook landed, or it was cancelled),
+    // preserve it — never demote completed/cancelled/noshow back to booked.
+    const prev = rec.bookings[uid];
+    const terminal = prev && ["completed", "cancelled", "noshow"].includes(prev.status);
     rec.bookings[uid] = {
-      createdISO: new Date().toISOString(),
-      startISO: String(payload.startTime || payload.start || ""),
-      status: "booked",
-      eventType: tier,
-      addons,
+      createdISO: (prev && prev.createdISO) || new Date().toISOString(),
+      startISO: String(payload.startTime || payload.start || (prev && prev.startISO) || ""),
+      status: terminal ? prev.status : "booked",
+      eventType: tier !== "unknown" ? tier : (prev && prev.eventType) || tier,
+      addons: addons.length ? addons : (prev && prev.addons) || [],
       steamWithoutInterior,
     };
     rec.firstTimeDiscountUsed = true; // farming guard: flips on first ever booking
@@ -163,8 +168,14 @@ export default async function handler(nodeReq, nodeRes) {
   if (trigger === "BOOKING_CREATED" && process.env.ELION_NOTIFY_EMAIL) {
     try {
       const card = computeCard(rec);
-      const markDoneUrl = `${SITE}/api/loyalty?action=markdone&uid=${encodeURIComponent(uid)}&hash=${hash}&t=${signToken(`markdone:${uid}:${hash}`)}`;
-      const redeemUrl   = `${SITE}/api/loyalty?action=redeem&hash=${hash}&t=${signToken(`redeem:${hash}`)}`;
+      // Day-bucket in the signed payload so a leaked/forwarded one-tap link
+      // can't be replayed forever (loyalty.js rejects tokens older than its
+      // freshness window). encodeURIComponent the uid in BOTH the query and
+      // the signed payload so they always match on verify.
+      const day = Math.floor(Date.now() / 86400000);
+      const uidEnc = encodeURIComponent(uid);
+      const markDoneUrl = `${SITE}/api/loyalty?action=markdone&uid=${uidEnc}&hash=${hash}&d=${day}&t=${signToken(`markdone:${uidEnc}:${hash}:${day}`)}`;
+      const redeemUrl   = `${SITE}/api/loyalty?action=redeem&hash=${hash}&d=${day}&t=${signToken(`redeem:${hash}:${day}`)}`;
       const mail = ellisLoyaltyNotificationEmail({
         name: extractName(payload),
         email,
@@ -215,7 +226,8 @@ function collectResponseStrings(payload) {
     }
     out.push(String(v));
   };
-  for (const src of [payload.responses, payload.userFieldsResponses, payload.bookingFieldsResponses]) {
+  const _b = payload.booking || {};
+  for (const src of [payload.responses, payload.userFieldsResponses, payload.bookingFieldsResponses, _b.responses, _b.userFieldsResponses]) {
     if (src && typeof src === "object") {
       for (const k of Object.keys(src)) { out.push(k); eat(src[k]); }
     }
@@ -256,26 +268,34 @@ function detectTier(payload) {
   return "unknown";
 }
 
+// Attendees can live at payload.attendees OR payload.booking.attendees
+// depending on the trigger (MEETING_ENDED sometimes nests under booking).
+function attendees(payload) {
+  if (Array.isArray(payload.attendees)) return payload.attendees;
+  if (payload.booking && Array.isArray(payload.booking.attendees)) return payload.booking.attendees;
+  return [];
+}
+
 function extractEmail(payload) {
-  if (Array.isArray(payload.attendees) && payload.attendees[0] && payload.attendees[0].email) {
-    return String(payload.attendees[0].email);
-  }
-  const r = payload.responses;
-  if (r && r.email) {
-    const v = r.email.value != null ? r.email.value : r.email;
-    if (typeof v === "string") return v;
+  const att = attendees(payload);
+  if (att[0] && att[0].email) return String(att[0].email);
+  for (const r of [payload.responses, payload.booking && payload.booking.responses]) {
+    if (r && r.email) {
+      const v = r.email.value != null ? r.email.value : r.email;
+      if (typeof v === "string") return v;
+    }
   }
   return "";
 }
 
 function extractName(payload) {
-  if (Array.isArray(payload.attendees) && payload.attendees[0] && payload.attendees[0].name) {
-    return String(payload.attendees[0].name).slice(0, 80);
-  }
-  const r = payload.responses;
-  if (r && r.name) {
-    const v = r.name.value != null ? r.name.value : r.name;
-    if (typeof v === "string") return v.slice(0, 80);
+  const att = attendees(payload);
+  if (att[0] && att[0].name) return String(att[0].name).slice(0, 80);
+  for (const r of [payload.responses, payload.booking && payload.booking.responses]) {
+    if (r && r.name) {
+      const v = r.name.value != null ? r.name.value : r.name;
+      if (typeof v === "string") return v.slice(0, 80);
+    }
   }
   return "Customer";
 }

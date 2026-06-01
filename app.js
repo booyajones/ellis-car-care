@@ -226,55 +226,9 @@
     }
   }
 
-  /* 7. Form: Formspree if configured, otherwise mailto + inline confirmation. */
-
-  const form = $("#bookForm");
-  if (form) {
-    if (cfg.formspreeId && cfg.formspreeId.trim()) {
-      form.setAttribute("action", `https://formspree.io/f/${cfg.formspreeId.trim()}`);
-      form.removeAttribute("enctype");
-    } else {
-      form.addEventListener("submit", function (ev) {
-        if (!form.checkValidity()) return; // let browser show native validation
-        ev.preventDefault();
-        const fd = new FormData(form);
-        const services = fd.getAll("services").join(", ") || "(not specified)";
-        const lines = [
-          `Name: ${fd.get("name") || ""}`,
-          `Phone: ${fd.get("phone") || ""}`,
-          `Address: ${fd.get("address") || ""}`,
-          `Car: ${fd.get("car") || ""}`,
-          `Services: ${services}`,
-          `Notes: ${fd.get("notes") || ""}`,
-        ].join("\n");
-        const subject = "Elion Car Care booking";
-        const mailto = `mailto:${cfg.contact.email}?subject=${enc(subject)}&body=${enc(lines)}`;
-
-        // Trigger mailto via a hidden anchor click. This works on iOS Safari
-        // without forcing a hard navigation that wipes the page.
-        const a = document.createElement("a");
-        a.href = mailto;
-        a.style.display = "none";
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
-
-        // Replace the form with an inline confirmation so the user sees feedback
-        // even if their mail app handled the navigation in a separate context.
-        const confirm = document.createElement("div");
-        confirm.className = "book-confirm";
-        confirm.setAttribute("role", "status");
-        confirm.setAttribute("aria-live", "polite");
-        confirm.innerHTML = `
-          <p class="eyebrow">Sent</p>
-          <h3 class="form-title">Got it. Ellis will text you back.</h3>
-          <p class="book-confirm-lead">Usually inside an hour. If your mail app didn't open, text Ellis directly:</p>
-          <a class="btn btn-primary btn-lg" href="sms:${cfg.contact.phoneHref}">Text ${cfg.contact.phone}</a>
-        `;
-        form.replaceWith(confirm);
-      });
-    }
-  }
+  /* 7. (removed) The old #bookForm mailto handler is gone — ordering runs
+        through Cal.com now (see /book). The dormant form was deleted from
+        index.html, so there's nothing to wire here. */
 
   /* 8. Append OfferCatalog to the existing JSON-LD */
 

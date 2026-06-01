@@ -62,7 +62,9 @@
         free.hidden = true;
       }
 
-      if (!data.returning && filled <= 1) {
+      if (freeAvail > 0) {
+        status.textContent = "Your card's full. A free Essential is waiting, just mention it when you book.";
+      } else if (!data.returning && filled <= 1) {
         status.textContent = "Your card is started, one punch on the house. Book your first wash to keep it going.";
       } else if (nextIn === 1) {
         status.textContent = "One more wash and your next one's a free Essential.";

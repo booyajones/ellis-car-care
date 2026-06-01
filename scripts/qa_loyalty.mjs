@@ -45,7 +45,7 @@ function recWith(statuses) {
   return recompute(r);
 }
 let r0 = recWith([]);
-eq(computeCard(r0), { completedJobs: 0, stampsFilled: 1, totalSlots: CARD_SLOTS, nextRewardIn: JOBS_PER_FREE, freeEarned: 0, freeRedeemed: 0, freeAvailable: 0, firstTimeEligible: true, returning: false }, "empty card: 1 courtesy stamp, 4 to go");
+eq(computeCard(r0), { completedJobs: 0, stampsFilled: 1, totalSlots: CARD_SLOTS, nextRewardIn: JOBS_PER_FREE, cardComplete: false, freeEarned: 0, freeRedeemed: 0, freeAvailable: 0, firstTimeEligible: true, returning: false }, "empty card: 1 courtesy stamp, 4 to go");
 
 let r3 = recWith(["completed", "completed", "completed", "booked", "cancelled"]);
 eq(r3.completedJobs, 3, "3 completed (booked + cancelled excluded)");
@@ -54,12 +54,12 @@ eq([c3.stampsFilled, c3.nextRewardIn, c3.freeAvailable], [4, 1, 0], "3 done -> 4
 
 let r4 = recWith(["completed", "completed", "completed", "completed"]);
 const c4 = computeCard(r4);
-eq([c4.completedJobs, c4.freeEarned, c4.freeAvailable, c4.stampsFilled, c4.nextRewardIn], [4, 1, 1, 1, 4], "4 done -> free earned, card resets to 1/5");
+eq([c4.completedJobs, c4.freeEarned, c4.freeAvailable, c4.stampsFilled, c4.nextRewardIn, c4.cardComplete], [4, 1, 1, 5, 0, true], "4 done -> free earned, card shows FULL 5/5 (not reset) while unredeemed");
 
 let r4r = recWith(["completed", "completed", "completed", "completed"]);
 r4r.freeRedeemed = 1;
 const c4r = computeCard(recompute(r4r));
-eq(c4r.freeAvailable, 0, "redeeming the free zeroes freeAvailable");
+eq([c4r.freeAvailable, c4r.stampsFilled, c4r.nextRewardIn, c4r.cardComplete], [0, 1, 4, false], "after redeeming, card resets to 1/5 with 4 to go");
 
 let r8 = recWith(Array(8).fill("completed"));
 const c8 = computeCard(r8);

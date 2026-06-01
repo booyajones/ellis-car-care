@@ -57,8 +57,13 @@ export function isValidEmailShape(email) {
 }
 
 // ---------- signed one-tap operator tokens ----------
-// Token = HMAC(LOYALTY_HASH_SECRET, "action:value"). Lets Ellis tap a link
-// from his phone with no password, but the link can't be forged.
+// Token = HMAC(LOYALTY_HASH_SECRET, "action:value:day"). Lets Ellis tap a
+// link from his phone with no password, but the link can't be forged, and
+// loyalty.js rejects tokens older than its freshness window so a leaked /
+// forwarded email can't be replayed forever.
+// NOTE: identity hashing and token signing intentionally share
+// LOYALTY_HASH_SECRET. Rotating it re-keys every customer record AND
+// invalidates all outstanding one-tap links — only rotate on a known leak.
 export function signToken(payload) {
   const secret = process.env.LOYALTY_HASH_SECRET || "";
   if (!secret) return "";
@@ -118,13 +123,25 @@ export function computeCard(rec) {
   const freeRedeemed = rec ? (rec.freeRedeemed || 0) : 0;
   const freeAvailable = Math.max(0, freeEarned - freeRedeemed);
   const inCycle = completed % JOBS_PER_FREE;       // 0..3
-  const stampsFilled = inCycle + 1;                // +1 courtesy -> 1..4 (5th = the free)
-  const nextRewardIn = JOBS_PER_FREE - inCycle;    // jobs until the next free (1..4)
+  let stampsFilled, nextRewardIn, cardComplete;
+  if (freeAvailable > 0) {
+    // A free Essential is sitting unredeemed: show a FULL card with the
+    // reward lit. (At 4/8/12 jobs inCycle is 0, so without this the card
+    // would wrongly read "1 of 5, 4 to go" while a free is waiting.)
+    stampsFilled = CARD_SLOTS;
+    nextRewardIn = 0;
+    cardComplete = true;
+  } else {
+    stampsFilled = inCycle + 1;                    // +1 courtesy -> 1..4 (5th = the free)
+    nextRewardIn = JOBS_PER_FREE - inCycle;        // jobs until the next free (1..4)
+    cardComplete = false;
+  }
   return {
     completedJobs: completed,
     stampsFilled,
     totalSlots: CARD_SLOTS,
     nextRewardIn,
+    cardComplete,
     freeEarned,
     freeRedeemed,
     freeAvailable,

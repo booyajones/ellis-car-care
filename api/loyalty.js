@@ -110,11 +110,24 @@ async function handleOperatorAction(action, url, blobToken, sendHtml) {
   const hash = (url.searchParams.get("hash") || "").trim();
   const uid = (url.searchParams.get("uid") || "").trim();
   const token = (url.searchParams.get("t") || "").trim();
+  const day = (url.searchParams.get("d") || "").trim();
 
   if (!/^[a-f0-9]{64}$/.test(hash)) return sendHtml(400, page("Bad link", "That link looks malformed."));
 
+  // Token freshness: one-tap links expire so a forwarded email can't be
+  // replayed forever. The webhook stamps the issue-day; reject if missing,
+  // future-dated, or older than the window.
+  const MAX_TOKEN_AGE_DAYS = 60;
+  const today = Math.floor(Date.now() / 86400000);
+  const dayNum = Number(day);
+  if (!/^\d+$/.test(day) || dayNum > today || (today - dayNum) > MAX_TOKEN_AGE_DAYS) {
+    return sendHtml(401, page("Link expired", "This link has expired. Open the latest booking email, or use the dashboard."));
+  }
+  // uid was encodeURIComponent'd when the token was signed — re-encode to match.
+  const uidEnc = encodeURIComponent(uid);
+
   if (action === "markdone") {
-    if (!uid || !verifyToken(`markdone:${uid}:${hash}`, token)) {
+    if (!uid || !verifyToken(`markdone:${uidEnc}:${hash}:${day}`, token)) {
       return sendHtml(401, page("Link expired or invalid", "This mark-done link could not be verified."));
     }
     let rec = await readCustomer(hash, blobToken);
@@ -132,14 +145,17 @@ async function handleOperatorAction(action, url, blobToken, sendHtml) {
     const freeMsg = card.freeAvailable > 0
       ? `<p style="color:#3CB286;font-weight:700;">A FREE Essential is now available for this customer. Tap the "Redeem free Essential" link in the booking email when you give it.</p>`
       : "";
+    const progress = card.freeAvailable > 0
+      ? `<p>Card's full — ${card.stampsFilled} of ${card.totalSlots}.</p>`
+      : `<p>Punch ${card.stampsFilled} of ${card.totalSlots}. ${card.nextRewardIn} more for a free Essential.</p>`;
     return sendHtml(200, page(
       already ? "Already marked done" : "Job marked done (+1 punch)",
-      `${cardStrip(card)}<p>Punch ${card.stampsFilled} of ${card.totalSlots}. ${card.nextRewardIn} more for a free Essential.</p>${freeMsg}`
+      `${cardStrip(card)}${progress}${freeMsg}`
     ));
   }
 
   if (action === "redeem") {
-    if (!verifyToken(`redeem:${hash}`, token)) {
+    if (!verifyToken(`redeem:${hash}:${day}`, token)) {
       return sendHtml(401, page("Link expired or invalid", "This redeem link could not be verified."));
     }
     const rec = await readCustomer(hash, blobToken);
@@ -168,6 +184,7 @@ function publicCard(rec) {
     stampsFilled: c.stampsFilled,
     totalSlots: c.totalSlots,
     nextRewardIn: c.nextRewardIn,
+    cardComplete: c.cardComplete,
     freeAvailable: c.freeAvailable,
     returning: c.returning,
     completedJobs: c.completedJobs,

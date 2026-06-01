@@ -365,7 +365,11 @@ function validateOrder(b) {
   if (!["burns", "annarbor", "nearby"].includes(location)) return { error: "invalid_location" };
   order.location = location;
 
-  // First-time flag (client-side hint; we recompute on server)
+  // First-time flag — DORMANT endpoint only. The live first-time 25% is now
+  // server-decided in the loyalty store (api/_loyalty.js, keyed by email
+  // hash), not trusted from the client. If this POST path is ever
+  // re-enabled, route first-time eligibility through the loyalty record
+  // instead of this client-supplied flag (otherwise it's farmable again).
   order.first_time = !!b.first_time;
 
   return { order };
