@@ -80,6 +80,10 @@
       const inc = (a.includedIn || []).map(t => escapeHtml(tierName(cfg, t)));
       let avail = detail || (onTiers.length ? onTiers.join(" & ") : "");
       if (inc.length) avail += `${avail ? ". " : ""}Included in ${inc.join(" & ")}`;
+      if (a.requires) {
+        const reqName = (cfg.addons.find(x => x.id === a.requires) || {}).name || a.requires;
+        avail += `${avail ? ". " : ""}Add to ${escapeHtml(reqName.toLowerCase())}`;
+      }
 
       return `
         <li class="cal-addon-item">

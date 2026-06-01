@@ -42,6 +42,7 @@ ADD-ONS (picked as checkboxes inside the Cal.com booking):
   - Diablo wheel scrub ($10): deep wheel + tire scrub past a rinse. Available on Basic and Essential; already included in Premium.
   - Clay bar ($20): pulls bonded contaminants out of the paint. Available on Basic and Essential; already included in Premium.
   - Interior ($40 on Basic, $35 on Essential — $5 cheaper to nudge Essential): vacuum, wipe-down, glass, vents. Deep interior (heavy pet hair or set-in stains) is quoted, not flat. On Premium, interior is quoted.
+  - Steam clean ($20): pairs WITH interior only (it's a steam upgrade to the interior detail). Lifts set-in grime, sanitizes vents and seams. Only offer it when interior is being done.
   - Headlight restoration ($30): sand + polish + UV pass for yellowed/foggy headlights. Any package.
 
 DISCOUNTS:

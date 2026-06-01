@@ -128,6 +128,7 @@ const CONFIG = {
   // price:       flat add-on price
   // priceByTier: per-package price (used for Interior — $5 less on Essential)
   // quotedTiers: packages where this add-on is quoted, not flat-priced
+  // requires:    add-on id this depends on (steam clean needs interior)
   // These mirror the Cal.com booking questions on each event type.
   // ----------------------------------------------------------
   addons: [
@@ -153,7 +154,15 @@ const CONFIG = {
       priceByTier: { basic: 40, essential: 35 },
       tiers: ["basic", "essential", "premium"],
       quotedTiers: ["premium"],
-      description: "Vacuum, wipe-down, glass, and vents. Deep interior (heavy pet hair or stains) is quoted.",
+      description: "Vacuum, wipe-down, glass, door jambs, and vents. Heavy pet hair or set-in stains run deeper, so those are quoted.",
+    },
+    {
+      id: "steam",
+      name: "Steam clean",
+      price: 20,
+      tiers: ["basic", "essential", "premium"],
+      requires: "interior",
+      description: "Add steam to the interior detail. Lifts set-in grime and sanitizes vents, seams, and tight spots. Pairs with interior.",
     },
     {
       id: "headlight",

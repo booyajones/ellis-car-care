@@ -151,7 +151,11 @@
       if (perTierNote) avail += `${perTierNote}. `;
       else if (onTiers.length) avail += `On ${onTiers.map(escapeHtml).join(", ")}. `;
       if (inc.length) avail += `Included in ${inc.map(escapeHtml).join(", ")}.`;
-      const deepNote = (a.id === "interior") ? " Deep interior quoted." : "";
+      // Dependent add-ons (steam clean -> interior) get a clear tag.
+      if (a.requires) {
+        const reqName = (cfg.addons.find(x => x.id === a.requires) || {}).name || a.requires;
+        avail += ` Add to ${escapeHtml(reqName.toLowerCase())}.`;
+      }
 
       const card = document.createElement("div");
       card.className = "addon-card";
@@ -160,8 +164,8 @@
           <h4 class="addon-name">${escapeHtml(a.name)}</h4>
           <span class="addon-price">${priceLine}</span>
         </div>
-        <p class="addon-desc">${escapeHtml(a.description)}${deepNote}</p>
-        <p class="addon-avail">${avail}</p>
+        <p class="addon-desc">${escapeHtml(a.description)}</p>
+        <p class="addon-avail">${avail.trim()}</p>
       `;
       addonsEl.appendChild(card);
     });

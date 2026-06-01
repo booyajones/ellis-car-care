@@ -38,6 +38,7 @@
 
   const ADDONS = {
     interior:  { id: "interior", name: "Interior (vacuum + wipe + glass + vents)", price: 40, included: [] },
+    steam:     { id: "steam",    name: "Steam clean (with interior)",             price: 20, included: [], requires: "interior" },
     headlight: { id: "headlight", name: "Headlight restoration",                  price: 30, included: [] },
     diablo:    { id: "diablo",   name: "Diablo wheel scrub",                      price: 10, included: ["premium"] },
     claybar:   { id: "claybar",  name: "Clay bar",                                price: 20, included: ["premium"] },
@@ -462,9 +463,16 @@
       reasons.push("Bonded contaminants in the paint — a clay bar (+$20) pulls them out before sealing.");
     }
 
+    // Steam clean — a flat $20 add-on that pairs with interior. Suggested when
+    // the inside is grimy (stains or disaster-zone), since steam lifts set-in dirt.
+    if (wantsInterior && (heavyStains || disasterInt)) {
+      addons.push({ ...ADDONS.steam });
+      reasons.push("Set-in grime inside, so I added a steam clean ($20) on top of the interior. It lifts what a wipe-down won't.");
+    }
+
     // Deep interior signals — no flat upcharge; Ellis quotes these.
     if (wantsInterior && (lotsPetHair || heavyStains || disasterInt)) {
-      reasons.push("Heavy pet hair, stains, or a rough interior means a deep interior, which Ellis quotes on top.");
+      reasons.push("Heavy pet hair or stains can mean a deep interior, which Ellis quotes on top if it needs it.");
     }
 
     // ---- Size note (timing only, no upcharge) ----
