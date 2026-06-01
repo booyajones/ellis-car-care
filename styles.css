@@ -709,6 +709,18 @@ section {
   color: var(--ink-soft);
   line-height: 1.5;
 }
+.bundle-price-quote {
+  font-size: 1.15rem;
+  letter-spacing: 0;
+}
+.bundle-addons {
+  font-size: 0.82rem;
+  line-height: 1.5;
+  color: var(--muted);
+  margin: 0;
+}
+.bundle-addon-inc { color: var(--accent); font-weight: 600; }
+.bundle-addon-opt { color: var(--muted); }
 .bundle-includes {
   list-style: none;
   padding: 0;
@@ -802,40 +814,80 @@ section {
   font-weight: 600;
 }
 
-.extras {
+/* ADD-ONS BLOCK (home pricing section) -------------------- */
+.addons-block {
+  margin-top: var(--s-7);
+  padding-top: var(--s-6);
+  border-top: 1px solid var(--line);
+}
+.addons-head { margin-bottom: var(--s-5); }
+.addons-title {
+  font-family: var(--display);
+  font-weight: 600;
+  font-size: 1.4rem;
+  color: var(--ink);
+  margin: 0 0 4px;
+}
+.addons-sub {
+  color: var(--muted);
+  font-size: 0.92rem;
+  margin: 0;
+}
+.addons-grid {
   display: grid;
   grid-template-columns: 1fr;
-  gap: var(--s-5);
-  margin-top: var(--s-3);
+  gap: var(--s-4);
 }
-.extra-card {
+@media (min-width: 720px) {
+  .addons-grid { grid-template-columns: repeat(2, 1fr); }
+}
+@media (min-width: 1000px) {
+  .addons-grid { grid-template-columns: repeat(4, 1fr); }
+}
+.addon-card {
   background: var(--surface);
   border: 1px dashed var(--line-strong);
   border-radius: var(--radius);
   padding: var(--s-5);
-  display: grid;
-  grid-template-columns: 1fr auto;
-  align-items: start;
-  gap: var(--s-4) var(--s-5);
+  display: flex;
+  flex-direction: column;
+  gap: var(--s-3);
 }
-.extra-card .eyebrow { grid-column: 1 / -1; }
-.extra-name {
+.addon-card-top {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--s-3);
+}
+.addon-name {
   font-family: var(--display);
   font-weight: 600;
-  font-size: 1.25rem;
-  color: var(--ink);
-}
-.extra-price {
-  font-family: var(--display);
-  font-weight: 600;
-  color: var(--ink);
   font-size: 1.1rem;
+  color: var(--ink);
+  margin: 0;
+}
+.addon-price {
+  font-family: var(--mono);
+  font-size: 0.8rem;
+  font-weight: 500;
+  color: var(--accent);
+  white-space: nowrap;
   font-variant-numeric: tabular-nums lining-nums;
 }
-.extra-desc {
-  grid-column: 1 / -1;
+.addon-desc {
   color: var(--ink-soft);
-  font-size: 0.94rem;
+  font-size: 0.9rem;
+  line-height: 1.5;
+  margin: 0;
+}
+.addon-avail {
+  margin: auto 0 0;
+  font-family: var(--mono);
+  font-size: 0.68rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--muted);
+  line-height: 1.5;
 }
 
 /* PROCESS -------------------------------------------------- */
@@ -1403,6 +1455,87 @@ section {
   text-align: center;
 }
 .cal-fast-note a { color: var(--accent); }
+
+/* /book add-ons explainer under the calendar embed */
+.cal-addons-note {
+  margin-top: var(--s-5);
+  padding-top: var(--s-5);
+  border-top: 1px solid var(--line);
+}
+.cal-addons-title {
+  font-family: var(--mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin: 0 0 var(--s-4);
+}
+.cal-addons-list {
+  list-style: none;
+  margin: 0 0 var(--s-4);
+  padding: 0;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--s-3);
+}
+@media (min-width: 640px) {
+  .cal-addons-list { grid-template-columns: 1fr 1fr; }
+}
+.cal-addon-item {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: baseline;
+  gap: 2px var(--s-3);
+  padding: var(--s-3) 0;
+  border-bottom: 1px solid var(--line);
+}
+.cal-addon-name {
+  font-weight: 600;
+  color: var(--ink);
+  font-size: 0.95rem;
+}
+.cal-addon-price {
+  font-family: var(--mono);
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--accent);
+  text-align: right;
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums lining-nums;
+}
+.cal-addon-avail {
+  grid-column: 1 / -1;
+  font-size: 0.82rem;
+  color: var(--muted);
+  line-height: 1.45;
+}
+.cal-addons-foot { margin: 0; }
+
+/* /book first-time note + AI helper card */
+.book-firsttime {
+  display: inline-block;
+  margin-top: var(--s-4);
+  padding: 8px 16px;
+  background: rgba(232, 155, 58, 0.1);
+  border: 1px solid rgba(232, 155, 58, 0.3);
+  border-radius: 999px;
+  font-size: 0.92rem;
+  color: var(--ink-soft);
+}
+.book-firsttime strong { color: var(--accent); }
+.book-help {
+  margin-top: var(--s-7);
+  padding: var(--s-6);
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  max-width: 520px;
+}
+.book-help-head {
+  display: flex;
+  align-items: center;
+  gap: var(--s-4);
+}
 
 /* PROCESS PAGE INLINE PHOTOS ------------------------------- */
 .process-photo {

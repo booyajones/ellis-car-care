@@ -26,38 +26,36 @@ Then redeploy (just push any commit, or click "Redeploy" in Vercel dashboard).
 
 ## When a customer books
 
-1. They fill out the form at `/book` (or chat with the AI helper)
-2. Their order saves and pops up in your `/admin` dashboard
-3. They get a confirmation email
-4. **You get an email** at elionx24@gmail.com (the notification address). To change it: `vercel env rm ELION_NOTIFY_EMAIL production` then `vercel env add ELION_NOTIFY_EMAIL production` and paste the new address.
-5. **You text them within an hour** to lock in a time
+Ordering goes through **Cal.com** now. The `/book` page leads with the calendar.
 
-The site already tells them you'll text. They expect it.
+1. They pick a tier (Basic / Essential / Premium) on `/book`
+2. They pick a time slot in the embedded Cal.com calendar
+3. They check off add-ons (Diablo wheel scrub, clay bar, interior, headlights) right in the Cal.com booking
+4. **You get a Cal.com email + it shows in your Cal.com dashboard** at app.cal.com. The booking has their name, phone, address, the add-ons they picked, and any notes.
+5. **You confirm the total when you arrive** (the site quotes a starting number; you finalize it based on add-ons, deep interior, etc.)
 
-## Reading the dashboard
+Manage all bookings, availability, and reschedules in your **Cal.com dashboard** (app.cal.com, sign in with elionx24@gmail.com). That's your source of truth now.
 
-Each order is a card. The fields:
+> The old custom order form and `/admin` dashboard are retired. `/admin` still exists but no new orders flow into it. Everything lives in Cal.com.
 
-- **Name + total** at the top
-- **Status badge** (new, scheduled, in_progress, done, cancelled)
-- **Tier**: Basic, Essential, or Premium, plus what they want cleaned
-- **Add-ons**: headlight, pet hair, etc.
-- **Phone / address / car / preferred timing**: tap-to-call, tap-to-text, tap-for-map
-- **First-time star**: if you see this they got 25% off automatically
-- **Status dropdown**: change as you go (new, then scheduled, then in_progress, then done)
-- **Delete**: for spam or test orders. Confirms first.
+## Add-on prices (these are also the Cal.com booking questions)
 
-Refresh in the top right pulls latest orders.
+- **Diablo wheel scrub** +$10 (Basic & Essential; included in Premium)
+- **Clay bar** +$20 (Basic & Essential; included in Premium)
+- **Interior** $40 on Basic, $35 on Essential (deep interior quoted; Premium interior quoted)
+- **Headlight restoration** +$30 (any package)
+
+If you change an add-on price, update it in **two places**: `config.js` (the website) AND the Cal.com event-type booking question label (the booking form). Keep them matched.
 
 ## Getting paid
 
-Customer's confirmation email has a Venmo deep link with the right amount pre-filled. They pay AFTER the job, when they're happy. Your Venmo handle is `@Ellis-Wyatt-2` (controlled by `config.js` → `contact.venmo` and `contact.venmoSlug` for the client side, plus `VENMO_HANDLE` / `VENMO_SLUG` at the top of `api/_email.js` for the email templates). If you change your Venmo handle, change BOTH places, then push.
+They pay AFTER the job, when they're happy, by Venmo or cash. Your Venmo handle is `@Ellis-Wyatt-2` (shown on the site and the booking). It's set in `config.js` → `contact.venmo` and `contact.venmoSlug`, plus `VENMO_HANDLE` / `VENMO_SLUG` at the top of `api/_email.js`. If you change your Venmo handle, change BOTH places, then push.
 
 ## When you finish a job
 
 1. Take a before/after photo with your phone
 2. Text them the after photo
-3. Mark the dashboard card "done"
+3. Mark the booking done in your Cal.com dashboard
 4. If you took good photos, save the `.jpg` files to `images/jobs/` in the repo with names like:
    - `job-01-before.jpg`
    - `job-01-after.jpg`

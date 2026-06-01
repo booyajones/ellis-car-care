@@ -32,6 +32,9 @@
     { id: "10", alt: "Side foam mist on a black SUV in a driveway" },
     { id: "11", alt: "Water rinsing the roof and windshield of a dark sedan, neighborhood backdrop" },
     { id: "12", alt: "Close-up of foam suds running off the wheel and side panel of a black SUV" },
+    { id: "13", alt: "Pressure-washing a black Enkei wheel on a white car, Diablo wheel scrub" },
+    { id: "14", alt: "Spray hitting the face of a black multi-spoke wheel, brake dust rinsing off" },
+    { id: "15", alt: "Clean black Enkei rim and tire after a Diablo wheel scrub" },
   ];
 
   function tryImage(src) {

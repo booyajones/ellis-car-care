@@ -28,7 +28,7 @@
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,500;1,9..144,600&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap">
 
   <link rel="preload" as="image" href="images/process/wash-01-1600.webp" imagesrcset="images/process/wash-01-900.webp 900w, images/process/wash-01-1600.webp 1600w" imagesizes="(max-width: 720px) 100vw, 50vw" type="image/webp">
-  <link rel="stylesheet" href="styles.css?v=21">
+  <link rel="stylesheet" href="styles.css?v=22">
   <link rel="stylesheet" href="chatbot.css?v=3">
   <link rel="stylesheet" href="nav.css?v=2">
 
@@ -187,14 +187,18 @@
     <div class="container">
       <header class="section-head">
         <p class="eyebrow">Pricing</p>
-        <h2 class="display">Three packages. One add-on.</h2>
-        <p>Burns Park is free. Greater Ann Arbor (48104, 48103, 48105) adds $5 for travel.</p>
+        <h2 class="display">Three packages. Add what you want.</h2>
+        <p>Burns Park is free. Greater Ann Arbor (48104, 48103, 48105) adds $5 for travel. Add-ons get picked when you book your time.</p>
       </header>
 
       <div class="bundles" data-bundles></div>
 
-      <div class="extras">
-        <div class="extra-card" data-addon></div>
+      <div class="addons-block">
+        <header class="addons-head">
+          <h3 class="addons-title">Add-ons</h3>
+          <p class="addons-sub">Check these off in the booking step. Picked, not pushed.</p>
+        </header>
+        <div class="addons-grid" data-addons></div>
       </div>
 
       <p class="pricing-helper">
@@ -452,9 +456,9 @@
   <span class="sticky-cta-sub">(628) 252-0740 · Venmo or cash</span>
 </a>
 
-<script src="config.js?v=19"></script>
-<script src="app.js?v=12" defer></script>
+<script src="config.js?v=20"></script>
+<script src="app.js?v=13" defer></script>
 <script src="nav.js?v=2" defer></script>
-<script src="chatbot.js?v=10" defer></script>
+<script src="chatbot.js?v=11" defer></script>
 </body>
 </html>

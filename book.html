@@ -13,7 +13,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&display=swap">
-  <link rel="stylesheet" href="styles.css?v=21">
+  <link rel="stylesheet" href="styles.css?v=22">
   <link rel="stylesheet" href="chatbot.css?v=3">
   <link rel="stylesheet" href="book.css?v=2">
   <link rel="stylesheet" href="nav.css?v=2">
@@ -28,38 +28,38 @@
   <div class="container">
     <header class="section-head book-head">
       <p class="eyebrow">Book a wash</p>
-      <h1 class="display">Pick a time. You're booked.</h1>
-      <p class="book-firsttime" data-firsttime-banner hidden>
-        <strong>25% off your first order</strong>, applied automatically at checkout.
+      <h1 class="display">Pick a tier, then a time.</h1>
+      <p class="book-firsttime">
+        <strong>First wash? 25% off.</strong> Mention it in the booking notes and Ellis takes it off your total.
       </p>
     </header>
 
     <!-- ============================================================
-         FAST PATH: Cal.com tier picker. Click a tier, the embedded
-         calendar swaps to that tier's event type. Customer books a
-         real slot in one screen. No form required for the fast path.
+         Cal.com is the order system. Pick a tier, the embedded
+         calendar swaps to that tier's event type, and add-ons +
+         interior are checkboxes inside the Cal.com booking step.
          ============================================================ -->
     <section class="cal-fast" aria-labelledby="cal-fast-heading">
       <div class="cal-fast-head">
-        <h2 id="cal-fast-heading" class="cal-fast-title">Pick a tier, then a time.</h2>
-        <p class="cal-fast-sub">Booking lands on Ellis's calendar with a confirmation. About 30 seconds.</p>
+        <h2 id="cal-fast-heading" class="cal-fast-title">Choose your package.</h2>
+        <p class="cal-fast-sub">Pick a tier, pick a time, check off any add-ons in the booking. Lands on Ellis's calendar with a confirmation. About 30 seconds.</p>
       </div>
       <div class="cal-fast-tiers" role="tablist" aria-label="Wash tier">
         <button type="button" class="cal-tier-btn" data-cal-tier="basic" role="tab" aria-selected="false" aria-controls="cal-embed-panel">
           <span class="cal-tier-name">Basic</span>
           <span class="cal-tier-meta"><span>$40</span><span>45 min</span></span>
-          <span class="cal-tier-desc">Hand wash, dry, tires, jambs.</span>
+          <span class="cal-tier-desc">Wheel rinse, two-bucket contact wash, hand dry.</span>
         </button>
         <button type="button" class="cal-tier-btn is-popular" data-cal-tier="essential" role="tab" aria-selected="true" aria-controls="cal-embed-panel">
           <span class="cal-tier-popular">Most popular</span>
           <span class="cal-tier-name">Essential</span>
-          <span class="cal-tier-meta"><span>$90</span><span>1.5 hr</span></span>
-          <span class="cal-tier-desc">Wash + ceramic seal. Paint protected 3-4 months.</span>
+          <span class="cal-tier-meta"><span>$60</span><span>1 hr</span></span>
+          <span class="cal-tier-desc">Everything in Basic, finished with spray wax.</span>
         </button>
         <button type="button" class="cal-tier-btn" data-cal-tier="premium" role="tab" aria-selected="false" aria-controls="cal-embed-panel">
           <span class="cal-tier-name">Premium</span>
-          <span class="cal-tier-meta"><span>$200</span><span>4 hr</span></span>
-          <span class="cal-tier-desc">Wash + seal + single-stage cut and polish.</span>
+          <span class="cal-tier-meta"><span>from $200</span><span>quoted</span></span>
+          <span class="cal-tier-desc">Full decon, clay bar, machine polish, ceramic coat.</span>
         </button>
       </div>
       <div class="cal-embed-wrap" id="cal-embed-panel" role="tabpanel" aria-label="Time slot picker">
@@ -71,195 +71,33 @@
           allow="payment https://cal.com https://app.cal.com; clipboard-write https://cal.com https://app.cal.com"
           referrerpolicy="strict-origin-when-cross-origin"></iframe>
       </div>
-      <p class="cal-fast-note">
-        Want headlight restoration, pet-hair removal, or other add-ons? <a href="#detailed-form">Use the detailed form below.</a>
-      </p>
+      <div class="cal-addons-note">
+        <p class="cal-addons-title">Add-ons you can check off in the booking</p>
+        <ul class="cal-addons-list" data-book-addons></ul>
+        <p class="cal-addons-foot muted small">No payment now. You pay Ellis after the job via Venmo or cash. He confirms your total when he arrives.</p>
+      </div>
     </section>
 
-    <hr class="stripe-rule is-wide" aria-hidden="true" style="margin: var(--s-8) auto var(--s-6);">
-
-    <header class="section-head" id="detailed-form" style="margin-top:var(--s-7);">
-      <p class="eyebrow">Detailed form</p>
-      <h2 class="display">Or, tell Ellis the specifics.</h2>
-      <p style="max-width:60ch;color:var(--ink-soft);">
-        Use this if you want add-ons (headlight, pet hair, leather, etc.), specific notes for Ellis, or you'd rather have him text you back to lock the time.
-      </p>
-    </header>
-
-    <div class="book-layout">
-      <!-- Order form -->
-      <form id="orderForm" class="order-form" novalidate>
-        <fieldset class="tier-pick">
-          <legend>Tier</legend>
-          <label class="tier-card">
-            <input type="radio" name="tier" value="basic" required>
-            <span class="tier-card-body">
-              <span class="tier-name">Basic</span>
-              <span class="tier-price">$40</span>
-              <span class="tier-desc">Hand wash, dry, tires, jambs.</span>
-              <span class="tier-time">about 45 min</span>
-            </span>
-          </label>
-          <label class="tier-card is-popular">
-            <input type="radio" name="tier" value="essential" required>
-            <span class="tier-card-body">
-              <span class="tier-name">Essential <span class="tier-tag">Most popular</span></span>
-              <span class="tier-price">$90</span>
-              <span class="tier-desc">Wash + ceramic seal. Paint protected 3 to 4 months.</span>
-              <span class="tier-time">about 1.5 hr</span>
-            </span>
-          </label>
-          <label class="tier-card">
-            <input type="radio" name="tier" value="premium" required>
-            <span class="tier-card-body">
-              <span class="tier-name">Premium</span>
-              <span class="tier-price">$200</span>
-              <span class="tier-desc">Wash + seal + single-stage cut and polish.</span>
-              <span class="tier-time">about 4 hr</span>
-            </span>
-          </label>
-        </fieldset>
-
-        <fieldset class="scope-pick">
-          <legend>What gets cleaned</legend>
-          <label class="check"><input type="radio" name="scope" value="exterior" checked> Exterior only</label>
-          <label class="check"><input type="radio" name="scope" value="both"> Inside and out <span class="bundle-hint">(+$50 interior, save $10 with Essential or Premium)</span></label>
-          <label class="check"><input type="radio" name="scope" value="interior"> Interior focus</label>
-        </fieldset>
-
-        <fieldset class="addon-pick">
-          <legend>Add-ons</legend>
-          <label class="check"><input type="checkbox" name="addons" value="headlight"> Headlight restoration ($30)</label>
-          <label class="check"><input type="checkbox" name="addons" value="pethair"> Heavy pet hair removal ($20) <span class="addon-hint">requires interior</span></label>
-          <label class="check"><input type="checkbox" name="addons" value="stain"> Heavy stain treatment ($25) <span class="addon-hint">requires interior</span></label>
-          <label class="check"><input type="checkbox" name="addons" value="leather"> Leather conditioning ($15) <span class="addon-hint">requires interior, free with Premium</span></label>
-        </fieldset>
-
-        <div class="grid-2">
-          <label class="field">
-            <span>Your name</span>
-            <input type="text" name="name" required autocomplete="name">
-          </label>
-          <label class="field">
-            <span>Phone</span>
-            <input type="tel" name="phone" required autocomplete="tel" inputmode="tel" placeholder="So Ellis can text you back">
-          </label>
+    <!-- AI helper -->
+    <aside class="book-help">
+      <div class="book-help-head">
+        <span class="chat-avatar" aria-hidden="true">E</span>
+        <div>
+          <p class="chat-title">Not sure which package?</p>
+          <p class="chat-sub">Snap a photo of your car or just describe it</p>
         </div>
-
-        <label class="field">
-          <span>Email (optional, for confirmation)</span>
-          <input type="email" name="email" autocomplete="email" inputmode="email" placeholder="you@example.com">
-        </label>
-
-        <label class="field">
-          <span>Address</span>
-          <input type="text" name="address" required autocomplete="street-address" placeholder="Street, Ann Arbor">
-        </label>
-
-        <label class="field">
-          <span>Car (optional)</span>
-          <input type="text" name="car" placeholder="e.g. 2020 Honda Pilot">
-        </label>
-
-        <fieldset class="loc-pick">
-          <legend>Where are you?</legend>
-          <label class="check"><input type="radio" name="location" value="burns" checked> Burns Park (free travel)</label>
-          <label class="check"><input type="radio" name="location" value="annarbor"> Ann Arbor 48104/48103/48105 (+$5)</label>
-          <label class="check"><input type="radio" name="location" value="nearby"> Nearby (Ellis confirms travel)</label>
-        </fieldset>
-
-        <fieldset class="slot-pick">
-          <legend>When works?</legend>
-          <p class="slot-hint">Pick a day and a window. Ellis will text to confirm the exact time.</p>
-          <div class="slot-day-row" data-slot-days></div>
-          <div class="slot-time-row" data-slot-times>
-            <label class="slot-chip"><input type="radio" name="slot_time" value="morning"> Morning <span class="slot-chip-sub">9am to noon</span></label>
-            <label class="slot-chip"><input type="radio" name="slot_time" value="afternoon"> Afternoon <span class="slot-chip-sub">noon to 4pm</span></label>
-            <label class="slot-chip"><input type="radio" name="slot_time" value="evening"> Evening <span class="slot-chip-sub">4pm to 7pm</span></label>
-            <label class="slot-chip"><input type="radio" name="slot_time" value="flexible" checked> Flexible <span class="slot-chip-sub">anytime that day</span></label>
-          </div>
-          <input type="hidden" name="preferred_timing" data-slot-formatted>
-        </fieldset>
-
-        <label class="field">
-          <span>Notes (optional)</span>
-          <textarea name="notes" rows="3" placeholder="Anything Ellis should know."></textarea>
-        </label>
-
-        <div class="quote-box" data-quote-box>
-          <div class="quote-line"><span>Tier</span><span data-quote-tier>Pick a tier above</span></div>
-          <div class="quote-line"><span>Add-ons</span><span data-quote-addons>(none)</span></div>
-          <div class="quote-line"><span>Travel</span><span data-quote-travel>$0</span></div>
-          <div class="quote-line" data-quote-bundle-row hidden><span>Bundle discount</span><span data-quote-bundle>$0</span></div>
-          <div class="quote-line" data-quote-firsttime-row hidden><span>First-time 25% off</span><span data-quote-firsttime>$0</span></div>
-          <div class="quote-line quote-total"><span>Total</span><span data-quote-total>$0</span></div>
-        </div>
-
-        <button type="submit" class="btn btn-primary btn-lg" data-submit-btn>Book this wash</button>
-        <p class="muted small">No payment now. You pay Ellis after the job via Venmo or cash.</p>
-      </form>
-
-      <!-- AI assistant alongside -->
-      <aside class="book-ai">
-        <div class="book-ai-head">
-          <span class="chat-avatar" aria-hidden="true">E</span>
-          <div>
-            <p class="chat-title">Need help picking?</p>
-            <p class="chat-sub">Snap a photo or just describe your car</p>
-          </div>
-        </div>
-        <div class="book-ai-body">
-          <p class="muted small" style="margin-bottom: 12px;">Tap the chat button (bottom left) to open the AI planner. It looks at your car and recommends the right tier and add-ons. You can apply its suggestions to this form with one tap.</p>
-          <button type="button" class="btn btn-ghost" data-open-chat>Open AI planner</button>
-        </div>
-      </aside>
-    </div>
-  </div>
-
-  <!-- Confirmation modal -->
-  <div class="confirm-modal" id="confirmModal" aria-hidden="true" role="dialog" aria-labelledby="confirmTitle">
-    <div class="confirm-modal-inner">
-      <button type="button" class="confirm-close" aria-label="Close">×</button>
-      <h2 id="confirmTitle" class="display">Booked. Thanks!</h2>
-      <p class="muted small" data-confirm-order-id></p>
-
-      <div class="confirm-summary" data-confirm-summary></div>
-
-      <h3>Pick your exact time</h3>
-      <p class="muted small" style="margin-top:-8px;">Pick a slot below and you're locked in. Ellis will get a calendar invite and so will you.</p>
-      <div class="cal-embed-wrap" data-cal-embed-wrap>
-        <a class="btn btn-primary btn-lg" data-cal-link href="https://cal.com/elion" target="_blank" rel="noopener">Open the calendar</a>
       </div>
-
-      <h3>Pay Ellis (after the job)</h3>
-      <p>Open Venmo and send <strong data-confirm-amount>$0</strong> to <strong data-venmo-handle>@Ellis-Wyatt-2</strong> with note <em data-confirm-venmo-note></em>.</p>
-      <div class="confirm-actions">
-        <a href="#" class="btn btn-primary btn-lg" data-venmo-link target="_blank" rel="noopener">Open Venmo</a>
-        <button type="button" class="btn btn-ghost" data-copy-handle>Copy <span data-venmo-handle>@Ellis-Wyatt-2</span></button>
-      </div>
-
-      <h3>What happens next</h3>
-      <ul class="confirm-next">
-        <li>Pick your slot above, you'll both get a calendar invite.</li>
-        <li>If you'd rather text to pick a time, that's fine too. Ellis still gets the order in his dashboard.</li>
-        <li>Before-and-after photos every job. Anything not right, he comes back.</li>
-      </ul>
-
-      <p class="muted small">
-        Save this page or screenshot it. Your confirmation is order
-        <strong data-confirm-id-bare></strong>.
-      </p>
-
-      <button type="button" class="btn btn-ghost" data-confirm-close>Done</button>
-    </div>
+      <p class="muted small" style="margin:12px 0;">The AI planner looks at your car and tells you which tier and add-ons make sense, then you book the time above.</p>
+      <button type="button" class="btn btn-ghost" data-open-chat>Open AI planner</button>
+    </aside>
   </div>
 </main>
 
 <footer class="site-footer" data-shared-footer></footer>
 
-<script src="config.js?v=19"></script>
+<script src="config.js?v=20"></script>
 <script src="nav.js?v=2" defer></script>
-<script src="chatbot.js?v=10" defer></script>
-<script src="book.js?v=2" defer></script>
+<script src="chatbot.js?v=11" defer></script>
+<script src="book.js?v=4" defer></script>
 </body>
 </html>
