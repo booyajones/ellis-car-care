@@ -48,17 +48,15 @@ Manage all bookings, availability, and reschedules in your **Cal.com dashboard**
 
 If you change an add-on price, update it in **two places**: `config.js` (the website) AND the Cal.com event-type booking question label (the booking form). Keep them matched.
 
-### TODO: finish the Cal.com add-on checkboxes (5 min, your account)
+### Cal.com add-on checkboxes (done, all three events)
 
-The booking questions currently live on the **Basic** event. Add the same checkboxes to **Essential** and **Premium** so customers can pick add-ons there too. In app.cal.com → Event Types → (open Essential, then Premium) → **Advanced → Booking questions → Add a question**, add a checkbox/boolean question for each:
+Each event (Basic, Essential, Premium) has one **Add-ons** booking question so customers can check options when they book:
 
-- Diablo wheel scrub (+$10)
-- Clay bar (+$20)
-- Interior (+$40 / +$35)
-- **Steam clean (+$20, with interior)**
-- Headlight restoration (+$30)
+- Basic: Diablo (+$10), Clay bar (+$20), Interior (+$40), Steam clean (+$20), Headlight (+$30)
+- Essential: Diablo (+$10), Clay bar (+$20), Interior (+$35), Steam clean (+$20), Headlight (+$30)
+- Premium: Interior (quoted), Steam clean (+$20), Headlight (+$30). Diablo and Clay are already included in Premium.
 
-Until then the site copy already says "add-ons are options in the booking, or just ask Ellis," so nothing is broken if a customer just tells you. The website reads whatever labels are on the booking, so as long as the words "diablo / clay / interior / steam / headlight" appear, your notification email tags them automatically.
+**Maintenance rule if you ever edit these in Cal.com:** keep the word "interior" OUT of the Steam clean option (use "Steam clean (+$20)", not "...with interior"). The site detects add-ons by keyword, so "interior" inside the Steam label would make every steam booking also read as an interior job. The "pick Interior too" hint lives in the question's main label instead, which is safe. Same idea: don't add a separate yes/no "Interior?" question with a "No interior" option, that always trips the interior keyword. Interior is just one of the checkboxes.
 
 ## Punch card + first-time discount (automatic)
 
