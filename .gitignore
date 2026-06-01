@@ -8,3 +8,7 @@ node_modules/
 *.log
 
 .env*.local
+
+# Stray code-review dump files (path-mangled artifacts)
+*UserschrisDownloads*
+*_[0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f].js
