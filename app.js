@@ -251,30 +251,10 @@
         through Cal.com now (see /book). The dormant form was deleted from
         index.html, so there's nothing to wire here. */
 
-  /* 8. Append OfferCatalog to the existing JSON-LD */
-
-  try {
-    const existing = $('script[type="application/ld+json"]');
-    if (existing) {
-      const parsed = JSON.parse(existing.textContent);
-      parsed.hasOfferCatalog = {
-        "@type": "OfferCatalog",
-        "name": "Detailing packages",
-        "itemListElement": cfg.bundles.map((b) => ({
-          "@type": "Offer",
-          "name": b.name,
-          "price": String(b.price),
-          "priceCurrency": "USD",
-          "itemOffered": {
-            "@type": "Service",
-            "name": b.name,
-            "description": b.includes.join("; ")
-          }
-        }))
-      };
-      existing.textContent = JSON.stringify(parsed);
-    }
-  } catch (e) { /* leave static JSON-LD alone if parsing fails */ }
+  /* 8. (removed) OfferCatalog is now authored statically inside the home
+        @graph JSON-LD (LocalBusiness #business hasOfferCatalog), so crawlers
+        and AI answer engines see prices in raw HTML without running JS. We no
+        longer mutate the JSON-LD at runtime (that would break the @graph). */
 
   /* 9. Sticky CTA: hide and remove from a11y tree when book section is visible */
 

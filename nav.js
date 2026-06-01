@@ -83,15 +83,15 @@
       <div class="container footer-grid">
         <div>
           <p class="footer-brand">Elion Car Care</p>
-          <p class="muted small">Hand-detailed, in your driveway. Ann Arbor.</p>
+          <p class="muted small">Mobile car detailing in Ann Arbor, MI.</p>
         </div>
         <div>
           <p><a href="tel:${PHONE_HREF}" data-tel-link>${PHONE}</a></p>
           <p><a href="mailto:info@elioncarcare.com">info@elioncarcare.com</a></p>
         </div>
         <div>
-          <p class="muted small">Burns Park, Ann Arbor, MI</p>
-          <p class="muted small">Greater Ann Arbor served.</p>
+          <p class="muted small">Serving Burns Park and ZIPs 48104, 48103, 48105.</p>
+          <p class="muted small">Comes to your driveway. No drop-off.</p>
         </div>
       </div>
       <hr class="stripe-rule is-wide" aria-hidden="true">

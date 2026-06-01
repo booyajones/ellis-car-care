@@ -932,6 +932,31 @@ section {
 }
 .addons-boxed { margin-top: var(--s-5); }
 .addons-boxed .svc-deepclean { margin: 0; }
+
+/* SEO/AEO answer content */
+.hero-intro {
+  color: var(--ink-soft);
+  font-size: 0.95rem;
+  line-height: 1.6;
+  max-width: 52ch;
+  margin: var(--s-3) 0 0;
+}
+.cost-answer {
+  border-left: 3px solid var(--accent);
+  background: var(--surface);
+  border-radius: 0 var(--radius) var(--radius) 0;
+  padding: var(--s-4) var(--s-5);
+  margin: 0 0 var(--s-6);
+}
+.cost-answer h3 { margin: 0 0 var(--s-2); font-family: var(--display); font-size: 1.15rem; }
+.cost-answer p { margin: 0; color: var(--ink-soft); line-height: 1.6; }
+.story-geo {
+  margin: var(--s-2) 0 0;
+  font-family: var(--mono);
+  font-size: 0.78rem;
+  letter-spacing: 0.04em;
+  color: var(--accent);
+}
 .svc-deepclean-head {
   display: flex;
   align-items: center;

@@ -251,6 +251,14 @@ const CONFIG = {
       q: "What if you scratch my car?",
       a: "I work by hand, two-bucket method, fresh microfiber. If something happens, I make it right out of pocket. I'll never machine polish a panel without talking to you first.",
     },
+    {
+      q: "Do you come to me?",
+      a: "Yes. I detail your car in your own driveway. Burns Park is free travel and gets the fastest scheduling. Greater Ann Arbor (48104, 48103, 48105) adds $5.",
+    },
+    {
+      q: "How much does car detailing cost in Ann Arbor?",
+      a: "A real hand wash is $40. A wash plus wax and tire shine is $60. A full ceramic detail is from $200, quoted on your car. Add an interior for $40 on Basic, or $35 with Essential or Premium. No minimums and no surprise fees.",
+    },
   ],
 
   formspreeId: "",

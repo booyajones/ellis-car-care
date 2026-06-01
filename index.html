@@ -3,8 +3,8 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <title>Elion Car Care, hand-detailed in Ann Arbor</title>
-  <meta name="description" content="Hand auto detailing in Ann Arbor, Michigan. Two-bucket wash, wax and tire shine, or a ceramic coat, plus headlight restoration, done in your driveway by Ellis, a local Burns Park detailer. 25% off your first wash.">
+  <title>Mobile Car Detailing in Ann Arbor &amp; Burns Park | Elion Car Care</title>
+  <meta name="description" content="Mobile hand car detailing in Ann Arbor, Michigan. Ellis comes to your driveway in Burns Park and the 48104, 48103, and 48105 ZIP codes. A real hand wash starts at $40. 25% off your first wash.">
   <meta name="theme-color" content="#0E1014">
   <meta name="robots" content="index,follow">
   <meta name="color-scheme" content="dark">
@@ -13,8 +13,8 @@
   <link rel="icon" href="favicon.svg" type="image/svg+xml">
   <link rel="apple-touch-icon" href="apple-touch-icon.png">
 
-  <meta property="og:title" content="Elion Car Care, hand-detailed in Ann Arbor">
-  <meta property="og:description" content="Hand wash, wax and tire shine, or a ceramic coat. Done by hand in your driveway, in Ann Arbor. 25% off your first wash.">
+  <meta property="og:title" content="Mobile Car Detailing in Ann Arbor & Burns Park | Elion Car Care">
+  <meta property="og:description" content="Mobile hand car detailing in your Ann Arbor driveway, by Ellis. A real hand wash starts at $40. Serving Burns Park and 48104, 48103, 48105. 25% off your first wash.">
   <meta property="og:image" content="https://elioncarcare.com/og-image.png?v=2">
   <meta property="og:image:width" content="1200">
   <meta property="og:image:height" content="630">
@@ -28,32 +28,109 @@
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,500;1,9..144,600&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap">
 
   <link rel="preload" as="image" href="images/process/wash-01-1600.webp" imagesrcset="images/process/wash-01-900.webp 900w, images/process/wash-01-1600.webp 1600w" imagesizes="(max-width: 720px) 100vw, 50vw" type="image/webp">
-  <link rel="stylesheet" href="styles.css?v=25">
+  <link rel="stylesheet" href="styles.css?v=26">
   <link rel="stylesheet" href="chatbot.css?v=3">
   <link rel="stylesheet" href="nav.css?v=2">
 
   <script type="application/ld+json">
   {
     "@context": "https://schema.org",
-    "@type": "AutoDetailing",
-    "name": "Elion Car Care",
-    "description": "Hand auto detailing in Ann Arbor, Michigan. Two-bucket wash, full detail, hand wax, and paint restoration, done by hand in your driveway.",
-    "url": "https://elioncarcare.com/",
-    "image": "https://elioncarcare.com/og-image.png",
-    "telephone": "(628) 252-0740",
-    "email": "info@elioncarcare.com",
-    "priceRange": "$",
-    "areaServed": [
-      { "@type": "Place", "name": "Burns Park, Ann Arbor, MI" },
-      { "@type": "PostalCode", "postalCode": "48104" },
-      { "@type": "PostalCode", "postalCode": "48103" },
-      { "@type": "PostalCode", "postalCode": "48105" }
-    ],
-    "serviceArea": {
-      "@type": "GeoCircle",
-      "geoMidpoint": { "@type": "GeoCoordinates", "latitude": 42.2628, "longitude": -83.7281 },
-      "geoRadius": "4000"
-    }
+    "@graph": [
+      {
+        "@type": ["AutoDetailing", "LocalBusiness"],
+        "@id": "https://elioncarcare.com/#business",
+        "name": "Elion Car Care",
+        "description": "Mobile hand car detailing in Ann Arbor, Michigan. Two-bucket hand wash, wax, ceramic coating, and headlight restoration, done in your driveway by Ellis, a local detailer based in Burns Park. Summer-seasonal and by appointment.",
+        "url": "https://elioncarcare.com/",
+        "image": "https://elioncarcare.com/og-image.png?v=2",
+        "telephone": "+16282520740",
+        "email": "info@elioncarcare.com",
+        "priceRange": "$$",
+        "currenciesAccepted": "USD",
+        "paymentAccepted": "Cash, Venmo",
+        "founder": { "@type": "Person", "name": "Ellis" },
+        "address": {
+          "@type": "PostalAddress",
+          "addressLocality": "Ann Arbor",
+          "addressRegion": "MI",
+          "postalCode": "48104",
+          "addressCountry": "US"
+        },
+        "geo": { "@type": "GeoCoordinates", "latitude": 42.2628, "longitude": -83.7281 },
+        "areaServed": [
+          { "@type": "City", "name": "Ann Arbor" },
+          { "@type": "Place", "name": "Burns Park, Ann Arbor, MI" },
+          { "@type": "Place", "name": "48104" },
+          { "@type": "Place", "name": "48103" },
+          { "@type": "Place", "name": "48105" }
+        ],
+        "serviceArea": {
+          "@type": "GeoCircle",
+          "geoMidpoint": { "@type": "GeoCoordinates", "latitude": 42.2628, "longitude": -83.7281 },
+          "geoRadius": "4000"
+        },
+        "hasOfferCatalog": {
+          "@type": "OfferCatalog",
+          "name": "Car detailing packages",
+          "itemListElement": [
+            {
+              "@type": "Offer",
+              "price": "40",
+              "priceCurrency": "USD",
+              "itemOffered": { "@type": "Service", "name": "Basic hand wash", "description": "A real two-bucket hand wash. Foam pre-wash, contact wash, full rinse, hand dry with no water spots." }
+            },
+            {
+              "@type": "Offer",
+              "price": "60",
+              "priceCurrency": "USD",
+              "itemOffered": { "@type": "Service", "name": "Essential wash", "description": "Basic plus a wax protectant for gloss and a few weeks of protection, and tire shine." }
+            },
+            {
+              "@type": "Offer",
+              "price": "200",
+              "priceCurrency": "USD",
+              "description": "From $200, quoted on your car.",
+              "itemOffered": { "@type": "Service", "name": "Premium ceramic detail", "description": "Clay bar, single-stage machine polish, and ceramic protection on the paint and wheels, with Diablo wheel cleaner and tire shine included." }
+            }
+          ]
+        }
+      },
+      {
+        "@type": "WebSite",
+        "@id": "https://elioncarcare.com/#website",
+        "url": "https://elioncarcare.com/",
+        "name": "Elion Car Care",
+        "publisher": { "@id": "https://elioncarcare.com/#org" },
+        "potentialAction": {
+          "@type": "ReserveAction",
+          "target": "https://elioncarcare.com/book",
+          "name": "Book a wash"
+        }
+      },
+      {
+        "@type": "Organization",
+        "@id": "https://elioncarcare.com/#org",
+        "name": "Elion Car Care",
+        "url": "https://elioncarcare.com/",
+        "logo": "https://elioncarcare.com/apple-touch-icon.png",
+        "founder": { "@type": "Person", "name": "Ellis" }
+      },
+      {
+        "@type": "FAQPage",
+        "@id": "https://elioncarcare.com/#faq",
+        "mainEntity": [
+          { "@type": "Question", "name": "What if it rains?", "acceptedAnswer": { "@type": "Answer", "text": "Reschedule, no charge. I text the night before if it looks likely and we lock a new time." } },
+          { "@type": "Question", "name": "How do I pay?", "acceptedAnswer": { "@type": "Answer", "text": "Venmo (@Ellis-Wyatt-2) or cash. Pay after the job, when you're happy with how the car looks." } },
+          { "@type": "Question", "name": "Do you need my keys?", "acceptedAnswer": { "@type": "Answer", "text": "Only if I'm doing interior work. Leave them on the front seat or hand them off when I arrive." } },
+          { "@type": "Question", "name": "What if I'm not home?", "acceptedAnswer": { "@type": "Answer", "text": "Fine. Leave the car unlocked if there's interior work. I text photos when it's done and you can pay then." } },
+          { "@type": "Question", "name": "What products do you use?", "acceptedAnswer": { "@type": "Answer", "text": "Mr. Pink pH-balanced soap with a two-bucket method and a foam cannon, microfiber sorted by job, Diablo cleaner for the wheels, clay bar for paint decon, and Chemical Guys VRP for trim. Essential gets a wax protectant; Premium gets a machine polish and a ceramic coat. I'll talk you through anything specific to your car." } },
+          { "@type": "Question", "name": "How do I know it'll be done well?", "acceptedAnswer": { "@type": "Answer", "text": "Before-and-after photos every job. If anything isn't right, I come back and fix it, no charge." } },
+          { "@type": "Question", "name": "What if you scratch my car?", "acceptedAnswer": { "@type": "Answer", "text": "I work by hand, two-bucket method, fresh microfiber. If something happens, I make it right out of pocket. I'll never machine polish a panel without talking to you first." } },
+          { "@type": "Question", "name": "Do you come to me?", "acceptedAnswer": { "@type": "Answer", "text": "Yes. I detail your car in your own driveway. Burns Park is free travel and gets the fastest scheduling. Greater Ann Arbor (48104, 48103, 48105) adds $5." } },
+          { "@type": "Question", "name": "How much does car detailing cost in Ann Arbor?", "acceptedAnswer": { "@type": "Answer", "text": "A real hand wash is $40. A wash plus wax and tire shine is $60. A full ceramic detail is from $200, quoted on your car. Add an interior for $40 on Basic, or $35 with Essential or Premium. No minimums and no surprise fees." } }
+        ]
+      }
+    ]
   }
   </script>
 </head>
@@ -71,10 +148,13 @@
     <div class="container hero-grid">
       <div class="hero-copy">
         <p class="eyebrow">Burns Park · Ann Arbor · Michigan</p>
-        <h1 class="display hero-h1">Hand-detailed, in your driveway.</h1>
+        <h1 class="display hero-h1">Mobile car detailing, hand-done in your Ann Arbor driveway.</h1>
         <p class="hero-discount"><span aria-hidden="true">★</span> 25% off your first wash, taken off your total.</p>
         <p class="lead hero-lead">
           Hand wash. Wax and tire shine. Ceramic coat. Done by hand on your block, by Ellis.
+        </p>
+        <p class="hero-intro">
+          Elion Car Care is a mobile hand car detailing service in Ann Arbor, Michigan, run by Ellis, a local from Burns Park. A real hand wash starts at $40 and I come to your driveway in Burns Park and the 48104, 48103, and 48105 ZIP codes. Pay by Venmo or cash after the job.
         </p>
 
         <div class="hero-phone-block">
@@ -145,6 +225,11 @@
         <h2 class="display">Three packages. Add what you want.</h2>
         <p>Burns Park is free. Greater Ann Arbor (48104, 48103, 48105) adds $5 for travel. Add-ons get picked when you book your time.</p>
       </header>
+
+      <div class="cost-answer">
+        <h3>What does car detailing cost in Ann Arbor?</h3>
+        <p>A real hand wash starts at $40. A wash plus wax and tire shine is $60. A full ceramic detail is from $200, quoted on your car. Add an interior for $40 on Basic, or $35 with Essential or Premium. No minimums, no surprise fees.</p>
+      </div>
 
       <div class="bundles" data-bundles></div>
 
@@ -366,9 +451,9 @@
   <span class="sticky-cta-sub">(628) 252-0740 · Venmo or cash</span>
 </a>
 
-<script src="config.js?v=24"></script>
-<script src="app.js?v=17" defer></script>
-<script src="nav.js?v=4" defer></script>
+<script src="config.js?v=25"></script>
+<script src="app.js?v=18" defer></script>
+<script src="nav.js?v=5" defer></script>
 <script src="chatbot.js?v=16" defer></script>
 </body>
 </html>
