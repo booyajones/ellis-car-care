@@ -875,8 +875,11 @@
       if (rec && rec.bundleOffer) {
         const offer = rec.bundleOffer;
         const labelSavings = offer.savings > 0 ? `, save $${offer.savings}` : "";
+        const bundleLabel = offer.quoted
+          ? "Add interior (quoted)"
+          : `Add interior (+$${offer.effectiveCost}${labelSavings})`;
         const bundleBtn = makeButton(
-          `Add interior (+$${offer.effectiveCost}${labelSavings})`,
+          bundleLabel,
           "is-primary",
           () => {
             state.answers._addInterior = true;

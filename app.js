@@ -130,7 +130,7 @@
       // availability line. Flat add-ons show one number.
       let priceLine;
       let perTierNote = "";
-      if (a.priceByTier) {
+      if (a.priceByTier && Object.keys(a.priceByTier).length) {
         const vals = Object.values(a.priceByTier).map(Number);
         const min = Math.min(...vals), max = Math.max(...vals);
         priceLine = min === max ? `+$${min}` : `+$${min}–$${max}`;
@@ -171,11 +171,11 @@
 
   const bringEl = $("[data-bring]");
   if (bringEl && cfg.process && cfg.process.iBring) {
-    bringEl.innerHTML = cfg.process.iBring.map((i) => `<li>${i}</li>`).join("");
+    bringEl.innerHTML = cfg.process.iBring.map((i) => `<li>${escapeHtml(i)}</li>`).join("");
   }
   const youEl = $("[data-you]");
   if (youEl && cfg.process && cfg.process.youProvide) {
-    youEl.innerHTML = cfg.process.youProvide.map((i) => `<li>${i}</li>`).join("");
+    youEl.innerHTML = cfg.process.youProvide.map((i) => `<li>${escapeHtml(i)}</li>`).join("");
   }
 
   /* 5. FAQ */

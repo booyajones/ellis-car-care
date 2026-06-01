@@ -60,7 +60,7 @@
       // Price text + per-tier detail.
       let price;
       let detail = "";
-      if (a.priceByTier) {
+      if (a.priceByTier && Object.keys(a.priceByTier).length) {
         const parts = Object.keys(a.priceByTier).map(t => `$${a.priceByTier[t]} on ${escapeHtml(tierName(cfg, t))}`);
         const vals = Object.values(a.priceByTier).map(Number);
         const min = Math.min(...vals), max = Math.max(...vals);
