@@ -141,8 +141,8 @@
         "• Basic — $40, about 45 min. Wheel rinse, contact wash, hand dry.",
         "• Essential — $60, about 1 hr. Basic + spray wax.",
         "• Premium — from $200, about 4 hrs. Full decon, clay bar, polish, ceramic coat. Quoted on your car.",
-        "• Add-ons: Diablo wheel scrub $10 · Clay bar $20 · Interior $40 ($35 on Essential) · Headlights $30.",
-        "• First-time customer: 25% off your first order.",
+        "• Add-ons: Diablo wheel scrub $10 · Clay bar $20 · Interior $40 ($35 on Essential) · Steam clean +$20 (with interior) · Headlights $30.",
+        "• First-time customer: 25% off your first wash, taken off your total.",
         "Burns Park is free travel. Greater Ann Arbor (48104/48103/48105) adds $5.",
       ],
       options: [

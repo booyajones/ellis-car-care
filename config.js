@@ -19,8 +19,8 @@ const CONFIG = {
   business: {
     name: "Elion Car Care",
     tagline: "Hand-detailed, in your driveway. Ann Arbor.",
-    sub: "Hand wash, spray wax, full ceramic correction. Done by hand on your block.",
-    description: "Hand auto detailing in Ann Arbor, Michigan. Two-bucket wash, spray wax, full ceramic correction, and headlight restoration, done in your driveway by Ellis, a local detailer based in Burns Park.",
+    sub: "Hand wash, spray wax, ceramic coat. Done by hand on your block.",
+    description: "Hand auto detailing in Ann Arbor, Michigan. Two-bucket wash, spray wax, ceramic coat, and headlight restoration, done in your driveway by Ellis, a local detailer based in Burns Park.",
   },
 
   contact: {
@@ -108,7 +108,7 @@ const CONFIG = {
       quote: true,
       priceLabel: "from $200",
       time: "about 4 hours",
-      summary: "Full correction and ceramic. Quoted on your car.",
+      summary: "Machine polish and ceramic coat. Quoted on your car.",
       includes: [
         "Diablo wheel and tire scrub",
         "Pre-wash, two contact washes, full rinse-downs",
@@ -173,8 +173,11 @@ const CONFIG = {
     },
   ],
 
-  // First-time customer discount. Applied automatically the first time a
-  // browser confirms an order (tracked in localStorage). Set to 0 to disable.
+  // First-time customer discount. Decided server-side: api/cal-webhook.js
+  // flags the first booking per email (HMAC identity, can't be farmed by
+  // clearing cookies) and surfaces it in Ellis's notification email. Ellis
+  // takes it off the Venmo/cash total after the job. This value is the
+  // display figure shown in site copy. Set to 0 to disable.
   firstTimeDiscount: 0.25,
 
   // Process notes (used in the "Process" section).

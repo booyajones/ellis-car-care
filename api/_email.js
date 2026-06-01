@@ -264,7 +264,7 @@ export function elionNotificationEmail(order) {
 
         ${order.notes ? `<h2 style="font-family:Fraunces,Georgia,serif;font-size:16px;color:#0E1014;margin:24px 0 8px;">Customer notes</h2><p style="background:#f4f1ea;padding:12px;border-radius:6px;margin:0;font-style:italic;">"${escapeHtml(order.notes)}"</p>` : ""}
 
-        ${order.first_time ? `<p style="margin:16px 0 0;color:#E5A235;">⭐ First-time customer (25% off applied automatically)</p>` : ""}
+        ${order.first_time ? `<p style="margin:16px 0 0;color:#E5A235;">⭐ First-time customer, take 25% off the total</p>` : ""}
 
         <p style="margin:24px 0 0;font-size:13px;color:#666;">Dashboard: <a href="https://elioncarcare.com/admin" style="color:#E5A235;">elioncarcare.com/admin</a></p>
         </div>

@@ -12,8 +12,9 @@
    oracle). Cal.com bookings are written by /api/cal-webhook, not here.
    ============================================================ */
 
+import crypto from "node:crypto";
 import {
-  normalizeEmail, hashEmail, isValidEmailShape, verifyToken,
+  normalizeEmail, hashEmail, isValidEmailShape, verifyToken, timingSafeHex,
   recompute, computeCard, readCustomer, writeCustomer, newCustomer,
   JOBS_PER_FREE, CARD_SLOTS,
 } from "./_loyalty.js";
@@ -220,10 +221,14 @@ function isAdmin(headers) {
   const want = process.env.ELION_ADMIN_PASSWORD;
   if (!want) return false;
   const got = headers["x-elion-admin"] || "";
-  if (got.length !== want.length) return false;
-  let diff = 0;
-  for (let i = 0; i < got.length; i++) diff |= got.charCodeAt(i) ^ want.charCodeAt(i);
-  return diff === 0;
+  // HMAC both sides to fixed-length (64-char) hex digests before comparing.
+  // This makes the compare constant-time regardless of input and leaks
+  // neither the password length nor a per-character timing signal (the old
+  // length-mismatch early-return did both). Key off LOYALTY_HASH_SECRET when
+  // present so the admin secret is never used as its own comparison key.
+  const key = process.env.LOYALTY_HASH_SECRET || want;
+  const digest = (v) => crypto.createHmac("sha256", key).update(String(v)).digest("hex");
+  return timingSafeHex(digest(got), digest(want));
 }
 
 async function readBody(nodeReq) {

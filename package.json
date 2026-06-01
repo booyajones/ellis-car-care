@@ -1,12 +1,12 @@
 {
   "name": "elion-car-care",
-  "version": "0.8.1",
+  "version": "0.8.2",
   "private": true,
   "type": "module",
   "description": "Elion Car Care — static site + Vercel Functions for booking and AI planning.",
   "scripts": {
     "build": "node scripts/verify-build.mjs",
-    "test:qa": "python tests/qa_full.py && node tests/qa_client_parity.mjs && node tests/qa_e2e_book.mjs && node tests/qa_e2e_admin.mjs"
+    "test:qa": "python tests/qa_full.py && node tests/qa_client_parity.mjs && node tests/qa_e2e_book.mjs && node tests/qa_e2e_admin.mjs && node scripts/qa_loyalty.mjs"
   },
   "dependencies": {
     "@vercel/blob": "^2.4.0",
