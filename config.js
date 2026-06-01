@@ -215,7 +215,7 @@ const CONFIG = {
     },
     {
       q: "What products do you use?",
-      a: "Two-bucket wash with pH-balanced soap and a foam cannon, microfiber sorted by job, hand-applied wax or ceramic spray sealant, clay bar for paint decon. I'll talk you through anything specific to your car.",
+      a: "Two-bucket wash with pH-balanced soap and a foam cannon, microfiber sorted by job, hand-applied wax or a ceramic coat on Premium, clay bar for paint decon. I'll talk you through anything specific to your car.",
     },
     {
       q: "How do I know it'll be done well?",
