@@ -241,16 +241,25 @@ function detectAddons(payload) {
   const addons = [];
   if (has(/diablo/)) addons.push("diablo");
   if (has(/clay\s*bar|claybar/)) addons.push("claybar");
+  // Deep clean before interior so "deep clean" doesn't also count as a flat
+  // interior. Steam/Trim option labels deliberately avoid the word "interior".
+  const hasDeep = has(/deep\s*clean|deepclean/);
+  if (hasDeep) addons.push("deepclean");
   const hasInterior = has(/interior/);
   if (hasInterior) addons.push("interior");
   const hasSteam = has(/steam/);
   if (hasSteam) addons.push("steam");
+  if (has(/\btrim\b|vrp/)) addons.push("trim");
+  // Narrow: only the "Ceramic on wheels" option, not a stray "ceramic" in a
+  // free-text field (and Premium already includes it, so it is not an option there).
+  if (has(/ceramic\s*(?:on\s*)?wheel/)) addons.push("ceramicwheels");
   if (has(/headlight/)) addons.push("headlight");
   return {
     addons: [...new Set(addons)],
     hasInterior,
     hasSteam,
-    steamWithoutInterior: hasSteam && !hasInterior,
+    // Steam pairs with any interior work (standard interior OR a deep clean).
+    steamWithoutInterior: hasSteam && !hasInterior && !hasDeep,
   };
 }
 

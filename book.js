@@ -62,7 +62,7 @@
       let detail = "";
       if (a.priceByTier && Object.keys(a.priceByTier).length) {
         const parts = Object.keys(a.priceByTier).map(t => `$${a.priceByTier[t]} on ${escapeHtml(tierName(cfg, t))}`);
-        const vals = Object.values(a.priceByTier).map(Number);
+        const vals = Object.values(a.priceByTier).map(Number).filter(Number.isFinite);
         const min = Math.min(...vals), max = Math.max(...vals);
         price = min === max ? `+$${min}` : `+$${min}–$${max}`;
         detail = parts.join(", ");

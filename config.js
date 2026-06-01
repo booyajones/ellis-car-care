@@ -79,12 +79,12 @@ const CONFIG = {
       name: "Basic",
       price: 40,
       time: "about 45 minutes",
-      summary: "A real hand wash, wheels to dry.",
+      summary: "A real hand wash. Every bit of dirt and grime off, car looks fresh.",
       includes: [
-        "Wheel pressure rinse",
-        "Wheel wash",
-        "Pressure rinse the body",
-        "Two-bucket contact wash",
+        "Wheel and tire pressure rinse",
+        "Pre-wash foam to lift grit",
+        "Mr. Pink two-bucket contact wash",
+        "Full body rinse",
         "Hand dry, no water spots",
       ],
       popular: false,
@@ -94,10 +94,11 @@ const CONFIG = {
       name: "Essential",
       price: 60,
       time: "about 1 hour",
-      summary: "Everything in Basic, finished with spray wax.",
+      summary: "Everything in Basic, sealed with a wax protectant and tire shine.",
       includes: [
         "Everything in Basic",
-        "Spray wax for gloss and a few weeks of protection",
+        "Wax protectant for gloss and a few weeks of protection",
+        "Tire shine",
       ],
       popular: true,
     },
@@ -108,14 +109,14 @@ const CONFIG = {
       quote: true,
       priceLabel: "from $200",
       time: "about 4 hours",
-      summary: "Machine polish and ceramic coat. Quoted on your car.",
+      summary: "Clay bar, machine polish, and ceramic protection. Quoted on your car.",
       includes: [
-        "Diablo wheel and tire scrub",
-        "Pre-wash, two contact washes, full rinse-downs",
-        "Clay bar the whole car",
-        "Machine polish to cut swirls and oxidation",
-        "Ceramic coat every panel",
-        "Tire shine and hydro sealant",
+        "Everything in Essential",
+        "Clay bar decontamination",
+        "Single-stage machine polish",
+        "Ceramic protection on the paint, in place of wax",
+        "Ceramic protection on the wheels, included",
+        "Diablo wheel cleaner and tire shine, included",
       ],
       popular: false,
     },
@@ -126,35 +127,20 @@ const CONFIG = {
   // tiers:       which packages can add this (shown as a checkbox in booking)
   // includedIn:  packages where it's already part of the job (shown as "included")
   // price:       flat add-on price
-  // priceByTier: per-package price (used for Interior — $5 less on Essential)
+  // priceByTier: per-package price (Interior is $40 Basic, $35 on the higher
+  //              tiers; Trim is $30 Essential, $25 Premium for exterior)
   // quotedTiers: packages where this add-on is quoted, not flat-priced
   // requires:    add-on id this depends on (steam clean needs interior)
+  // boxed:       render in its own highlighted box (Deep clean, always quoted)
   // These mirror the Cal.com booking questions on each event type.
   // ----------------------------------------------------------
   addons: [
     {
-      id: "diablo",
-      name: "Diablo wheel scrub",
-      price: 10,
-      tiers: ["basic", "essential"],
-      includedIn: ["premium"],
-      description: "Deep scrub of the wheels and tires with the Diablo brush, past what a rinse gets. Brake dust gone.",
-    },
-    {
-      id: "claybar",
-      name: "Clay bar",
-      price: 20,
-      tiers: ["basic", "essential"],
-      includedIn: ["premium"],
-      description: "Clay the paint to pull out embedded grit a wash can't reach. Glass-smooth after.",
-    },
-    {
       id: "interior",
       name: "Interior",
-      priceByTier: { basic: 40, essential: 35 },
+      priceByTier: { basic: 40, essential: 35, premium: 35 },
       tiers: ["basic", "essential", "premium"],
-      quotedTiers: ["premium"],
-      description: "Vacuum, wipe-down, glass, door jambs, and vents. Heavy pet hair or set-in stains run deeper, so those are quoted.",
+      description: "Vacuum, full wipe-down, glass, door jambs, and vents. A standard interior clean. Set-in stains, heavy pet hair, or a neglected cabin go to a Deep clean (quoted), see below.",
     },
     {
       id: "steam",
@@ -162,14 +148,53 @@ const CONFIG = {
       price: 20,
       tiers: ["basic", "essential", "premium"],
       requires: "interior",
-      description: "Add steam to the interior detail. Lifts set-in grime and sanitizes vents, seams, and tight spots. Pairs with interior.",
+      description: "A steam upgrade to the interior detail. Lifts set-in grime and sanitizes vents, seams, and the spots a wipe-down misses. Pairs with Interior.",
+    },
+    {
+      id: "deepclean",
+      name: "Deep clean",
+      tiers: ["basic", "essential", "premium"],
+      quotedTiers: ["basic", "essential", "premium"],
+      boxed: true,
+      description: "For an interior that needs more than a standard clean: set-in stains, spills, heavy pet hair, or a long-neglected cabin. Ellis quotes it once he sees the car.",
+    },
+    {
+      id: "diablo",
+      name: "Diablo wheel cleaner",
+      price: 10,
+      tiers: ["basic", "essential"],
+      includedIn: ["premium"],
+      description: "Diablo is a wheel-cleaning compound, not a brush. It breaks down brake dust and grime baked onto the wheels, past what a rinse can lift.",
+    },
+    {
+      id: "claybar",
+      name: "Clay bar",
+      price: 20,
+      tiers: ["essential"],
+      includedIn: ["premium"],
+      description: "Clay bar decontamination pulls embedded grit and fallout the wash can't reach, so the paint feels glass-smooth. The right prep before wax or ceramic.",
+    },
+    {
+      id: "trim",
+      name: "Trim and plastic shine",
+      priceByTier: { essential: 30, premium: 25 },
+      tiers: ["essential", "premium"],
+      description: "Chemical Guys VRP on faded plastic, vinyl, and rubber trim, brought back to a clean satin finish. This price covers exterior trim. Inside and out is $50.",
+    },
+    {
+      id: "ceramicwheels",
+      name: "Ceramic on wheels",
+      price: 20,
+      tiers: ["essential"],
+      includedIn: ["premium"],
+      description: "A ceramic sealant on the wheels so brake dust and road grime wipe right off, with weeks of protection. Included on Premium.",
     },
     {
       id: "headlight",
       name: "Headlight restoration",
       price: 30,
       tiers: ["basic", "essential", "premium"],
-      description: "Sand, polish, and a UV seal to bring foggy headlights back to clear.",
+      description: "Sand, polish, and a UV seal to bring foggy, yellowed headlights back to clear.",
     },
   ],
 
@@ -184,10 +209,11 @@ const CONFIG = {
   process: {
     iBring: [
       "Two-bucket wash kit, grit guards in both",
-      "Foam cannon and pH-balanced soap",
+      "Foam cannon and Mr. Pink pH-balanced soap",
       "Microfiber sorted by job, color-coded",
       "Cordless vacuum, brushes, and detailing swabs",
-      "Wax, polish, sealant, and clay bar",
+      "Diablo wheel cleaner, clay bar, wax, polish, and ceramic",
+      "Chemical Guys VRP for trim and plastics",
     ],
     youProvide: [
       "An outdoor water spigot",
@@ -215,7 +241,7 @@ const CONFIG = {
     },
     {
       q: "What products do you use?",
-      a: "Two-bucket wash with pH-balanced soap and a foam cannon, microfiber sorted by job, hand-applied wax or a ceramic coat on Premium, clay bar for paint decon. I'll talk you through anything specific to your car.",
+      a: "Mr. Pink pH-balanced soap with a two-bucket method and a foam cannon, microfiber sorted by job, Diablo cleaner for the wheels, clay bar for paint decon, and Chemical Guys VRP for trim. Essential gets a wax protectant; Premium gets a machine polish and a ceramic coat. I'll talk you through anything specific to your car.",
     },
     {
       q: "How do I know it'll be done well?",

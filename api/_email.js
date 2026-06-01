@@ -283,10 +283,13 @@ export function elionNotificationEmail(order) {
 // ============================================================
 const LOYALTY_TIER_LABEL = { basic: "Basic", essential: "Essential", premium: "Premium", unknown: "(tier?)" };
 const LOYALTY_ADDON_LABEL = {
-  diablo: "Diablo wheel scrub (+$10)",
-  claybar: "Clay bar (+$20)",
   interior: "Interior",
   steam: "Steam clean (+$20)",
+  deepclean: "Deep clean (quoted)",
+  diablo: "Diablo wheel cleaner (+$10)",
+  claybar: "Clay bar (+$20)",
+  trim: "Trim and plastic shine (from $25)",
+  ceramicwheels: "Ceramic on wheels (+$20)",
   headlight: "Headlight restoration (+$30)",
 };
 

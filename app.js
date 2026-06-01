@@ -87,7 +87,8 @@
       // Per-card add-on hint. Included add-ons (Premium) listed as "included",
       // optional ones as "+ name $price", interior as a quoted note on Premium.
       const included = addonsForTier(b.id).filter(a => addonIsIncluded(a, b.id));
-      const optional = addonsForTier(b.id).filter(a => !addonIsIncluded(a, b.id));
+      // Boxed add-ons (Deep clean) get their own box below, not the hint line.
+      const optional = addonsForTier(b.id).filter(a => !addonIsIncluded(a, b.id) && !a.boxed);
       const optBits = optional.map(a => {
         if (addonIsQuoted(a, b.id)) return `${escapeHtml(a.name.toLowerCase())} quoted`;
         return `${escapeHtml(a.name.toLowerCase())} +$${addonPriceForTier(a, b.id)}`;
@@ -124,14 +125,14 @@
 
   const addonsEl = $("[data-addons]");
   if (addonsEl && Array.isArray(cfg.addons)) {
-    cfg.addons.forEach((a) => {
+    cfg.addons.filter(a => !a.boxed).forEach((a) => {
       // Price display. priceByTier (interior) shows a compact range in the
       // chip; the per-tier breakdown + $5 Essential incentive goes in the
       // availability line. Flat add-ons show one number.
       let priceLine;
       let perTierNote = "";
       if (a.priceByTier && Object.keys(a.priceByTier).length) {
-        const vals = Object.values(a.priceByTier).map(Number);
+        const vals = Object.values(a.priceByTier).map(Number).filter(Number.isFinite);
         const min = Math.min(...vals), max = Math.max(...vals);
         priceLine = min === max ? `+$${min}` : `+$${min}–$${max}`;
         perTierNote = Object.keys(a.priceByTier).map(tier => {
@@ -158,16 +159,36 @@
       }
 
       const card = document.createElement("div");
-      card.className = "addon-card";
+      card.className = "addon-card" + (a.boxed ? " addon-card--boxed" : "");
+      const boxedTag = a.boxed ? `<span class="addon-quoted-tag">Quoted</span>` : "";
       card.innerHTML = `
         <div class="addon-card-top">
-          <h4 class="addon-name">${escapeHtml(a.name)}</h4>
+          <h4 class="addon-name">${escapeHtml(a.name)}${boxedTag}</h4>
           <span class="addon-price">${priceLine}</span>
         </div>
         <p class="addon-desc">${escapeHtml(a.description)}</p>
         <p class="addon-avail">${avail.trim()}</p>
       `;
       addonsEl.appendChild(card);
+    });
+  }
+
+  /* 3b. Boxed add-ons (Deep clean) get their own highlighted box, set apart
+        from the flat-priced grid, matching the /services page treatment. */
+  const boxedEl = $("[data-addon-boxed]");
+  if (boxedEl && Array.isArray(cfg.addons)) {
+    cfg.addons.filter(a => a.boxed).forEach((a) => {
+      const box = document.createElement("div");
+      box.className = "svc-deepclean";
+      box.innerHTML = `
+        <div class="svc-deepclean-head">
+          <h3>${escapeHtml(a.name)}</h3>
+          <span class="addon-quoted-tag">Quoted</span>
+        </div>
+        <p>${escapeHtml(a.description)}</p>
+        <p class="muted small">Mention it when you book, or send Ellis a photo. He gives you the number before any work starts.</p>
+      `;
+      boxedEl.appendChild(box);
     });
   }
 
