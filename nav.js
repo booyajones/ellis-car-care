@@ -14,6 +14,7 @@
     { href: "/#menu",    label: "Pricing" },
     { href: "/process",  label: "Process" },
     { href: "/gallery",  label: "Gallery" },
+    { href: "/rewards",  label: "Rewards" },
     { href: "/about",    label: "About" },
   ];
   const PHONE = "(628) 252-0740";

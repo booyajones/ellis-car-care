@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <title>Elion Car Care, hand-detailed in Ann Arbor</title>
-  <meta name="description" content="Hand auto detailing in Ann Arbor, Michigan. Two-bucket wash, ceramic seal, and cut-and-polish paint correction. Done in your driveway by Ellis, a local Burns Park detailer. 25% off your first order.">
+  <meta name="description" content="Hand auto detailing in Ann Arbor, Michigan. Two-bucket wash, spray wax, or full ceramic correction, plus headlight restoration, done in your driveway by Ellis, a local Burns Park detailer. 25% off your first wash.">
   <meta name="theme-color" content="#0E1014">
   <meta name="robots" content="index,follow">
   <meta name="color-scheme" content="dark">
@@ -14,7 +14,7 @@
   <link rel="apple-touch-icon" href="apple-touch-icon.png">
 
   <meta property="og:title" content="Elion Car Care, hand-detailed in Ann Arbor">
-  <meta property="og:description" content="Hand wash, ceramic seal, cut and polish. Done by hand in your driveway, in Ann Arbor. 25% off first order.">
+  <meta property="og:description" content="Hand wash, spray wax, or full ceramic correction. Done by hand in your driveway, in Ann Arbor. 25% off your first wash.">
   <meta property="og:image" content="https://elioncarcare.com/og-image.png?v=2">
   <meta property="og:image:width" content="1200">
   <meta property="og:image:height" content="630">
@@ -28,7 +28,7 @@
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,500;1,9..144,600&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap">
 
   <link rel="preload" as="image" href="images/process/wash-01-1600.webp" imagesrcset="images/process/wash-01-900.webp 900w, images/process/wash-01-1600.webp 1600w" imagesizes="(max-width: 720px) 100vw, 50vw" type="image/webp">
-  <link rel="stylesheet" href="styles.css?v=23">
+  <link rel="stylesheet" href="styles.css?v=24">
   <link rel="stylesheet" href="chatbot.css?v=3">
   <link rel="stylesheet" href="nav.css?v=2">
 
@@ -119,7 +119,7 @@
         <h1 class="display hero-h1">Hand-detailed, in your driveway.</h1>
         <p class="hero-discount"><span aria-hidden="true">★</span> 25% off your first wash, applied automatically.</p>
         <p class="lead hero-lead">
-          Hand wash. Ceramic seal. Cut and polish. Done by hand on your block, by Ellis.
+          Hand wash. Spray wax. Full ceramic correction. Done by hand on your block, by Ellis.
         </p>
 
         <div class="hero-phone-block">
@@ -129,7 +129,7 @@
 
         <div class="hero-ctas">
           <a class="btn btn-primary btn-lg" href="/book">Book online</a>
-          <a class="btn btn-ghost btn-lg" href="sms:+16282520740" data-sms-link>Text instead</a>
+          <a class="btn btn-ghost btn-lg" href="sms:+16282520740" data-sms-link>Text Ellis</a>
         </div>
         <p class="hero-meta">
           <span><span class="hero-status-dot" aria-hidden="true"></span><span data-next-available>Booking this week</span></span>
@@ -158,7 +158,7 @@
         </span>
         <div>
           <strong>Done by hand.</strong>
-          <span>No automated brushes. Two-bucket wash, microfiber sorted by job, foam cannon when warranted.</span>
+          <span>No automated brushes. Two-bucket wash, microfiber sorted by job, foam cannon when the car needs it.</span>
         </div>
       </div>
       <div class="trust-item">
@@ -375,43 +375,13 @@
         </div>
       </div>
 
-      <form class="book-form" id="bookForm" method="POST" action="mailto:info@elioncarcare.com?subject=Elion%20Car%20Care%20booking" enctype="text/plain">
-        <h3 class="form-title">Book by form</h3>
-        <label>
-          <span>Your name</span>
-          <input type="text" name="name" required autocomplete="name">
-        </label>
-        <label>
-          <span>Phone</span>
-          <input type="tel" name="phone" required autocomplete="tel" inputmode="tel" placeholder="So I can text you back">
-        </label>
-        <label>
-          <span>Address</span>
-          <input type="text" name="address" required autocomplete="street-address" placeholder="Street, Ann Arbor">
-        </label>
-        <label>
-          <span>Car</span>
-          <input type="text" name="car" required placeholder="2019 Honda Pilot">
-        </label>
-        <fieldset class="checks">
-          <legend>Pick a tier (paint treatment)</legend>
-          <label class="check"><input type="checkbox" name="services" value="Basic"> Basic, $40 (hand wash)</label>
-          <label class="check"><input type="checkbox" name="services" value="Essential"> Essential, $90 (wash + ceramic seal)</label>
-          <label class="check"><input type="checkbox" name="services" value="Premium"> Premium, $200 (wash + seal + cut and polish)</label>
-        </fieldset>
-        <fieldset class="checks">
-          <legend>Add-ons (optional)</legend>
-          <label class="check"><input type="checkbox" name="services" value="Interior detail"> Interior detail, $50</label>
-          <label class="check"><input type="checkbox" name="services" value="Headlight restoration"> Headlight restoration, $30</label>
-        </fieldset>
-        <label>
-          <span>Notes</span>
-          <textarea name="notes" rows="3" placeholder="Preferred day, paint condition, anything else."></textarea>
-        </label>
-        <input type="hidden" name="_redirect" value="thanks.html">
-        <button type="submit" class="btn btn-primary btn-lg">Send to Ellis</button>
-        <p class="muted small">Submissions go straight to Ellis. 25% off your first order. No third-party tracking.</p>
-      </form>
+      <div class="book-online-card">
+        <p class="eyebrow">Or pick a time</p>
+        <h3 class="form-title">Book online in about 30 seconds.</h3>
+        <p>Choose your package, grab a slot, check off any add-ons. You pay after the job, once you see the car. First wash is 25% off.</p>
+        <a class="btn btn-primary btn-lg" href="/book">Open the calendar</a>
+        <p class="muted small">No deposit, no card on file. The whole thing lands on Ellis's calendar with a confirmation.</p>
+      </div>
     </div>
   </section>
 
@@ -456,9 +426,9 @@
   <span class="sticky-cta-sub">(628) 252-0740 · Venmo or cash</span>
 </a>
 
-<script src="config.js?v=21"></script>
-<script src="app.js?v=15" defer></script>
-<script src="nav.js?v=2" defer></script>
-<script src="chatbot.js?v=13" defer></script>
+<script src="config.js?v=22"></script>
+<script src="app.js?v=16" defer></script>
+<script src="nav.js?v=3" defer></script>
+<script src="chatbot.js?v=14" defer></script>
 </body>
 </html>

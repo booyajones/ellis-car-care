@@ -42,13 +42,15 @@ const DAILY_WINDOW_MS = 24 * 60 * 60 * 1000;
 let dailyState = { count: 0, resetAt: Date.now() + DAILY_WINDOW_MS };
 
 // --- Tier + add-on prices (kept in sync with config.js + chatbot.js) ---
-const PRICES = { basic: 40, essential: 90, premium: 200 };
+// NOTE: this endpoint is dormant — ordering runs through Cal.com now — but
+// kept self-consistent with the live menu so nothing here contradicts it.
+const PRICES = { basic: 40, essential: 60, premium: 200 };
 const ADDON_PRICES = {
-  interior: 50,
+  interior: 40,
+  steam: 20,      // pairs with interior
+  diablo: 10,
+  claybar: 20,
   headlight: 30,
-  pethair: 20,
-  stain: 25,
-  leather: 15,
 };
 const TIERS = new Set(["basic", "essential", "premium"]);
 const ADDON_IDS = new Set(Object.keys(ADDON_PRICES));
@@ -376,17 +378,9 @@ function computePricing(order) {
   const addonSet = new Set(order.addons || []);
   if (order.scope === "interior" || order.scope === "both") addonSet.add("interior");
 
-  // Drop interior-dependent add-ons if interior isn't actually included.
-  // (Mirrors client-side book.js so server total matches what user saw.)
+  // Steam clean only pairs with interior — drop it if interior isn't included.
   if (!addonSet.has("interior")) {
-    addonSet.delete("pethair");
-    addonSet.delete("stain");
-    addonSet.delete("leather");
-  }
-
-  // Leather conditioning is free with Premium.
-  if (addonSet.has("leather") && order.tier === "premium") {
-    addonSet.delete("leather");
+    addonSet.delete("steam");
   }
 
   const addons = [...addonSet].map(id => ({ id, price: ADDON_PRICES[id] || 0 }));

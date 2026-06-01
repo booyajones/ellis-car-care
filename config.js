@@ -19,8 +19,8 @@ const CONFIG = {
   business: {
     name: "Elion Car Care",
     tagline: "Hand-detailed, in your driveway. Ann Arbor.",
-    sub: "Wash, ceramic seal, cut and polish. Done by hand on your block.",
-    description: "Hand auto detailing in Ann Arbor, Michigan. Two-bucket wash, ceramic sealant, paint correction, and headlight restoration, done in your driveway by Ellis, a local detailer based in Burns Park.",
+    sub: "Hand wash, spray wax, full ceramic correction. Done by hand on your block.",
+    description: "Hand auto detailing in Ann Arbor, Michigan. Two-bucket wash, spray wax, full ceramic correction, and headlight restoration, done in your driveway by Ellis, a local detailer based in Burns Park.",
   },
 
   contact: {

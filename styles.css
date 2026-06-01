@@ -1537,6 +1537,69 @@ section {
   gap: var(--s-4);
 }
 
+/* REWARDS / PUNCH CARD (/rewards) ------------------------- */
+.rewards-form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--s-4);
+  align-items: flex-start;
+  margin: var(--s-6) 0;
+  max-width: 420px;
+}
+.rewards-form .field { width: 100%; }
+.rewards-result {
+  margin: var(--s-5) 0;
+  padding: var(--s-5);
+  background: var(--surface);
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius);
+}
+.rewards-strip {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--s-3);
+  margin-bottom: var(--s-4);
+}
+.rewards-dot {
+  width: 46px;
+  height: 46px;
+  border-radius: 50%;
+  border: 2px solid var(--accent);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.1rem;
+  color: var(--accent);
+  background: transparent;
+  transition: background 0.2s, color 0.2s;
+}
+.rewards-dot.is-filled {
+  background: var(--accent);
+  color: var(--bg);
+}
+.rewards-dot.is-reward {
+  border-color: var(--stripe-green);
+  color: var(--stripe-green);
+}
+.rewards-dot.is-reward.is-filled {
+  background: var(--stripe-green);
+  color: var(--bg);
+}
+.rewards-status {
+  font-size: 1.05rem;
+  color: var(--ink);
+  margin: 0 0 var(--s-2);
+}
+.rewards-free {
+  margin: var(--s-3) 0;
+  padding: 10px 14px;
+  background: rgba(60, 178, 134, 0.14);
+  border: 1px solid var(--stripe-green);
+  border-radius: var(--radius-sm);
+  color: var(--stripe-green);
+  font-weight: 600;
+}
+
 /* PROCESS PAGE INLINE PHOTOS ------------------------------- */
 .process-photo {
   margin: var(--s-6) 0 var(--s-5);

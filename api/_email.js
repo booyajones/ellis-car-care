@@ -275,3 +275,76 @@ export function elionNotificationEmail(order) {
 
   return { subject: `New order: ${order.name} - $${p.total} (${TIER_LABEL[order.tier]})`, html, text };
 }
+
+// ============================================================
+//  Loyalty booking notification (sent by /api/cal-webhook on a new
+//  Cal.com booking). Carries the punch-card context + first-timer
+//  status + steam/interior warning + two signed one-tap operator links.
+// ============================================================
+const LOYALTY_TIER_LABEL = { basic: "Basic", essential: "Essential", premium: "Premium", unknown: "(tier?)" };
+const LOYALTY_ADDON_LABEL = {
+  diablo: "Diablo wheel scrub (+$10)",
+  claybar: "Clay bar (+$20)",
+  interior: "Interior",
+  steam: "Steam clean (+$20)",
+  headlight: "Headlight restoration (+$30)",
+};
+
+export function ellisLoyaltyNotificationEmail(d) {
+  const tierLabel = LOYALTY_TIER_LABEL[d.tier] || d.tier || "(tier?)";
+  const when = d.startISO ? new Date(d.startISO).toLocaleString("en-US", { timeZone: "America/Detroit" }) : "(time in Cal.com)";
+  const addonList = (d.addons || []).map(id => LOYALTY_ADDON_LABEL[id] || id);
+  const card = d.card || {};
+  const stamps = `${card.stampsFilled || 1} of ${card.totalSlots || 5}`;
+  const firstLine = d.firstTimeEligible
+    ? `<p style="margin:8px 0;padding:8px 12px;background:#eaf7ef;border-radius:6px;color:#1c7a4d;font-weight:700;">FIRST-TIMER — knock 25% off the Venmo total.</p>`
+    : `<p style="margin:8px 0;color:#666;">Returning customer — no first-time discount.</p>`;
+  const freeLine = (card.freeAvailable > 0)
+    ? `<p style="margin:8px 0;padding:10px 12px;background:#3CB286;color:#0E1014;border-radius:6px;font-weight:800;">FREE ESSENTIAL AVAILABLE — this wash is on the house. Tap "Redeem free Essential" below when you give it.</p>`
+    : "";
+  const steamWarn = d.steamWithoutInterior
+    ? `<p style="margin:8px 0;padding:10px 12px;background:#fdecea;border:1px solid #D94436;border-radius:6px;color:#a3271b;font-weight:700;">WARNING: Steam clean (+$20) was selected WITHOUT an interior. Confirm with the customer or drop it — steam only goes with an interior detail.</p>`
+    : "";
+  const addonsHtml = addonList.length
+    ? `<p style="margin:8px 0;"><strong>Add-ons:</strong> ${addonList.map(escapeHtml).join(", ")}</p>`
+    : `<p style="margin:8px 0;color:#666;">No add-ons selected.</p>`;
+
+  const html = `
+    <!doctype html><html><body style="margin:0;padding:24px 16px;background:#f4f1ea;font-family:Inter,system-ui,sans-serif;color:#1a1a1a;">
+      <div style="max-width:560px;margin:auto;background:#fff;border-radius:8px;overflow:hidden;">
+        <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%" style="border-collapse:collapse;">
+          <tr>
+            <td width="25%" height="6" bgcolor="#D94436" style="background:#D94436;line-height:0;font-size:0;">&nbsp;</td>
+            <td width="25%" height="6" bgcolor="#E89B3A" style="background:#E89B3A;line-height:0;font-size:0;">&nbsp;</td>
+            <td width="25%" height="6" bgcolor="#E4CB42" style="background:#E4CB42;line-height:0;font-size:0;">&nbsp;</td>
+            <td width="25%" height="6" bgcolor="#3CB286" style="background:#3CB286;line-height:0;font-size:0;">&nbsp;</td>
+          </tr>
+        </table>
+        <div style="padding:24px;">
+        <p style="margin:0 0 4px;color:#666;font-size:12px;">${d.isNewCustomer ? "NEW BOOKING — NEW CUSTOMER" : "NEW BOOKING — RETURNING"}</p>
+        <h1 style="font-family:Fraunces,Georgia,serif;font-size:24px;margin:0 0 12px;color:#0E1014;">${escapeHtml(d.name || "Customer")} — <span style="color:#E5A235;">${escapeHtml(tierLabel)}</span></h1>
+        <p style="margin:4px 0;">When: ${escapeHtml(when)}</p>
+        ${addonsHtml}
+        ${steamWarn}
+        ${firstLine}
+        <h2 style="font-family:Fraunces,Georgia,serif;font-size:16px;color:#0E1014;margin:20px 0 6px;">Punch card: ${escapeHtml(stamps)}</h2>
+        <p style="margin:4px 0;color:#666;">${card.nextRewardIn != null ? `${card.nextRewardIn} more completed job${card.nextRewardIn === 1 ? "" : "s"} for a free Essential.` : ""}</p>
+        ${freeLine}
+        <div style="margin:20px 0;">
+          <a href="${escapeHtml(d.markDoneUrl || "#")}" style="display:inline-block;background:#0E1014;color:#fff;padding:12px 18px;border-radius:999px;text-decoration:none;font-weight:700;margin:4px 6px 4px 0;">Mark job done (+1 punch)</a>
+          ${card.freeAvailable > 0 ? `<a href="${escapeHtml(d.redeemUrl || "#")}" style="display:inline-block;background:#3CB286;color:#0E1014;padding:12px 18px;border-radius:999px;text-decoration:none;font-weight:700;margin:4px 0;">Redeem free Essential</a>` : ""}
+        </div>
+        <p style="margin:16px 0 0;font-size:12px;color:#888;">Tap "Mark job done" only after you finish the wash — that's what adds the punch. Customer email is ${escapeHtml(d.email || "n/a")}.</p>
+        </div>
+      </div>
+    </body></html>
+  `;
+  const text = `${d.isNewCustomer ? "NEW BOOKING (new customer)" : "NEW BOOKING (returning)"}\n${d.name || "Customer"} — ${tierLabel}\nWhen: ${when}\nAdd-ons: ${addonList.join(", ") || "none"}\n${d.steamWithoutInterior ? "WARNING: steam selected without interior — confirm/drop.\n" : ""}${d.firstTimeEligible ? "FIRST-TIMER: take 25% off.\n" : "Returning: no first-time discount.\n"}Punch card: ${stamps}. ${card.nextRewardIn != null ? card.nextRewardIn + " more for a free Essential." : ""}\n${card.freeAvailable > 0 ? "FREE ESSENTIAL AVAILABLE — redeem link below.\n" : ""}\nMark done (+1 punch): ${d.markDoneUrl}\n${card.freeAvailable > 0 ? "Redeem free Essential: " + d.redeemUrl + "\n" : ""}Customer email: ${d.email || "n/a"}`;
+
+  const flags = [];
+  if (d.firstTimeEligible) flags.push("first-timer");
+  if (card.freeAvailable > 0) flags.push("FREE");
+  if (d.steamWithoutInterior) flags.push("steam-check");
+  const tag = flags.length ? ` [${flags.join(", ")}]` : "";
+  return { subject: `Booking: ${d.name || "Customer"} — ${tierLabel}${tag}`, html, text };
+}

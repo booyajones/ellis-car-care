@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Your rewards, Elion Car Care</title>
+  <meta name="description" content="Check your Elion Car Care punch card. Four washes earns a free Essential detail.">
+  <meta name="robots" content="noindex">
+  <meta name="theme-color" content="#0E1014">
+  <meta name="color-scheme" content="dark">
+  <link rel="canonical" href="https://elioncarcare.com/rewards">
+  <link rel="icon" href="favicon.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap">
+  <link rel="stylesheet" href="styles.css?v=24">
+  <link rel="stylesheet" href="chatbot.css?v=3">
+  <link rel="stylesheet" href="nav.css?v=2">
+</head>
+<body>
+
+<header class="topbar" data-shared-nav></header>
+
+<main class="story-page">
+  <div class="container">
+    <article class="story" style="max-width:560px;">
+      <p class="eyebrow">Rewards</p>
+      <h1 class="display">Four washes, the fifth Essential is free.</h1>
+      <hr class="stripe-rule" aria-hidden="true">
+      <p class="story-lead">
+        Every detail you book gets a punch. Your card starts with one already filled, on the house. Check yours below.
+      </p>
+
+      <form class="rewards-form" id="rewardsForm" novalidate>
+        <label class="field">
+          <span>Your email</span>
+          <input type="email" id="rewardsEmail" name="email" required autocomplete="email" inputmode="email" placeholder="the email you book with">
+        </label>
+        <button type="submit" class="btn btn-primary btn-lg" id="rewardsCheck">Check my card</button>
+      </form>
+
+      <div class="rewards-result" id="rewardsResult" hidden aria-live="polite">
+        <div class="rewards-strip" id="rewardsStrip" aria-hidden="true"></div>
+        <p class="rewards-status" id="rewardsStatus"></p>
+        <p class="rewards-free" id="rewardsFree" hidden></p>
+        <p class="muted small" id="rewardsHint"></p>
+      </div>
+
+      <p class="muted small" style="margin-top:var(--s-6);">
+        Punches land after Ellis finishes the job. The free wash is an Essential ($60 value). Cancelled or no-show visits do not count.
+      </p>
+
+      <p style="margin-top:var(--s-6);">
+        <a class="btn btn-primary btn-lg" href="/book">Book a wash</a>
+        <a class="btn btn-ghost btn-lg" href="/">Home</a>
+      </p>
+    </article>
+  </div>
+</main>
+
+<footer class="site-footer" data-shared-footer></footer>
+
+<script src="config.js?v=22"></script>
+<script src="nav.js?v=3" defer></script>
+<script src="rewards.js?v=1" defer></script>
+</body>
+</html>

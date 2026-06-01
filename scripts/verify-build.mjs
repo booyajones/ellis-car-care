@@ -42,7 +42,7 @@ async function checkApiImports() {
 // 2. Static HTML asset references resolve
 // ============================================================
 async function checkHtmlAssets() {
-  const htmls = ["index.html", "book.html", "admin.html", "about.html", "process.html", "thanks.html", "404.html"];
+  const htmls = ["index.html", "book.html", "admin.html", "about.html", "process.html", "gallery.html", "rewards.html", "thanks.html", "404.html"];
   for (const h of htmls) {
     const full = path.join(ROOT, h);
     if (!existsSync(full)) continue;
@@ -78,7 +78,7 @@ async function checkHtmlAssets() {
 // ============================================================
 async function checkRebrand() {
   const oldTerms = ["Ellis Car Care", "Quick Shine", "Driveway Detail", "Full Reset"];
-  const shippedFiles = ["index.html", "book.html", "admin.html", "about.html", "process.html", "thanks.html"];
+  const shippedFiles = ["index.html", "book.html", "admin.html", "about.html", "process.html", "gallery.html", "rewards.html", "thanks.html"];
   for (const f of shippedFiles) {
     const full = path.join(ROOT, f);
     if (!existsSync(full)) continue;

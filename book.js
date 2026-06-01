@@ -66,7 +66,6 @@
         const min = Math.min(...vals), max = Math.max(...vals);
         price = min === max ? `+$${min}` : `+$${min}–$${max}`;
         detail = parts.join(", ");
-        if (a.id === "interior") detail += ", deep interior quoted";
       } else if (a.price == null) {
         price = "Quoted";
       } else {
