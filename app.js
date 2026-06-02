@@ -256,43 +256,7 @@
         and AI answer engines see prices in raw HTML without running JS. We no
         longer mutate the JSON-LD at runtime (that would break the @graph). */
 
-  /* 9. Sticky CTA: hide and remove from a11y tree when book section is visible */
-
-  const sticky = $(".sticky-cta");
-  const hero = $(".hero");
-  const book = $("#book");
-  if (sticky && "IntersectionObserver" in window) {
-    let heroVisible = true;
-    let bookVisible = false;
-    function update() {
-      const hidden = heroVisible || bookVisible;
-      sticky.classList.toggle("is-hidden", hidden);
-      if (hidden) {
-        sticky.setAttribute("aria-hidden", "true");
-        sticky.setAttribute("tabindex", "-1");
-      } else {
-        sticky.removeAttribute("aria-hidden");
-        sticky.removeAttribute("tabindex");
-      }
-    }
-    if (hero) {
-      const heroIo = new IntersectionObserver((entries) => {
-        heroVisible = entries[0].isIntersecting;
-        update();
-      }, { threshold: 0.1 });
-      heroIo.observe(hero);
-    } else {
-      heroVisible = false;
-    }
-    if (book) {
-      const bookIo = new IntersectionObserver((entries) => {
-        bookVisible = entries[0].isIntersecting;
-        update();
-      }, { rootMargin: "0px 0px -20% 0px", threshold: 0 });
-      bookIo.observe(book);
-    }
-    update();
-  }
+  /* 9. [removed] Sticky CTA was here
 
   /* 10. Year in footer (also pre-filled in HTML for no-JS) */
 
