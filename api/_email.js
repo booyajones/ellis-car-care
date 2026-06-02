@@ -289,8 +289,8 @@ const LOYALTY_ADDON_LABEL = {
   diablo: "Diablo wheel cleaner (+$10)",
   claybar: "Clay bar (+$20)",
   trim: "Trim and plastic shine (from $25)",
-  ceramicwheels: "Ceramic on wheels (+$20)",
-  headlight: "Headlight restoration (+$30)",
+  ceramicwheels: "Ceramic wheel coat (+$25)",
+  headlight: "Headlight restoration (+$35)",
 };
 
 export function ellisLoyaltyNotificationEmail(d) {
