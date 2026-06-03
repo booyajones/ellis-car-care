@@ -35,11 +35,11 @@
     }).join("");
 
     return `
-      <a class="brand" href="/" aria-label="Elion Car Care home">
+      <a class="brand" href="/" aria-label="Wyatt Auto Detailing home">
         <span class="brand-stripe" aria-hidden="true"></span>
         <span class="brand-stack">
-          <span class="brand-name">Elion</span>
-          <span class="brand-mono">Car Care · Ann Arbor</span>
+          <span class="brand-name">Wyatt</span>
+          <span class="brand-mono">Auto Detailing · Ann Arbor</span>
         </span>
       </a>
       <nav class="topnav" aria-label="Primary">${navItems}</nav>
@@ -52,8 +52,8 @@
 
       <div class="nav-drawer" id="nav-drawer" role="dialog" aria-modal="true" aria-hidden="true" aria-label="Navigation menu">
         <div class="nav-drawer-head">
-          <a class="brand" href="/" aria-label="Elion Car Care home">
-            <span class="brand-name">Elion Car Care</span>
+          <a class="brand" href="/" aria-label="Wyatt Auto Detailing home">
+            <span class="brand-name">Wyatt Auto Detailing</span>
             <span class="brand-mono">ANN ARBOR · MI</span>
           </a>
           <button class="nav-drawer-close" type="button" aria-label="Close menu">
@@ -82,7 +82,7 @@
     return `
       <div class="container footer-grid">
         <div>
-          <p class="footer-brand">Elion Car Care</p>
+          <p class="footer-brand">Wyatt Auto Detailing</p>
           <p class="muted small">Mobile car detailing in Ann Arbor, MI.</p>
         </div>
         <div>
@@ -95,7 +95,7 @@
         </div>
       </div>
       <hr class="stripe-rule is-wide" aria-hidden="true">
-      <p class="footer-fine muted small">© ${year} ELION CAR CARE · MADE IN ANN ARBOR</p>
+      <p class="footer-fine muted small">© ${year} WYATT AUTO DETAILING · MADE IN ANN ARBOR</p>
     `;
   }
 
