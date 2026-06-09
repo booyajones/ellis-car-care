@@ -161,7 +161,7 @@
         <div>📍 <a href="${escapeHtml(mapHref)}" target="_blank" rel="noopener">${escapeHtml(order.address)}</a></div>
         ${order.preferred_timing ? `<div>🕐 ${escapeHtml(order.preferred_timing)}</div>` : ""}
         ${order.location === "annarbor" ? '<div style="color: var(--muted);">+$5 travel (Greater Ann Arbor)</div>' : ""}
-        ${order.first_time ? '<div style="color: var(--accent);">⭐ First-time customer (25% discount applied)</div>' : ""}
+        ${order.first_time ? '<div style="color: var(--accent);">⭐ First-time customer (15% discount applied)</div>' : ""}
       </div>
       ${order.notes ? `<div class="order-card-notes">"${escapeHtml(order.notes)}"</div>` : ""}
       ${order.notes_admin ? `<div class="order-card-notes" style="background: var(--accent-soft); color: var(--accent);">📝 ${escapeHtml(order.notes_admin)}</div>` : ""}

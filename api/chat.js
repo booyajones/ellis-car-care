@@ -49,7 +49,7 @@ ADD-ONS (picked as checkboxes inside the Cal.com booking):
   - Headlight restoration ($30): sand + polish + UV pass for yellowed/foggy headlights. Any package.
 
 DISCOUNTS:
-  - First-time customer: 25% off the first wash. It's automatic, Ellis sees it's a first booking and takes 25% off the total. The customer doesn't need to enter a code or mention anything.
+  - First-time customer: 15% off the first wash. It's automatic, Ellis sees it's a first booking and takes 15% off the total. The customer doesn't need to enter a code or mention anything.
 
 NOTE: ordering happens through the calendar (Cal.com) on the site. The customer picks a tier, picks a time, and checks off add-ons in the booking. The Essential wax protectant is light, a few weeks of protection; the durable months-long ceramic coat is the Premium package, not Essential. There is a full descriptions page at /services that explains every package and add-on.
 

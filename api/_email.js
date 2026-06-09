@@ -179,7 +179,7 @@ function renderSummaryHtml(o) {
       ${addonRows}
       ${p.travel ? `<tr><td style="padding:4px 0;">+ Travel</td><td style="text-align:right;padding:4px 0;">$${p.travel}</td></tr>` : ""}
       ${p.bundle_discount ? `<tr><td style="padding:4px 0;color:#888;">- Bundle discount</td><td style="text-align:right;padding:4px 0;color:#888;">- $${p.bundle_discount}</td></tr>` : ""}
-      ${p.first_time_discount ? `<tr><td style="padding:4px 0;color:#888;">- First-time 25% off</td><td style="text-align:right;padding:4px 0;color:#888;">- $${p.first_time_discount}</td></tr>` : ""}
+      ${p.first_time_discount ? `<tr><td style="padding:4px 0;color:#888;">- First-time 15% off</td><td style="text-align:right;padding:4px 0;color:#888;">- $${p.first_time_discount}</td></tr>` : ""}
       <tr><td style="padding:10px 0 4px;border-top:2px solid #1a1a1a;"><strong>Total</strong></td><td style="text-align:right;padding:10px 0 4px;border-top:2px solid #1a1a1a;font-size:18px;"><strong>$${p.total}</strong></td></tr>
     </table>
   `;
@@ -264,7 +264,7 @@ export function elionNotificationEmail(order) {
 
         ${order.notes ? `<h2 style="font-family:Fraunces,Georgia,serif;font-size:16px;color:#0E1014;margin:24px 0 8px;">Customer notes</h2><p style="background:#f4f1ea;padding:12px;border-radius:6px;margin:0;font-style:italic;">"${escapeHtml(order.notes)}"</p>` : ""}
 
-        ${order.first_time ? `<p style="margin:16px 0 0;color:#E5A235;">⭐ First-time customer, take 25% off the total</p>` : ""}
+        ${order.first_time ? `<p style="margin:16px 0 0;color:#E5A235;">⭐ First-time customer, take 15% off the total</p>` : ""}
 
         <p style="margin:24px 0 0;font-size:13px;color:#666;">Dashboard: <a href="https://elioncarcare.com/admin" style="color:#E5A235;">elioncarcare.com/admin</a></p>
         </div>
@@ -300,7 +300,7 @@ export function ellisLoyaltyNotificationEmail(d) {
   const card = d.card || {};
   const stamps = `${card.stampsFilled || 1} of ${card.totalSlots || 5}`;
   const firstLine = d.firstTimeEligible
-    ? `<p style="margin:8px 0;padding:8px 12px;background:#eaf7ef;border-radius:6px;color:#1c7a4d;font-weight:700;">FIRST-TIMER — knock 25% off the Venmo total.</p>`
+    ? `<p style="margin:8px 0;padding:8px 12px;background:#eaf7ef;border-radius:6px;color:#1c7a4d;font-weight:700;">FIRST-TIMER — knock 15% off the Venmo total.</p>`
     : `<p style="margin:8px 0;color:#666;">Returning customer — no first-time discount.</p>`;
   const freeLine = (card.freeAvailable > 0)
     ? `<p style="margin:8px 0;padding:10px 12px;background:#3CB286;color:#0E1014;border-radius:6px;font-weight:800;">FREE ESSENTIAL AVAILABLE — this wash is on the house. Tap "Redeem free Essential" below when you give it.</p>`
@@ -342,7 +342,7 @@ export function ellisLoyaltyNotificationEmail(d) {
       </div>
     </body></html>
   `;
-  const text = `${d.isNewCustomer ? "NEW BOOKING (new customer)" : "NEW BOOKING (returning)"}\n${d.name || "Customer"} — ${tierLabel}\nWhen: ${when}\nAdd-ons: ${addonList.join(", ") || "none"}\n${d.steamWithoutInterior ? "WARNING: steam selected without interior — confirm/drop.\n" : ""}${d.firstTimeEligible ? "FIRST-TIMER: take 25% off.\n" : "Returning: no first-time discount.\n"}Punch card: ${stamps}. ${card.nextRewardIn != null ? card.nextRewardIn + " more for a free Essential." : ""}\n${card.freeAvailable > 0 ? "FREE ESSENTIAL AVAILABLE — redeem link below.\n" : ""}\nMark done (+1 punch): ${d.markDoneUrl}\n${card.freeAvailable > 0 ? "Redeem free Essential: " + d.redeemUrl + "\n" : ""}Customer email: ${d.email || "n/a"}`;
+  const text = `${d.isNewCustomer ? "NEW BOOKING (new customer)" : "NEW BOOKING (returning)"}\n${d.name || "Customer"} — ${tierLabel}\nWhen: ${when}\nAdd-ons: ${addonList.join(", ") || "none"}\n${d.steamWithoutInterior ? "WARNING: steam selected without interior — confirm/drop.\n" : ""}${d.firstTimeEligible ? "FIRST-TIMER: take 15% off.\n" : "Returning: no first-time discount.\n"}Punch card: ${stamps}. ${card.nextRewardIn != null ? card.nextRewardIn + " more for a free Essential." : ""}\n${card.freeAvailable > 0 ? "FREE ESSENTIAL AVAILABLE — redeem link below.\n" : ""}\nMark done (+1 punch): ${d.markDoneUrl}\n${card.freeAvailable > 0 ? "Redeem free Essential: " + d.redeemUrl + "\n" : ""}Customer email: ${d.email || "n/a"}`;
 
   const flags = [];
   if (d.firstTimeEligible) flags.push("first-timer");

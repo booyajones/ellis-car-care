@@ -365,7 +365,7 @@ function validateOrder(b) {
   if (!["burns", "annarbor", "nearby"].includes(location)) return { error: "invalid_location" };
   order.location = location;
 
-  // First-time flag — DORMANT endpoint only. The live first-time 25% is now
+  // First-time flag — DORMANT endpoint only. The live first-time 15% is now
   // server-decided in the loyalty store (api/_loyalty.js, keyed by email
   // hash), not trusted from the client. If this POST path is ever
   // re-enabled, route first-time eligibility through the loyalty record
@@ -397,9 +397,9 @@ function computePricing(order) {
   const bundleEligible = hasInterior && (order.tier === "essential" || order.tier === "premium");
   const bundleDiscount = bundleEligible ? 10 : 0;
 
-  // First-time discount: 25% off subtotal (after bundle)
+  // First-time discount: 15% off subtotal (after bundle)
   const subtotalPreFirstTime = base + addonTotal + travel - bundleDiscount;
-  const firstTimeDiscount = order.first_time ? Math.round(subtotalPreFirstTime * 0.25) : 0;
+  const firstTimeDiscount = order.first_time ? Math.round(subtotalPreFirstTime * 0.15) : 0;
   const total = subtotalPreFirstTime - firstTimeDiscount;
 
   return {

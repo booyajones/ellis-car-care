@@ -146,7 +146,7 @@
         "• Premium, from $200, about 4 hrs. Clay bar, machine polish, ceramic on paint and wheels. Quoted on your car.",
         "• Add-ons: Interior $40 ($35 on Essential/Premium) · Steam clean +$20 (with interior) · Diablo wheel cleaner $10 · Clay bar $20 · Trim shine from $25 · Ceramic wheels $20 · Headlights $30.",
         "• Deep clean (set-in stains, heavy pet hair, neglected interior): quoted on your car.",
-        "• First-time customer: 25% off your first wash, taken off your total.",
+        "• First-time customer: 15% off your first wash, taken off your total.",
         "Burns Park is free travel. Greater Ann Arbor (48104/48103/48105) adds $5.",
       ],
       options: [
@@ -499,7 +499,7 @@
 
     // First-time customer discount, % off the subtotal. Tracked in
     // localStorage; once a customer confirms an order, they don't see this
-    // again. Configurable via CONFIG.firstTimeDiscount; default 25%.
+    // again. Configurable via CONFIG.firstTimeDiscount; default 15%.
     const firstTimeRate = (window.CONFIG && Number(window.CONFIG.firstTimeDiscount)) || 0;
     const isFirstTime = firstTimeRate > 0 && isFirstTimeBrowser();
     const preFirstTimeTotal = base + addonTotal + travel - bundleDiscount;

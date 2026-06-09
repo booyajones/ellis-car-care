@@ -203,7 +203,7 @@ const CONFIG = {
   // clearing cookies) and surfaces it in Ellis's notification email. Ellis
   // takes it off the Venmo/cash total after the job. This value is the
   // display figure shown in site copy. Set to 0 to disable.
-  firstTimeDiscount: 0.25,
+  firstTimeDiscount: 0.15,
 
   // Process notes (used in the "Process" section).
   process: {
