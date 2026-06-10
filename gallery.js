@@ -17,24 +17,16 @@
 (function () {
   "use strict";
 
-  // Curated 12, ordered for visual rhythm: wide shots, then close-ups,
-  // then variety. See scripts/process-wash-photos.py for source mapping.
+  // 8 photos from Ellis, updated June 2026.
   const WASH_PHOTOS = [
-    { id: "01", alt: "Ellis rinsing a dark SUV in a Burns Park driveway, water arc visible" },
-    { id: "02", alt: "Foam cannon applying suds to the side panel of a black SUV" },
-    { id: "03", alt: "Dark SUV fully foamed up before rinse, side profile" },
-    { id: "04", alt: "Front three-quarter shot of a car covered in fresh foam, garage in background" },
-    { id: "05", alt: "Foam over the rear taillight cluster of a black car, close detail" },
-    { id: "06", alt: "Foam cannon coating the hood of a black sedan, top-down view" },
-    { id: "07", alt: "Foam covering the rear hatch of a black Mazda CX-5" },
-    { id: "08", alt: "Rear corner of a Mazda CX-5 with foam mist spraying onto the trunk" },
-    { id: "09", alt: "Foam cannon spraying the side panel of a black SUV, mid-application" },
-    { id: "10", alt: "Side foam mist on a black SUV in a driveway" },
-    { id: "11", alt: "Water rinsing the roof and windshield of a dark sedan, neighborhood backdrop" },
-    { id: "12", alt: "Close-up of foam suds running off the wheel and side panel of a black SUV" },
-    { id: "13", alt: "Pressure-washing a black Enkei wheel on a white car, Diablo wheel cleaner" },
-    { id: "14", alt: "Spray hitting the face of a black multi-spoke wheel, brake dust rinsing off" },
-    { id: "15", alt: "Clean black Enkei rim and tire after a Diablo wheel cleaner" },
+    { id: "01", alt: "Black Mazda CX-5 freshly detailed in a Burns Park driveway" },
+    { id: "02", alt: "Wheel and tire close-up after a hand detail, Burns Park" },
+    { id: "03", alt: "Side profile of a clean car in a neighborhood driveway" },
+    { id: "04", alt: "Detail shot from a recent wash in Ann Arbor" },
+    { id: "05", alt: "Close-up detail on a freshly washed vehicle" },
+    { id: "06", alt: "Car exterior after a full hand detail by Ellis" },
+    { id: "07", alt: "Black SUV after a hand wash and wax, driveway in Burns Park" },
+    { id: "08", alt: "Wheel close-up after tire shine treatment — after" },
   ];
 
   function tryImage(src) {
