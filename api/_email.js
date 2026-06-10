@@ -15,7 +15,7 @@
      2. Generate API key
      3. vercel env add RESEND_API_KEY production
      4. Verify elioncarcare.com as a Resend domain
-     5. vercel env add EMAIL_FROM "Elion Car Care <book@elioncarcare.com>"
+     5. vercel env add EMAIL_FROM "Wyatt Auto Detailing <book@elioncarcare.com>"
    The code automatically prefers Resend over Gmail once the key is set.
    ============================================================ */
 
@@ -127,7 +127,7 @@ async function sendViaGmail({ to, subject, html, text, replyTo, from, cc, transp
   // For Gmail SMTP, the From header must match the authenticated account.
   // We can set a display name only, but the actual address is the Gmail user.
   const fromAddr = process.env.GMAIL_USER;
-  const displayName = (process.env.EMAIL_FROM_NAME || "Elion Car Care").replace(/[<>"]/g, "");
+  const displayName = (process.env.EMAIL_FROM_NAME || "Wyatt Auto Detailing").replace(/[<>"]/g, "");
   const fromHeader = from || `${displayName} <${fromAddr}>`;
 
   const message = {
@@ -190,7 +190,7 @@ function renderSummaryHtml(o) {
 // ============================================================
 export function customerConfirmationEmail(order) {
   const p = order.pricing || {};
-  const venmoNote = `Elion Car Care order ${String(order.id).replace(/^ord_/, "")}`;
+  const venmoNote = `Wyatt Auto Detailing order ${String(order.id).replace(/^ord_/, "")}`;
   const venmoUrl = `https://venmo.com/${VENMO_SLUG}?txn=pay&amount=${p.total}&note=${encodeURIComponent(venmoNote)}`;
 
   const html = `

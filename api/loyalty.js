@@ -203,7 +203,7 @@ function cardStrip(card) {
 }
 
 function page(title, bodyHtml) {
-  return `<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>${escapeHtml(title)} — Elion Car Care</title>
+  return `<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>${escapeHtml(title)} — Wyatt Auto Detailing</title>
 <style>body{margin:0;background:#2A2D33;color:#F4ECD8;font-family:-apple-system,Inter,Helvetica,Arial,sans-serif;line-height:1.5;}
 .wrap{max-width:480px;margin:0 auto;padding:48px 24px;text-align:center;}
 .bar{height:6px;display:flex;}.bar i{flex:1;}

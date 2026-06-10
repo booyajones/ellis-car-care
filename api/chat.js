@@ -29,7 +29,7 @@ const GEMINI_URL  = (model) => `https://generativelanguage.googleapis.com/v1beta
 
 const UPSTREAM_TIMEOUT_MS = 12_000;
 
-const SYSTEM_PROMPT = `You are Elion Car Care's wash-planning assistant on his website.
+const SYSTEM_PROMPT = `You are Wyatt Auto Detailing's wash-planning assistant on his website.
 
 Ellis is an 18-year-old who hand-details cars in customers' driveways around Burns Park, Ann Arbor. He's headed to U of M in the fall. He offers three PAINT-focused tiers, plus add-ons:
 
@@ -338,7 +338,7 @@ export default async function handler(req) {
       return json({
         error: "region_not_supported",
         country: geo.country,
-        message: "Elion Car Care serves Ann Arbor, Michigan. AI planning is US-only; you can still use the quick form on the site.",
+        message: "Wyatt Auto Detailing serves Ann Arbor, Michigan. AI planning is US-only; you can still use the quick form on the site.",
       }, 403, cors);
     }
   }
