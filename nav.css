@@ -28,14 +28,18 @@
 
 @media (max-width: 720px) {
   .topnav, .topbar-phone, .topbar-cta { display: none; }
-  .hamburger { display: inline-flex; }
+  .hamburger {
+    display: inline-flex;
+    margin-left: auto;   /* push to far right */
+    margin-right: 4px;   /* slight spacing from edge */
+  }
 }
 
 /* Drawer */
 .nav-drawer {
   position: fixed;
   inset: 0;
-  background: rgba(14, 16, 20, 0.85);
+  background: rgba(0, 0, 0, 0.75); /* dark scrim behind the panel */
   z-index: 90;
   display: none;
   align-items: stretch;
@@ -47,7 +51,7 @@
 .nav-drawer-head,
 .nav-drawer-links,
 .nav-drawer-cta {
-  background: var(--bg);
+  background: #0e1014; /* fully opaque so no site content bleeds through */
 }
 .nav-drawer-head {
   display: flex;
@@ -111,6 +115,12 @@ body.nav-drawer-open { overflow: hidden; }
 @media (max-width: 720px) {
   .nav-drawer-head, .nav-drawer-links, .nav-drawer-cta {
     width: 100%;
+    background: #0e1014; /* fully opaque — no bleed-through on mobile */
+  }
+  /* Drawer inner panel also needs full opaque bg as a flex column */
+  .nav-drawer.is-open {
+    flex-direction: column;
+    justify-content: flex-start;
   }
 }
 
