@@ -87,7 +87,7 @@
         </div>
         <div>
           <p><a href="tel:${PHONE_HREF}" data-tel-link>${PHONE}</a></p>
-          <p><a href="mailto:info@elioncarcare.com">info@elioncarcare.com</a></p>
+          <p><a href="mailto:wyattauto44@gmail.com">wyattauto44@gmail.com</a></p>
         </div>
         <div>
           <p class="muted small">Serving Burns Park and ZIPs 48104, 48103, 48105.</p>

@@ -26,7 +26,7 @@ const CONFIG = {
   contact: {
     phone: "(628) 252-0740",
     phoneHref: "+16282520740",
-    email: "info@elioncarcare.com",
+    email: "wyattauto44@gmail.com",
     // SINGLE SOURCE OF TRUTH for Venmo handle. Change here, the whole
     // client side updates: home FAQ, book.html confirmation modal,
     // copy-handle button, Venmo deep-link URL builder.
