@@ -17,7 +17,7 @@
 (function () {
   "use strict";
 
-  // 8 photos from Ellis, updated June 2026.
+  // 16 photos: 8 new detailed shots + 8 original foam-wash shots.
   const WASH_PHOTOS = [
     { id: "01", alt: "Black Mazda CX-5 freshly detailed in a Burns Park driveway" },
     { id: "02", alt: "Wheel and tire close-up after a hand detail, Burns Park" },
@@ -27,6 +27,14 @@
     { id: "06", alt: "Car exterior after a full hand detail by Ellis" },
     { id: "07", alt: "Black SUV after a hand wash and wax, driveway in Burns Park" },
     { id: "08", alt: "Wheel close-up after tire shine treatment — after" },
+    { id: "09", alt: "Ellis rinsing a dark SUV in a Burns Park driveway, water arc visible" },
+    { id: "10", alt: "Foam cannon applying suds to the side panel of a black SUV" },
+    { id: "11", alt: "Dark SUV fully foamed up before rinse, side profile" },
+    { id: "12", alt: "Front three-quarter shot of a car covered in fresh foam, garage in background" },
+    { id: "13", alt: "Foam over the rear taillight cluster of a black car, close detail" },
+    { id: "14", alt: "Foam cannon coating the hood of a black sedan, top-down view" },
+    { id: "15", alt: "Foam covering the rear hatch of a black Mazda CX-5" },
+    { id: "16", alt: "Rear corner of a Mazda CX-5 with foam mist spraying onto the trunk" },
   ];
 
   function tryImage(src) {

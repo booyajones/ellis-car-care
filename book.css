@@ -586,6 +586,35 @@
   margin-bottom: var(--s-3);
 }
 
-@media (prefers-reduced-motion: reduce) {
-  .confirm-modal, .order-card { transition: none; }
+/* MOBILE OVERRIDES (max-width: 640px) --------------------- */
+@media (max-width: 640px) {
+  .book-layout {
+    grid-template-columns: 1fr;
+    gap: var(--s-5);
+  }
+  .book-ai {
+    position: static;
+    margin-top: var(--s-6);
+  }
+  .tier-card {
+    padding: var(--s-3);
+    gap: var(--s-3);
+  }
+  .tier-name {
+    font-size: 1.1rem;
+  }
+  .tier-price {
+    font-size: 1.2rem;
+  }
+  .slot-day-row, .slot-time-row {
+    grid-template-columns: repeat(auto-fill, minmax(90px, 1fr));
+  }
+  .slot-chip {
+    padding: 8px 6px;
+    font-size: 0.85rem;
+  }
+  .confirm-modal-inner {
+    padding: var(--s-5) var(--s-4);
+  }
 }
+
