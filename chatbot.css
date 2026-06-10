@@ -339,6 +339,14 @@
   }
 }
 
+/* ---- Hide chat FAB when mobile nav drawer is open ---- */
+body.nav-drawer-open .chat-fab {
+  opacity: 0;
+  pointer-events: none;
+  transform: scale(0.8);
+  transition: opacity 0.15s ease, transform 0.15s ease;
+}
+
 /* On desktop, nudge sticky CTA so it doesn't overlap the panel */
 @media (min-width: 541px) {
   body.chat-open .sticky-cta {
