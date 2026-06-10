@@ -35,6 +35,7 @@
     { id: "14", alt: "Foam cannon coating the hood of a black sedan, top-down view" },
     { id: "15", alt: "Foam covering the rear hatch of a black Mazda CX-5" },
     { id: "16", alt: "Rear corner of a Mazda CX-5 with foam mist spraying onto the trunk" },
+    { id: "17", alt: "Drill brush scrub detail on a wheel, Burns Park driveway" },
   ];
 
   function tryImage(src) {
