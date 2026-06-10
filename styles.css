@@ -1819,7 +1819,7 @@ section {
   }
 
   h1.display, .hero-h1, h1 {
-    font-size: clamp(2.2rem, 8vw, 3.5rem);
+    font-size: clamp(2.8rem, 9.5vw, 4.1rem); /* +10px larger on mobile */
     letter-spacing: -0.03em;
   }
 
