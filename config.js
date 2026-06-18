@@ -77,7 +77,7 @@ const CONFIG = {
     {
       id: "basic",
       name: "Basic",
-      price: 40,
+      price: 37,
       time: "about 45 minutes",
       summary: "A real hand wash. Every bit of dirt and grime off, car looks fresh.",
       includes: [
@@ -257,7 +257,7 @@ const CONFIG = {
     },
     {
       q: "How much does car detailing cost in Ann Arbor?",
-      a: "A real hand wash is $40. A wash plus wax and tire shine is $60. A full ceramic detail is from $200, quoted on your car. Add an interior for $40 on Basic, or $35 with Essential or Premium. No minimums and no surprise fees.",
+      a: "A real hand wash is $37. A wash plus wax and tire shine is $60. A full ceramic detail is from $200, quoted on your car. Add an interior for $40 on Basic, or $35 with Essential or Premium. No minimums and no surprise fees.",
     },
   ],
 

@@ -141,7 +141,7 @@
       id: "skipToPrices",
       prompt: () => [
         "All good. Here's the lineup:",
-        "• Basic, $40, about 45 min. Mr. Pink two-bucket wash, wheel rinse, hand dry.",
+        "• Basic, $37, about 45 min. Mr. Pink two-bucket wash, wheel rinse, hand dry.",
         "• Essential, $60, about 1 hr. Basic + wax protectant + tire shine.",
         "• Premium, from $200, about 4 hrs. Clay bar, machine polish, ceramic on paint and wheels. Quoted on your car.",
         "• Add-ons: Interior $40 ($35 on Essential/Premium) · Steam clean +$20 (with interior) · Diablo wheel cleaner $10 · Clay bar $20 · Trim shine from $25 · Ceramic wheels $20 · Headlights $30.",
