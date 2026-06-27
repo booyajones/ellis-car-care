@@ -685,7 +685,7 @@ section {
     grid-column: 1 / -1;
     flex-direction: row;
     align-items: center;
-    padding: var(--s-4) var(--s-6);
+    padding: var(--s-5) var(--s-6);
     gap: var(--s-5);
   }
   .bundle--starter .bundle-head {
@@ -727,14 +727,15 @@ section {
     white-space: nowrap;
     align-self: center;
   }
+  /* Green left border (below) is the Starter bar's distinguishing stripe on
+     desktop, so hide the top accent span here to avoid doubling. */
   .bundle--starter .tier-accent {
     display: none;
   }
-  /* Faint left border instead of top accent stripe for the bar */
-  .bundle--starter {
-    border-left: 3px solid var(--line-strong);
+  .bundles .bundle--starter {
+    border-left: 5px solid var(--stripe-green);
     border-radius: var(--radius);
-    opacity: 0.85;
+    opacity: 0.9;
   }
 }
 
@@ -911,12 +912,14 @@ section {
   border-color: var(--ink);
   transform: translateY(-1px);
 }
-.bundle.popular .bundle-cta {
+.bundle.popular .bundle-cta,
+.bundle[data-tier="premium"] .bundle-cta {
   background: var(--accent);
   color: var(--bg);
   border-color: var(--accent);
 }
-.bundle.popular .bundle-cta:hover {
+.bundle.popular .bundle-cta:hover,
+.bundle[data-tier="premium"] .bundle-cta:hover {
   background: var(--accent-deep);
   border-color: var(--accent-deep);
 }

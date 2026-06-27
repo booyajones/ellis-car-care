@@ -78,6 +78,7 @@
       // Add modifier class for Starter: bundle--starter drives desktop bar + mobile compact
       const starterClass = b.id === "basic" ? " bundle--starter" : "";
       card.className = "bundle" + (b.popular ? " popular" : "") + starterClass;
+      card.dataset.tier = b.id;
       const popularBadge = b.popular ? '<span class="popular-badge">Most popular</span>' : "";
       const calSlug = (cfg.calEventBySlug && cfg.calEventBySlug[b.id]) || b.id;
       const calBase = cfg.calBaseUrl || "https://cal.com/elion";
