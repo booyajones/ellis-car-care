@@ -5,8 +5,8 @@
   "redirects": [
     {
       "source": "/(.*)",
-      "has": [{ "type": "host", "value": "www.elioncarcare.com" }],
-      "destination": "https://elioncarcare.com/$1",
+      "has": [{ "type": "host", "value": "www.wyattautodetailing.com" }],
+      "destination": "https://wyattautodetailing.com/$1",
       "permanent": true
     }
   ],

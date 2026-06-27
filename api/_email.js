@@ -14,8 +14,8 @@
      1. Sign up at https://resend.com (free tier 3K/mo)
      2. Generate API key
      3. vercel env add RESEND_API_KEY production
-     4. Verify elioncarcare.com as a Resend domain
-     5. vercel env add EMAIL_FROM "Wyatt Auto Detailing <book@elioncarcare.com>"
+     4. Verify wyattautodetailing.com as a Resend domain
+     5. vercel env add EMAIL_FROM "Wyatt Auto Detailing <book@wyattautodetailing.com>"
    The code automatically prefers Resend over Gmail once the key is set.
    ============================================================ */
 
@@ -266,12 +266,12 @@ export function elionNotificationEmail(order) {
 
         ${order.first_time ? `<p style="margin:16px 0 0;color:#E5A235;">⭐ First-time customer, take 15% off the total</p>` : ""}
 
-        <p style="margin:24px 0 0;font-size:13px;color:#666;">Dashboard: <a href="https://elioncarcare.com/admin" style="color:#E5A235;">elioncarcare.com/admin</a></p>
+        <p style="margin:24px 0 0;font-size:13px;color:#666;">Dashboard: <a href="https://wyattautodetailing.com/admin" style="color:#E5A235;">wyattautodetailing.com/admin</a></p>
         </div>
       </div>
     </body></html>
   `;
-  const text = `NEW ORDER ${order.id}\n${order.name} - $${p.total}\n\n${TIER_LABEL[order.tier]} (${SCOPE_LABEL[order.scope] || order.scope}) - $${p.base}\n${(p.addons || []).map(a => `+ ${ADDON_LABEL[a.id] || a.id} ($${a.price})`).join("\n")}\nTotal: $${p.total}\n\nContact: ${order.phone} - ${order.address}\n${order.car ? "Car: " + order.car + "\n" : ""}${order.preferred_timing ? "Timing: " + order.preferred_timing + "\n" : ""}${order.notes ? "Notes: " + order.notes + "\n" : ""}${order.first_time ? "* First-time customer\n" : ""}\nDashboard: https://elioncarcare.com/admin`;
+  const text = `NEW ORDER ${order.id}\n${order.name} - $${p.total}\n\n${TIER_LABEL[order.tier]} (${SCOPE_LABEL[order.scope] || order.scope}) - $${p.base}\n${(p.addons || []).map(a => `+ ${ADDON_LABEL[a.id] || a.id} ($${a.price})`).join("\n")}\nTotal: $${p.total}\n\nContact: ${order.phone} - ${order.address}\n${order.car ? "Car: " + order.car + "\n" : ""}${order.preferred_timing ? "Timing: " + order.preferred_timing + "\n" : ""}${order.notes ? "Notes: " + order.notes + "\n" : ""}${order.first_time ? "* First-time customer\n" : ""}\nDashboard: https://wyattautodetailing.com/admin`;
 
   return { subject: `New order: ${order.name} - $${p.total} (${TIER_LABEL[order.tier]})`, html, text };
 }

@@ -28,7 +28,7 @@ import { sendEmail, ellisLoyaltyNotificationEmail } from "./_email.js";
 
 export const config = { runtime: "nodejs" };
 
-const SITE = "https://elioncarcare.com";
+const SITE = "https://wyattautodetailing.com";
 
 export default async function handler(nodeReq, nodeRes) {
   const send = (status, obj) => {

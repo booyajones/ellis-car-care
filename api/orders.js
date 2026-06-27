@@ -21,8 +21,8 @@ import { sendEmail, customerConfirmationEmail, elionNotificationEmail } from "./
 export const config = { runtime: "nodejs" };
 
 const ALLOWED_ORIGINS = new Set([
-  "https://elioncarcare.com",
-  "https://www.elioncarcare.com",
+  "https://wyattautodetailing.com",
+  "https://www.wyattautodetailing.com",
   "https://ellis-car-care.vercel.app",  // legacy alias, redirects to apex eventually
   "http://localhost:5180",
   "http://127.0.0.1:5180",
@@ -537,7 +537,7 @@ function generateId() {
 }
 
 function corsHeaders(origin) {
-  const allow = ALLOWED_ORIGINS.has(origin) ? origin : "https://elioncarcare.com";
+  const allow = ALLOWED_ORIGINS.has(origin) ? origin : "https://wyattautodetailing.com";
   return {
     "Access-Control-Allow-Origin": allow,
     "Access-Control-Allow-Methods": "GET, POST, PATCH, DELETE, OPTIONS",

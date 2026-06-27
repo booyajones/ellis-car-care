@@ -277,7 +277,7 @@ const CONFIG = {
     headline: "Tell a neighbor.",
     body: "Send a neighbor to Wyatt Auto Detailing. When they book, you both get $10 off your next wash.",
     shareText: "Heads up, you should book Wyatt Auto Detailing for your car. Ellis details by hand in your driveway. Local, careful, the work is good:",
-    shareUrl: "https://elioncarcare.com",
+    shareUrl: "https://wyattautodetailing.com",
   },
 };
 

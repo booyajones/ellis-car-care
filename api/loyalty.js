@@ -22,8 +22,8 @@ import {
 export const config = { runtime: "nodejs" };
 
 const ALLOWED_ORIGINS = new Set([
-  "https://elioncarcare.com",
-  "https://www.elioncarcare.com",
+  "https://wyattautodetailing.com",
+  "https://www.wyattautodetailing.com",
   "https://ellis-car-care.vercel.app",
   "http://localhost:5180",
   "http://127.0.0.1:5180",
@@ -210,7 +210,7 @@ function page(title, bodyHtml) {
 h1{font-family:Georgia,serif;font-size:1.6rem;margin:24px 0 8px;}
 a.btn{display:inline-block;margin-top:24px;padding:12px 22px;background:#E89B3A;color:#0E1014;border-radius:999px;text-decoration:none;font-weight:700;}</style></head>
 <body><div class="bar"><i style="background:#D94436"></i><i style="background:#E89B3A"></i><i style="background:#E4CB42"></i><i style="background:#3CB286"></i></div>
-<div class="wrap"><h1>${escapeHtml(title)}</h1>${bodyHtml}<a class="btn" href="https://elioncarcare.com/admin">Open dashboard</a></div></body></html>`;
+<div class="wrap"><h1>${escapeHtml(title)}</h1>${bodyHtml}<a class="btn" href="https://wyattautodetailing.com/admin">Open dashboard</a></div></body></html>`;
 }
 function escapeHtml(s) {
   return String(s ?? "").replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
@@ -256,7 +256,7 @@ function rateLimitCheck(ip) {
 }
 
 function corsHeaders(origin) {
-  const allow = ALLOWED_ORIGINS.has(origin) ? origin : "https://elioncarcare.com";
+  const allow = ALLOWED_ORIGINS.has(origin) ? origin : "https://wyattautodetailing.com";
   return {
     "Access-Control-Allow-Origin": allow,
     "Access-Control-Allow-Methods": "GET, PATCH, OPTIONS",
