@@ -158,7 +158,7 @@ export function escapeHtml(s) {
   })[c]);
 }
 
-const TIER_LABEL  = { basic: "Basic", essential: "Essential", premium: "Premium" };
+const TIER_LABEL  = { basic: "Starter", essential: "Essential", premium: "Premium" };
 const ADDON_LABEL = {
   interior: "Interior detail",
   headlight: "Headlight restoration",
@@ -281,7 +281,7 @@ export function elionNotificationEmail(order) {
 //  Cal.com booking). Carries the punch-card context + first-timer
 //  status + steam/interior warning + two signed one-tap operator links.
 // ============================================================
-const LOYALTY_TIER_LABEL = { basic: "Basic", essential: "Essential", premium: "Premium", unknown: "(tier?)" };
+const LOYALTY_TIER_LABEL = { basic: "Starter", essential: "Essential", premium: "Premium", unknown: "(tier?)" };
 const LOYALTY_ADDON_LABEL = {
   interior: "Interior",
   steam: "Steam clean (+$20)",

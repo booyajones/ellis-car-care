@@ -68,9 +68,16 @@
 
   const bundlesEl = $("[data-bundles]");
   if (bundlesEl) {
-    cfg.bundles.forEach((b) => {
+    // Reorder: Essential and Premium first, Starter (basic) last.
+    const orderedBundles = [
+      ...cfg.bundles.filter(b => b.id !== "basic"),
+      ...cfg.bundles.filter(b => b.id === "basic"),
+    ];
+    orderedBundles.forEach((b) => {
       const card = document.createElement("article");
-      card.className = "bundle" + (b.popular ? " popular" : "");
+      // Add modifier class for Starter: bundle--starter drives desktop bar + mobile compact
+      const starterClass = b.id === "basic" ? " bundle--starter" : "";
+      card.className = "bundle" + (b.popular ? " popular" : "") + starterClass;
       const popularBadge = b.popular ? '<span class="popular-badge">Most popular</span>' : "";
       const calSlug = (cfg.calEventBySlug && cfg.calEventBySlug[b.id]) || b.id;
       const calBase = cfg.calBaseUrl || "https://cal.com/elion";
@@ -84,8 +91,11 @@
         ? `<span class="bundle-price bundle-price-quote">${escapeHtml(priceDisplay)}</span>`
         : `<span class="bundle-price">${escapeHtml(priceDisplay)}</span>`;
       const metaRight = isQuote ? "quoted" : "price range";
-      // Wash label: Essential carries a visible "wash" marker
-      const washBadge = b.washLabel ? ' <span class="bundle-wash-marker">wash</span>' : "";
+      // Wash check bullet: Essential and Premium get a green checked-checkbox "wash" item
+      // at the top of their includes list. Starter (basic) does not.
+      const washCheckItem = b.washIncluded
+        ? '<li class="bundle-wash-check"><span class="bundle-wash-check-box" aria-hidden="true">&#10003;</span> wash</li>'
+        : "";
 
       // Per-card add-on list. Included add-ons shown as "included" (accent),
       // optional ones show name + price on their own line.
@@ -111,12 +121,13 @@
         <span class="tier-accent" data-tier="${b.id}" aria-hidden="true"></span>
         ${popularBadge}
         <header class="bundle-head">
-          <h3 class="bundle-name">${escapeHtml(b.name)}${washBadge}</h3>
+          <h3 class="bundle-name">${escapeHtml(b.name)}</h3>
           ${priceHtml}
         </header>
         <p class="bundle-meta"><span>${escapeHtml(b.time)}</span><span>${metaRight}</span></p>
         ${summary}
         <ul class="bundle-includes">
+          ${washCheckItem}
           ${b.includes.map((i) => `<li>${escapeHtml(i)}</li>`).join("")}
         </ul>
         ${hintHtml}

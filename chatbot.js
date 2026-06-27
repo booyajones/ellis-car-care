@@ -23,7 +23,7 @@
   const PHONE_HREF = "+16282520740";
 
   // ---- Pricing & rules (Wyatt Auto Detailing, v10 tier model) ----
-  // Basic = wash + interior vacuum ($38 small / $50 large, quoted on site)
+  // Starter = wash + interior vacuum ($38 small / $50 large, quoted on site)
   // Essential = wash + wax + full interior ($85 small / $110 large)
   // Premium = clay + polish + ceramic + full interior + VRP ($150–200, quoted)
   // Interior is now INCLUDED in all tiers, not an add-on.
@@ -52,7 +52,7 @@
   };
 
   const PACKAGE_LABEL = {
-    basic:     "Basic",
+    basic:     "Starter",
     essential: "Essential",
     premium:   "Premium",
   };
@@ -145,7 +145,7 @@
       id: "skipToPrices",
       prompt: () => [
         "All good. Here's the lineup:",
-        "• Basic, $38\u201350, about 45 min. Two-bucket hand wash + interior vacuum.",
+        "• Starter, $38\u201350, about 45 min. Two-bucket hand wash + interior vacuum.",
         "• Essential, $85\u2013110, about 1\u20131.5 hrs. Wash + wax + full interior detail (boar's hair brushing, mats drill-scrubbed). This is a wash.",
         "• Premium, $150\u2013200, about 4 hrs. Clay bar, machine polish, ceramic on paint and wheels, full interior + Chemical Guys VRP protectant. Quoted on your car.",
         "• Add-ons: Steam clean +$20 · Clay bar +$20 (on Essential) · Trim shine from $25 · Ceramic wheels +$25 · Headlights +$35.",
@@ -446,7 +446,7 @@
 
     // Interior is included in all tiers — explain what that means per tier.
     if (pkg === "basic") {
-      reasons.push("Basic includes an interior vacuum.");
+      reasons.push("Starter includes an interior vacuum.");
     } else if (pkg === "essential") {
       reasons.push("Essential includes a full interior detail: boar’s hair brushing on all panels, mats and upholstery drill-scrubbed.");
     } else if (pkg === "premium") {
@@ -962,8 +962,8 @@
       altPkg === "premium"
         ? "Premium is the full job: clay bar, machine polish, ceramic coat, full interior with Chemical Guys VRP protectant. The right call for dull or swirled paint. Quoted on your car, $150–200."
         : altPkg === "essential"
-          ? "Essential adds a wax finish and a full interior detail on top of the Basic wash. Boar’s hair brushing on all panels, mats drill-scrubbed. $85–110."
-          : "Basic is a thorough hand wash plus an interior vacuum. $38–50.",
+          ? "Essential adds a wax finish and a full interior detail on top of the Starter wash. Boar’s hair brushing on all panels, mats drill-scrubbed. $85–110."
+          : "Starter is a thorough hand wash plus an interior vacuum. $38–50.",
       "Want this one instead, or stick with the original?",
     ];
     appendBotMessage(lines);

@@ -76,7 +76,7 @@ const CONFIG = {
   bundles: [
     {
       id: "basic",
-      name: "Basic",
+      name: "Starter",
       priceMin: 38,
       priceMax: 50,
       priceLabel: "$38–50",
@@ -100,12 +100,12 @@ const CONFIG = {
       priceMax: 110,
       priceLabel: "$85–110",
       priceSub: "small car $85 / large car $110",
-      // washLabel: true triggers rendering a "wash" marker/checkbox in tier lists
-      washLabel: true,
+      // washIncluded: true adds a green checked-checkbox "wash" bullet to the tier's includes list
+      washIncluded: true,
       time: "about 1–1.5 hours",
       summary: "A full wash and wax plus a thorough interior detail. This is the most complete everyday service.",
       includes: [
-        "Everything in Basic",
+        "Everything in Starter",
         "Wax protectant for gloss and a few weeks of protection",
         "Tire shine",
         "Interior: boar's hair brushing on all panels and interior parts",
@@ -120,6 +120,8 @@ const CONFIG = {
       priceMax: 200,
       priceLabel: "$150–200",
       quote: true,
+      // washIncluded: true adds a green checked-checkbox "wash" bullet to the tier's includes list
+      washIncluded: true,
       time: "about 4 hours",
       summary: "Clay bar, machine polish, and ceramic protection on the paint and wheels. Interior gets the Essential-level treatment plus Chemical Guys VRP protectant on all vinyl, rubber, and plastic surfaces.",
       includes: [
@@ -257,7 +259,7 @@ const CONFIG = {
     },
     {
       q: "How much does car detailing cost?",
-      a: "Basic is $38–50 (small car $38, large car $50), a full hand wash plus interior vacuum. Essential is $85–110, which adds a wax finish and a thorough interior detail with boar's hair brushing and drill-scrubbed mats. Premium is $150–200, the full paint correction and ceramic treatment. No minimums and no surprise fees.",
+      a: "Starter is $38–50 (small car $38, large car $50), a full hand wash plus interior vacuum. Essential is $85–110, which adds a wax finish and a thorough interior detail with boar's hair brushing and drill-scrubbed mats. Premium is $150–200, the full paint correction and ceramic treatment. No minimums and no surprise fees.",
     },
     {
       q: "What does detailing include vs a regular wash?",

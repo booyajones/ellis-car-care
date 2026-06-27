@@ -675,7 +675,62 @@ section {
   margin-bottom: var(--s-6);
 }
 @media (min-width: 760px) {
-  .bundles { grid-template-columns: repeat(3, 1fr); gap: var(--s-5); }
+  /* Essential + Premium sit side by side in row 1; Starter spans full width below */
+  .bundles { grid-template-columns: repeat(2, 1fr); gap: var(--s-5); }
+
+  /* Starter bar: full-width, horizontal condensed layout */
+  .bundle--starter {
+    grid-column: 1 / -1;
+    flex-direction: row;
+    align-items: center;
+    padding: var(--s-4) var(--s-5);
+    gap: var(--s-5);
+  }
+  .bundle--starter .bundle-head {
+    flex-direction: column;
+    align-items: flex-start;
+    border-bottom: none;
+    padding-bottom: 0;
+    min-width: 140px;
+    flex-shrink: 0;
+  }
+  .bundle--starter .bundle-name {
+    font-size: 1.2rem;
+  }
+  .bundle--starter .bundle-price {
+    font-size: 1.25rem;
+  }
+  .bundle--starter .bundle-meta {
+    flex-shrink: 0;
+    flex-direction: column;
+    gap: var(--s-1);
+    min-width: 90px;
+  }
+  .bundle--starter .bundle-summary {
+    flex: 1;
+    font-size: 0.88rem;
+    margin: 0;
+  }
+  .bundle--starter .bundle-includes {
+    display: none;
+  }
+  .bundle--starter .bundle-addons {
+    display: none;
+  }
+  .bundle--starter .bundle-cta {
+    margin-top: 0;
+    flex-shrink: 0;
+    white-space: nowrap;
+  }
+  .bundle--starter .tier-accent {
+    display: none;
+  }
+  /* Faint left border instead of top accent stripe for the bar */
+  .bundle--starter {
+    border-left: 3px solid var(--line-strong);
+    border-radius: var(--radius);
+    opacity: 0.85;
+  }
 }
 
 .bundle {
@@ -1600,6 +1655,30 @@ section {
   line-height: 1.6;
   margin-left: 6px;
 }
+/* Green checked-checkbox wash bullet inside Essential + Premium includes list */
+.bundle-wash-check {
+  grid-template-columns: 18px 1fr !important;
+  color: var(--stripe-green) !important;
+  font-weight: 600;
+}
+.bundle-wash-check::before {
+  display: none !important;
+}
+.bundle-wash-check-box {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 15px;
+  height: 15px;
+  background: var(--stripe-green);
+  color: #fff;
+  border-radius: 3px;
+  font-size: 0.6rem;
+  font-weight: 700;
+  line-height: 1;
+  margin-top: 5px;
+  flex-shrink: 0;
+}
 .cal-tier-meta {
   display: flex;
   gap: var(--s-3);
@@ -2022,6 +2101,29 @@ section {
   }
   .bundle-price {
     font-size: 1.4rem;
+  }
+  /* Starter: normal stacked card on mobile, but more compact */
+  .bundle--starter {
+    flex-direction: column;
+    padding: var(--s-4) var(--s-3) var(--s-3);
+    opacity: 0.85;
+    border-left-width: 1px;
+  }
+  .bundle--starter .bundle-name {
+    font-size: 1.1rem;
+  }
+  .bundle--starter .bundle-price {
+    font-size: 1.2rem;
+  }
+  .bundle--starter .bundle-includes {
+    display: flex;
+    gap: var(--s-1);
+  }
+  .bundle--starter .bundle-summary {
+    font-size: 0.85rem;
+  }
+  .bundle--starter .tier-accent {
+    display: block;
   }
 
   /* Add-ons */

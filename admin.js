@@ -14,7 +14,7 @@
 
   const PWD_KEY = "elion_admin_token";
 
-  const TIER_LABEL = { basic: "Basic", essential: "Essential", premium: "Premium" };
+  const TIER_LABEL = { basic: "Starter", essential: "Essential", premium: "Premium" };
   const ADDON_LABEL = {
     interior: "Interior detail",
     headlight: "Headlight restoration",
