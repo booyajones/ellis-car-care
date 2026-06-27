@@ -10,12 +10,13 @@
   "use strict";
 
   const PAGES = [
-    { href: "/book",      label: "Book" },
-    { href: "/#menu",     label: "Pricing" },
-    { href: "/services",  label: "What's included" },
-    { href: "/gallery",   label: "Gallery" },
-    { href: "/rewards",   label: "Rewards" },
-    { href: "/about",     label: "About" },
+    { href: "/book",       label: "Book" },
+    { href: "/#menu",      label: "Pricing" },
+    { href: "/services",   label: "What's included" },
+    { href: "/detailing",  label: "What is a detail?" },
+    { href: "/gallery",    label: "Gallery" },
+    { href: "/rewards",    label: "Rewards" },
+    { href: "/about",      label: "About" },
   ];
   const PHONE = "(628) 252-0740";
   const PHONE_HREF = "+16282520740";

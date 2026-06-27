@@ -286,7 +286,7 @@ const LOYALTY_ADDON_LABEL = {
   interior: "Interior",
   steam: "Steam clean (+$20)",
   deepclean: "Deep clean (quoted)",
-  diablo: "Diablo wheel cleaner (+$10)",
+  diablo: "Diablo wheel cleaner (included feature)",
   claybar: "Clay bar (+$20)",
   trim: "Trim and plastic shine (from $25)",
   ceramicwheels: "Ceramic wheel coat (+$25)",

@@ -1,5 +1,5 @@
 /* ============================================================
-   Elion Car Care, Wash Planner Chatbot
+   Wyatt Auto Detailing, Wash Planner Chatbot
    ------------------------------------------------------------
    A guided, deterministic chat assistant that asks a few
    questions about the car, recommends the right package +
@@ -22,29 +22,33 @@
 
   const PHONE_HREF = "+16282520740";
 
-  // ---- Pricing & rules (Elion Car Care, v9 tier model) ----
-  // Basic = wash, Essential = wash + spray wax, Premium = full
-  // correction + ceramic (quoted from $200). Add-ons are picked in the
-  // Cal.com booking; interior is $5 less on Essential than Basic.
+  // ---- Pricing & rules (Wyatt Auto Detailing, v10 tier model) ----
+  // Basic = wash + interior vacuum ($38 small / $50 large, quoted on site)
+  // Essential = wash + wax + full interior ($85 small / $110 large)
+  // Premium = clay + polish + ceramic + full interior + VRP ($150–200, quoted)
+  // Interior is now INCLUDED in all tiers, not an add-on.
+  // Diablo is an included FEATURE, not an add-on.
+  // Chat recommendation uses midpoint estimates for price display.
   const PRICES = {
-    basic:     40,    // wheel rinse, contact wash, dry
-    essential: 60,    // basic + spray wax
-    premium:  200,    // full decon, clay, polish, ceramic, QUOTE, this is the floor
+    basic:     44,    // midpoint of $38–$50 range
+    essential: 97,    // midpoint of $85–$110 range
+    premium:  175,    // midpoint of $150–$200 range (quoted)
   };
 
-  // Per-package interior price ($5 less on the higher tiers than Basic).
-  // Standard interior; a neglected cabin is a Deep clean (quoted) instead.
-  const INTERIOR_PRICE = { basic: 40, essential: 35, premium: 35 };
+  const PRICE_RANGE_LABEL = {
+    basic:     "$38–50",
+    essential: "$85–110",
+    premium:   "$150–200",
+  };
 
   const ADDONS = {
-    interior:  { id: "interior", name: "Interior (vacuum + wipe + glass + vents)", price: 40, included: [] },
-    steam:     { id: "steam",    name: "Steam clean (with interior)",             price: 20, included: [], requires: "interior" },
-    headlight: { id: "headlight", name: "Headlight restoration",                  price: 30, included: [] },
-    diablo:    { id: "diablo",   name: "Diablo wheel cleaner",                    price: 10, included: ["premium"] },
+    steam:     { id: "steam",    name: "Steam clean",                             price: 20, included: [] },
+    headlight: { id: "headlight", name: "Headlight restoration",                  price: 35, included: [] },
     claybar:   { id: "claybar",  name: "Clay bar",                                price: 20, included: ["premium"] },
     // Trim shine and ceramic-on-wheels live in config.js + the Cal.com booking
     // and the /services page. The chat planner doesn't auto-recommend them, so
     // they're intentionally not in this recommend-engine table (avoids drift).
+    // Diablo wheel cleaner is an included FEATURE on all washes, not an add-on.
   };
 
   const PACKAGE_LABEL = {
@@ -60,16 +64,16 @@
   };
 
   const PACKAGE_DESC = {
-    basic:     "hand wash",
-    essential: "wash + wax + tire shine",
-    premium:   "clay bar, machine polish, and ceramic coat",
+    basic:     "hand wash + interior vacuum",
+    essential: "wash + wax + full interior detail",
+    premium:   "clay bar, machine polish, ceramic coat, and full interior with VRP protectant",
   };
 
   // Premium is a quote, not a flat price.
   const QUOTE_TIERS = { premium: true };
 
   // ---- First-time discount tracking ----
-  const FIRSTTIME_KEY = "elion_firsttime_used";
+  const FIRSTTIME_KEY = "wyatt_firsttime_used";
   function isFirstTimeBrowser() {
     try { return !localStorage.getItem(FIRSTTIME_KEY); }
     catch { return true; }
@@ -82,7 +86,7 @@
   // ---- State ----
   // Bumped to v2 so existing sessions don't try to read the old
   // quickShine/drivewayDetail/fullReset state shape.
-  const STATE_KEY = "elion_chat_v2";
+  const STATE_KEY = "wyatt_chat_v2";
   function loadState() {
     try {
       const raw = sessionStorage.getItem(STATE_KEY);
@@ -141,11 +145,12 @@
       id: "skipToPrices",
       prompt: () => [
         "All good. Here's the lineup:",
-        "• Basic, $37, about 45 min. Mr. Pink two-bucket wash, wheel rinse, hand dry.",
-        "• Essential, $60, about 1 hr. Basic + wax protectant + tire shine.",
-        "• Premium, from $200, about 4 hrs. Clay bar, machine polish, ceramic on paint and wheels. Quoted on your car.",
-        "• Add-ons: Interior $40 ($35 on Essential/Premium) · Steam clean +$20 (with interior) · Diablo wheel cleaner $10 · Clay bar $20 · Trim shine from $25 · Ceramic wheels $20 · Headlights $30.",
+        "• Basic, $38\u201350, about 45 min. Two-bucket hand wash + interior vacuum.",
+        "• Essential, $85\u2013110, about 1\u20131.5 hrs. Wash + wax + full interior detail (boar's hair brushing, mats drill-scrubbed). This is a wash.",
+        "• Premium, $150\u2013200, about 4 hrs. Clay bar, machine polish, ceramic on paint and wheels, full interior + Chemical Guys VRP protectant. Quoted on your car.",
+        "• Add-ons: Steam clean +$20 · Clay bar +$20 (on Essential) · Trim shine from $25 · Ceramic wheels +$25 · Headlights +$35.",
         "• Deep clean (set-in stains, heavy pet hair, neglected interior): quoted on your car.",
+        "• Diablo wheel cleaner is included on every wash, not an add-on.",
         "• First-time customer: 15% off your first wash, taken off your total.",
         "Burns Park is free travel. Greater Ann Arbor (48104/48103/48105) adds $5.",
       ],
@@ -400,12 +405,12 @@
     },
   };
 
-  // ---- Recommendation engine (Elion v8) ----
-  // Tier choice is PAINT-driven. Interior is an independent add-on.
+  // ---- Recommendation engine (Wyatt v10) ----
+  // Tier choice is PAINT-driven. Interior is INCLUDED in all tiers (not an add-on).
+  // Diablo wheel cleaner is an included FEATURE on all washes.
   // a = answers; pkgOverride = optional package id to force (alt screen).
   function recommend(a, pkgOverride) {
     const scope = a.scope || "both";
-    const wantsInterior = scope === "interior" || scope === "both" || scope === "unsure" || !!a._addInterior;
 
     // Paint signals (gated by whether exterior is in scope at all)
     const exteriorInScope = scope !== "interior";
@@ -415,22 +420,20 @@
     const contaminants = exteriorInScope && a.exteriorCondition === "contaminants";
     const foggyHL      = exteriorInScope && a.headlights === "foggy";
 
-    // Interior signals (only meaningful if interior is in scope)
-    const heavyStains  = wantsInterior && a.stains === "heavy";
-    const lotsPetHair  = wantsInterior && a.petHair === "lots";
-    const disasterInt  = wantsInterior && a.interiorCondition === "disaster";
+    // Interior signals
+    const heavyStains  = a.stains === "heavy";
+    const lotsPetHair  = a.petHair === "lots";
+    const disasterInt  = a.interiorCondition === "disaster";
 
     // ---- Tier selection (paint-focused) ----
-    // basic     → just wash (default when nothing exterior-y is going on)
-    // essential → wash + spray wax (default when user wants gloss/protection
-    //             OR has minor swirls/water spots a fresh wax helps hide)
-    // premium   → full decon + machine polish + ceramic coat (required for
-    //             dull paint or bonded contaminants; correction territory)
+    // basic     → hand wash + vacuum (default for simple needs)
+    // essential → wash + wax + full interior detail (gloss or minor swirls)
+    // premium   → full correction + ceramic + interior + VRP (dull/contaminated paint)
     let pkg = "basic";
     if (dullPaint || contaminants) {
-      pkg = "premium";  // needs the cut + polish (and clay)
+      pkg = "premium";
     } else if (wantsSeal || swirls) {
-      pkg = "essential";  // seal protects, minor swirls hide under it
+      pkg = "essential";
     }
 
     // Honor explicit user override (alt-screen "Switch to X" button)
@@ -441,90 +444,69 @@
     const reasons = [];
     const isQuote = !!QUOTE_TIERS[pkg];
 
-    // Interior, flat price that varies by package ($40 Basic, $35 on the
-    // higher tiers). A neglected cabin is a Deep clean (quoted) instead, see below.
-    if (wantsInterior) {
-      const intPrice = INTERIOR_PRICE[pkg] != null ? INTERIOR_PRICE[pkg] : ADDONS.interior.price;
-      addons.push({ id: "interior", name: ADDONS.interior.name, price: intPrice });
-      if (scope === "interior") reasons.push("Interior is the focus.");
-      if (pkg !== "basic") reasons.push("Interior is $5 less on " + PACKAGE_LABEL[pkg] + " than on Basic.");
+    // Interior is included in all tiers — explain what that means per tier.
+    if (pkg === "basic") {
+      reasons.push("Basic includes an interior vacuum.");
+    } else if (pkg === "essential") {
+      reasons.push("Essential includes a full interior detail: boar’s hair brushing on all panels, mats and upholstery drill-scrubbed.");
+    } else if (pkg === "premium") {
+      reasons.push("Premium includes the Essential interior work plus Chemical Guys VRP on all vinyl, rubber, and plastic.");
     }
 
     // Headlight restoration, independent of tier
     if (foggyHL) {
       addons.push({ ...ADDONS.headlight });
-      reasons.push("Foggy headlights, added the $30 restoration pass.");
+      reasons.push("Foggy headlights, added the $35 restoration pass.");
     }
 
-    // Clay bar, when paint has bonded contaminants and the tier doesn't
-    // already include it (Premium clays everything).
+    // Clay bar when paint has bonded contaminants and the tier doesn't include it.
     if (contaminants && pkg !== "premium") {
       addons.push({ ...ADDONS.claybar });
       reasons.push("Bonded contaminants in the paint, a clay bar (+$20) pulls them out before sealing.");
     }
 
-    // Steam clean, a flat $20 add-on that pairs with interior. Suggested when
-    // the inside is grimy (stains or disaster-zone), since steam lifts set-in dirt.
-    if (wantsInterior && (heavyStains || disasterInt)) {
+    // Steam clean, a flat $20 add-on. Suggested when the inside is grimy.
+    if (heavyStains || disasterInt) {
       addons.push({ ...ADDONS.steam });
-      reasons.push("Set-in grime inside, so I added a steam clean ($20) on top of the interior. It lifts what a wipe-down won't.");
+      reasons.push("Set-in grime inside, so I added a steam clean ($20). It lifts what a wipe-down won’t.");
     }
 
-    // Deep clean signals, a separate quoted add-on (not the flat interior).
-    if (wantsInterior && (lotsPetHair || heavyStains || disasterInt)) {
-      reasons.push("With set-in stains or heavy pet hair, this may be a Deep clean, a separate add-on Ellis quotes on the car instead of the flat interior.");
+    // Deep clean signals
+    if (lotsPetHair || heavyStains || disasterInt) {
+      reasons.push("With set-in stains or heavy pet hair, this may need a Deep clean, which Ellis quotes on the car.");
     }
 
     // ---- Size note (timing only, no upcharge) ----
     let sizeNote = "";
     if (a.carSize === "fullsize") {
       if (pkg === "basic") sizeNote = " (allow about an hour for full-size)";
-      else if (pkg === "essential") sizeNote = " (about 1.5 hours on a full-size)";
+      else if (pkg === "essential") sizeNote = " (about 1.5–2 hours on a full-size)";
       else if (pkg === "premium") sizeNote = " (about 4.5–5 hours on a full-size)";
     }
 
-    // ---- Pricing ----
+    // ---- Pricing (use midpoint of range for chat estimates) ----
     const base = PRICES[pkg];
+    const priceRangeLabel = PRICE_RANGE_LABEL[pkg];
     const addonTotal = addons.reduce((sum, ad) => sum + (ad.price || 0), 0);
     const travel = a.location === "annarbor" ? 5 : 0;
     const travelNote = a.location === "annarbor"
       ? " (+$5 travel)"
       : (a.location === "nearby" ? " (Ellis will confirm travel after you book)" : "");
 
-    // No bundle discount in the v9 model, the interior incentive is baked
-    // into the lower Essential interior price. Kept as 0 so downstream
-    // display guards (which check > 0) simply never fire.
     const bundleApplied = false;
     const bundleDiscount = 0;
 
-    // First-time customer discount, % off the subtotal. Tracked in
-    // localStorage; once a customer confirms an order, they don't see this
-    // again. Configurable via CONFIG.firstTimeDiscount; default 15%.
+    // First-time customer discount
     const firstTimeRate = (window.CONFIG && Number(window.CONFIG.firstTimeDiscount)) || 0;
     const isFirstTime = firstTimeRate > 0 && isFirstTimeBrowser();
     const preFirstTimeTotal = base + addonTotal + travel - bundleDiscount;
     const firstTimeDiscount = isFirstTime ? Math.round(preFirstTimeTotal * firstTimeRate) : 0;
     const total = preFirstTimeTotal - firstTimeDiscount;
 
-    // ---- Interior-add upsell (only when exterior-only and not already added) ----
-    let bundleOffer = null;
-    if (!wantsInterior) {
-      // Interior is a flat price on every tier now ($40 Basic, $35 higher).
-      const intCost = INTERIOR_PRICE[pkg] != null ? INTERIOR_PRICE[pkg] : ADDONS.interior.price;
-      bundleOffer = {
-        addonId: "interior",
-        addonName: ADDONS.interior.name,
-        addonCost: intCost,
-        effectiveCost: intCost,
-        savings: 0,
-        quoted: false,
-      };
-    }
+    // No interior upsell — interior is included in all tiers
+    const bundleOffer = null;
 
-    let scopeNote = "";
-    if (scope === "interior") {
-      scopeNote = "Interior-focused job, exterior gets a courtesy wipe-down but no full wash unless you add a tier.";
-    }
+    const scopeNote = "";
 
     return {
       pkg,
@@ -532,6 +514,7 @@
       pkgDesc: PACKAGE_DESC[pkg],
       pkgTime: PACKAGE_TIME[pkg] + sizeNote,
       base,
+      priceRangeLabel,
       isQuote,
       addons,
       addonTotal,
@@ -547,7 +530,6 @@
       total,
       reasons,
       scopeNote,
-      wantsInterior,
     };
   }
 
@@ -557,8 +539,9 @@
     saveState(state);
 
     const lines = [];
-    const baseLabel = rec.isQuote ? `from $${rec.base} (quoted)` : `$${rec.base}`;
-    lines.push(`Based on your answers, I'd recommend **${rec.pkgLabel}** (${rec.pkgDesc}), ${baseLabel}.`);
+    const baseLabel = rec.priceRangeLabel || (rec.isQuote ? `from $${rec.base} (quoted)` : `$${rec.base}`);
+    const quoteNote = rec.isQuote ? " (quoted on your car)" : "";
+    lines.push(`Based on your answers, I'd recommend **${rec.pkgLabel}** (${rec.pkgDesc}), ${baseLabel}${quoteNote}.`);
     lines.push(`Time: ${rec.pkgTime}.`);
     if (rec.scopeNote) lines.push(rec.scopeNote);
 
@@ -596,18 +579,11 @@
 
     lines.push("");
     if (rec.isQuote) {
-      lines.push(`Estimated total: **from $${rec.total}**, Premium is quoted on your car, so Ellis confirms the final number.`);
+      lines.push(`Estimated range: **${rec.priceRangeLabel}**, quoted on your car. Ellis confirms the final number when he sees it.`);
     } else {
-      lines.push(`Estimated total: **$${rec.total}**`);
+      lines.push(`Estimated range: **${rec.priceRangeLabel}** (price depends on car size).`);
     }
     lines.push("");
-
-    if (rec.bundleOffer) {
-      // Exterior-only path, pitch the interior add-on (flat price on every tier).
-      const off = rec.bundleOffer;
-      lines.push(`Want the inside too? Add interior for **+$${off.effectiveCost}**. Tap the button below.`);
-      lines.push("");
-    }
 
     lines.push("Sound good? Book your time on the calendar, or tap below to text the plan to Ellis.");
 
@@ -626,19 +602,18 @@
     const carDesc = carDescParts.join(" ") || "not specified";
 
     const lines = [];
-    lines.push("Hi Ellis! I planned a wash on your site.");
+    lines.push("Hi Ellis! I planned a detail on your site.");
     lines.push("");
     lines.push(`Car: ${carDesc}`);
     lines.push(`What I need: ${prettyScope(a.scope)}`);
 
-    if (rec.wantsInterior) {
-      const intParts = [];
-      if (a.interiorCondition) intParts.push(prettyInteriorCondition(a.interiorCondition));
-      if (a.petHair && a.petHair !== "none") intParts.push(`${prettyPetHair(a.petHair)} pet hair`);
-      if (a.stains && a.stains !== "none") intParts.push(`${prettyStains(a.stains)} stains`);
-      if (a.seats) intParts.push(`${prettySeats(a.seats)} seats`);
-      if (intParts.length) lines.push(`Interior: ${intParts.join(", ")}`);
-    }
+    // Interior is always included, just note condition if relevant
+    const intParts = [];
+    if (a.interiorCondition) intParts.push(prettyInteriorCondition(a.interiorCondition));
+    if (a.petHair && a.petHair !== "none") intParts.push(`${prettyPetHair(a.petHair)} pet hair`);
+    if (a.stains && a.stains !== "none") intParts.push(`${prettyStains(a.stains)} stains`);
+    if (a.seats) intParts.push(`${prettySeats(a.seats)} seats`);
+    if (intParts.length) lines.push(`Interior condition: ${intParts.join(", ")}`);
 
     if (a.scope !== "interior") {
       const extParts = [];
@@ -657,7 +632,7 @@
     }
 
     lines.push("");
-    lines.push(`Recommended: ${rec.pkgLabel} (${rec.pkgDesc}), ${rec.isQuote ? `from $${rec.base} (quoted)` : `$${rec.base}`}`);
+    lines.push(`Recommended: ${rec.pkgLabel} (${rec.pkgDesc}), ${rec.priceRangeLabel || (rec.isQuote ? `from $${rec.base} (quoted)` : `$${rec.base}`)}`);
     if (rec.addons.length) {
       rec.addons.forEach(ad => {
         lines.push(`+ ${ad.name}${ad.quoted ? " (quoted)" : (ad.price ? ` ($${ad.price})` : "")}`);
@@ -667,7 +642,7 @@
     if (rec.isFirstTime && rec.firstTimeDiscount > 0) {
       lines.push(`- First-time customer ${rec.firstTimeRatePct}% off (-$${rec.firstTimeDiscount})`);
     }
-    lines.push(`Estimated total: ${rec.isQuote ? `from $${rec.total}` : `$${rec.total}`}`);
+    lines.push(`Price range: ${rec.priceRangeLabel || (rec.isQuote ? `from $${rec.total}` : `$${rec.total}`)}`);
     lines.push("");
     lines.push("Address: I'll share over text. Thanks!");
 
@@ -876,30 +851,7 @@
     if (step.isRecommendation) {
       const rec = state.recommendation;
 
-      // Interior-add button, shown when the recommendation doesn't yet include interior
-      if (rec && rec.bundleOffer) {
-        const offer = rec.bundleOffer;
-        const bundleLabel = `Add interior (+$${offer.effectiveCost})`;
-        const bundleBtn = makeButton(
-          bundleLabel,
-          "is-primary",
-          () => {
-            state.answers._addInterior = true;
-            // Flip scope so the engine knows interior is in play
-            if (!state.answers.scope || state.answers.scope === "exterior") {
-              state.answers.scope = "both";
-            }
-            // Safe defaults so engine doesn't over-trigger
-            if (!state.answers.interiorCondition) state.answers.interiorCondition = "normal";
-            if (!state.answers.petHair) state.answers.petHair = "none";
-            if (!state.answers.stains) state.answers.stains = "none";
-            saveState(state);
-            appendUserMessage("Add interior detail");
-            renderStep("recommend");
-          }
-        );
-        controls.appendChild(bundleBtn);
-      }
+      // Interior is included in all tiers now — no upsell button needed.
 
       const bookBtn = makeButton(`Book ${rec.pkgLabel} on the calendar`, "is-primary", () => {
         const url = calUrlForPkg(rec.pkg);
@@ -1002,17 +954,18 @@
     else altPkg = "essential";
 
     const altBase = PRICES[altPkg];
+    const altRangeLabel = PRICE_RANGE_LABEL[altPkg];
     const altTime = PACKAGE_TIME[altPkg];
     const altDesc = PACKAGE_DESC[altPkg];
-    const altPriceLabel = QUOTE_TIERS[altPkg] ? `from $${altBase} (quoted)` : `$${altBase}`;
+    const altPriceLabel = QUOTE_TIERS[altPkg] ? `${altRangeLabel} (quoted)` : altRangeLabel;
     const lines = [
       `Here's another option:`,
       `**${PACKAGE_LABEL[altPkg]}** (${altDesc}), ${altPriceLabel}, ${altTime}.`,
       altPkg === "premium"
-        ? "Premium is the full job: Diablo wheels, clay bar, machine polish, and a ceramic coat. The right call for dull or swirled paint. Quoted on your car."
+        ? "Premium is the full job: clay bar, machine polish, ceramic coat, full interior with Chemical Guys VRP protectant. The right call for dull or swirled paint. Quoted on your car, $150–200."
         : altPkg === "essential"
-          ? "Essential is the Basic wash finished with a wax protectant and tire shine, more gloss and a few weeks of protection."
-          : "Basic is a thorough hand wash, wheels to dry. Quick and clean.",
+          ? "Essential adds a wax finish and a full interior detail on top of the Basic wash. Boar’s hair brushing on all panels, mats drill-scrubbed. $85–110."
+          : "Basic is a thorough hand wash plus an interior vacuum. $38–50.",
       "Want this one instead, or stick with the original?",
     ];
     appendBotMessage(lines);
@@ -1024,15 +977,15 @@
       state.recommendation = recommend(state.answers, altPkg);
       appendUserMessage(`Switch to ${PACKAGE_LABEL[altPkg]}`);
       const r = state.recommendation;
-      const baseLabel = r.isQuote ? `from $${r.base} (quoted)` : `$${r.base}`;
-      const summary = [`Switched to **${r.pkgLabel}**, ${baseLabel}.`];
+      const altBaseLabel = r.priceRangeLabel || (r.isQuote ? `from $${r.base} (quoted)` : `$${r.base}`);
+      const summary = [`Switched to **${r.pkgLabel}**, ${altBaseLabel}.`];
       if (r.addons.length) {
         summary.push("Add-ons that still apply:");
         r.addons.forEach(a => summary.push(`• ${a.name}, ${a.quoted ? "quoted" : (a.price ? `$${a.price}` : "quoted")}`));
       }
       if (r.travel > 0) summary.push(`Travel: +$${r.travel}`);
       if (r.isFirstTime && r.firstTimeDiscount > 0) summary.push(`First-time ${r.firstTimeRatePct}% off: −$${r.firstTimeDiscount}`);
-      summary.push(r.isQuote ? `Estimated total: **from $${r.total}** (Ellis quotes Premium)` : `Estimated total: **$${r.total}**`);
+      summary.push(r.isQuote ? `Range: **${r.priceRangeLabel}** (Ellis quotes Premium on your car)` : `Range: **${r.priceRangeLabel}** (price depends on car size).`);
       appendBotMessage(summary);
       const bookBtn = makeButton(`Book ${r.pkgLabel} on the calendar`, "is-primary", () => {
         window.open(calUrlForPkg(r.pkg), "_blank", "noopener");
@@ -1445,8 +1398,9 @@
       _isFirstTime: isFirstTimeBrowser,
       _clearFirstTime: () => { try { localStorage.removeItem(FIRSTTIME_KEY); } catch {} },
     };
-    window.ElionChat = api;
-    // Back-compat alias so old QA / test scripts still work
+    window.WyattChat = api;
+    // Back-compat aliases so old QA / test scripts still work
+    window.ElionChat = api;  // legacy alias
     window.EllisChat = api;
   }
 

@@ -36,7 +36,11 @@
   const pkgEl = $("[data-svc-packages]");
   if (pkgEl) {
     cfg.bundles.forEach((b, i) => {
-      const priceLabel = b.quote ? escapeHtml(b.priceLabel || ("from $" + b.price)) : ("$" + b.price);
+      // Use range price label (e.g. "$38–50") for all tiers; quote tiers add "quoted" note
+      const priceDisplay = b.priceLabel || (b.priceMin != null ? `$${b.priceMin}\u2013${b.priceMax}` : `$${b.price || 0}`);
+      const priceLabel = b.quote ? escapeHtml(priceDisplay) + ' <span class="muted">(quoted)</span>' : escapeHtml(priceDisplay);
+      // Wash marker for Essential
+      const washMarker = b.washLabel ? ' <span class="bundle-wash-marker">wash</span>' : "";
       const includes = (b.includes || []).map(x => `<li>${escapeHtml(x)}</li>`).join("");
 
       // Add-on lines for this tier: included vs optional.
@@ -58,7 +62,7 @@
       d.className = "faq-item";
       if (i === 0) d.setAttribute("open", "");
       d.innerHTML = `
-        <summary>${escapeHtml(b.name)} <span class="svc-pkg-price">${priceLabel}</span></summary>
+        <summary>${escapeHtml(b.name)}${washMarker} <span class="svc-pkg-price">${priceLabel}</span></summary>
         <div class="faq-answer">
           <p class="svc-pkg-summary">${escapeHtml(b.summary || "")} <span class="muted">(${escapeHtml(b.time)})</span></p>
           <ul class="bundle-includes">${includes}</ul>

@@ -1,5 +1,5 @@
 /* ----------------------------------------------------------
-   Elion Car Care, app.js
+   Wyatt Auto Detailing, app.js
    Reads CONFIG (from config.js) and renders the dynamic bits.
    Static JSON-LD lives in index.html; the OfferCatalog is appended
    here so prices stay in sync with config.
@@ -77,12 +77,15 @@
       const calUrl = `${calBase}/${calSlug}`;
       const summary = b.summary ? `<p class="bundle-summary">${escapeHtml(b.summary)}</p>` : "";
 
-      // Price: quote tiers (Premium) show "from $200" + a "quoted" meta tag.
+      // Price: all tiers now use price ranges. Quote tiers show "quoted" meta tag.
       const isQuote = !!b.quote;
+      const priceDisplay = b.priceLabel || (b.priceMin != null ? `$${b.priceMin}\u2013${b.priceMax}` : `$${b.price || 0}`);
       const priceHtml = isQuote
-        ? `<span class="bundle-price bundle-price-quote">${escapeHtml(b.priceLabel || ("from $" + b.price))}</span>`
-        : `<span class="bundle-price"><span class="dollar">$</span>${b.price}</span>`;
-      const metaRight = isQuote ? "quoted" : "flat";
+        ? `<span class="bundle-price bundle-price-quote">${escapeHtml(priceDisplay)}</span>`
+        : `<span class="bundle-price">${escapeHtml(priceDisplay)}</span>`;
+      const metaRight = isQuote ? "quoted" : "price range";
+      // Wash label: Essential carries a visible "wash" marker
+      const washBadge = b.washLabel ? ' <span class="bundle-wash-marker">wash</span>' : "";
 
       // Per-card add-on hint. Included add-ons (Premium) listed as "included",
       // optional ones as "+ name $price", interior as a quoted note on Premium.
@@ -106,7 +109,7 @@
         <span class="tier-accent" data-tier="${b.id}" aria-hidden="true"></span>
         ${popularBadge}
         <header class="bundle-head">
-          <h3 class="bundle-name">${escapeHtml(b.name)}</h3>
+          <h3 class="bundle-name">${escapeHtml(b.name)}${washBadge}</h3>
           ${priceHtml}
         </header>
         <p class="bundle-meta"><span>${escapeHtml(b.time)}</span><span>${metaRight}</span></p>

@@ -1,5 +1,5 @@
 <!-- VOICE-GUARD-OFF -->
-# Elion Car Care, how to run your site
+# Wyatt Auto Detailing, how to run your site
 
 A one-page reference for Ellis. Bookmark this.
 
@@ -38,30 +38,37 @@ Manage all bookings, availability, and reschedules in your **Cal.com dashboard**
 
 > The old custom order form and `/admin` dashboard are retired. `/admin` still exists but no new orders flow into it. Everything lives in Cal.com.
 
+## Package prices
+
+- **Basic** $38 (small car) / $50 (large car) — hand wash + interior vacuum
+- **Essential** $85 (small) / $110 (large) — wash + wax + full interior detail (boar's hair, drill-scrubbed mats)
+- **Premium** $150–200 (quoted) — clay bar + polish + ceramic + interior + VRP protectant
+
 ## Add-on prices (these are the menu, and the Cal.com booking questions)
 
-- **Interior** $40 on Basic, $35 on Essential and Premium (a standard interior clean)
-- **Steam clean** +$20 (only paired with Interior, it's a steam upgrade to the interior detail)
-- **Deep clean** quoted (set-in stains, heavy pet hair, neglected cabin, its own box on the site)
-- **Diablo wheel cleaner** +$10 (a compound, not a brush; Basic & Essential; included in Premium)
+**Interior is now INCLUDED in all tiers. It is no longer a separate add-on.**
+
+- **Steam clean** +$20 (upgrades the included interior detail)
+- **Deep clean** quoted (set-in stains, heavy pet hair, neglected cabin — its own box on the site)
+- **Diablo wheel cleaner** — **INCLUDED FEATURE on every wash**, not an add-on
 - **Clay bar** +$20 (Essential; included in Premium)
-- **Trim and plastic shine** (Chemical Guys VRP): $30 exterior on Essential, $25 on Premium, $50 inside and out
-- **Ceramic on wheels** +$20 (Essential; included in Premium)
-- **Headlight restoration** +$30 (any package)
+- **Trim and plastic shine** (Chemical Guys VRP): $30 exterior on Essential, $25 on Premium, $50 inside and out on Essential, $45 on Premium
+- **Ceramic on wheels** +$25 (Essential; included in Premium)
+- **Headlight restoration** +$35 (any package)
 
 The website (config.js) and the AI planner already reflect all of these. If you change an add-on price, update **two places**: `config.js` (the website) AND the matching Cal.com booking question option label. Keep them matched.
 
-### Cal.com booking checkboxes: 5-minute finish (your account)
+### Cal.com booking updates needed
 
-The **Add-ons** booking question already exists on all three events with the original five options (Diablo, Clay bar, Interior, Steam clean, Headlight) and they still work. To match the new menu, open each event in app.cal.com -> Event Types -> (event) -> Advanced -> the **Add-ons** question -> Edit, and set the options to exactly this (then Save the question and Save the event):
+See `CAL_CHANGES_NEEDED.md` for exact step-by-step instructions. Summary:
 
-- **Basic** (interior $40): Interior (+$40), Steam clean (+$20), Deep clean (quoted), Diablo wheel cleaner (+$10), Headlight restoration (+$30). Remove Clay bar (it starts at Essential now).
-- **Essential** (interior $35): Interior (+$35), Steam clean (+$20), Deep clean (quoted), Diablo wheel cleaner (+$10), Clay bar (+$20), Trim and plastic shine (+$30 ext, $50 in and out), Ceramic on wheels (+$20), Headlight restoration (+$30).
-- **Premium** (interior $35): Interior (+$35), Steam clean (+$20), Deep clean (quoted), Trim and plastic shine (+$25 ext, $50 in and out), Headlight restoration (+$30). Diablo, Clay bar, and Ceramic on wheels are already included in Premium.
+- Update event type descriptions and prices to match the new tiers.
+- **Remove** the Diablo wheel cleaner add-on question from all events (it is now an included feature).
+- **Remove** the Interior add-on question from all events (interior is now included in every tier).
+- Update headlight restoration to +$35 (was $30).
+- Update ceramic on wheels to +$25 (was $20).
 
-Also worth a 10-second tidy: rename the Basic event's Diablo option from "Diablo wheel scrub" to "Diablo wheel cleaner" (it's a compound, not a brush). Nothing breaks until you do these; the website reads whatever labels are on the booking, and the copy already says "add-ons are options in the booking, or just ask Ellis."
-
-**Maintenance rule (important):** keep the word "interior" OUT of the Steam clean, Deep clean, and Trim option labels (use "Steam clean (+$20)", "Deep clean (quoted)", "Trim and plastic shine ... in and out", never "...with interior" or "interior and exterior"). The site detects add-ons by keyword, so "interior" inside another option would make that booking also read as a flat interior job. The "pick Interior too" hint lives in the question's main label, which is safe. Same idea: don't add a separate yes/no "Interior?" question with a "No interior" option, it always trips the interior keyword. Interior is just one of the checkboxes. And keep "ceramic" only in the "Ceramic on wheels" option (the detector looks for "ceramic ... wheel").
+**Maintenance rule (important):** keep the word "interior" OUT of the Steam clean, Deep clean, and Trim option labels. The site detects add-ons by keyword, so "interior" inside another option would make that booking also read as an interior job. Keep "ceramic" only in the "Ceramic on wheels" option.
 
 ## Punch card + first-time discount (automatic)
 
@@ -144,7 +151,7 @@ Your dad and Claude built this together. If you need code help, paste the error 
 
 ## Going to college
 
-When you're at U of M and Elion is on pause for the summer, you can:
+When you're at U of M and Wyatt Auto Detailing is on pause for the summer, you can:
 
 - Soft pause: set `nextAvailable` in `config.js` to something like `"Back in the fall"`.
 - Or pull the **Book** link from the nav: edit the `PAGES` list at the top of `nav.js` (the nav is shared across every page now, so one edit hides it everywhere).

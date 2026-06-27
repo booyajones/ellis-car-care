@@ -1,5 +1,5 @@
 /* ----------------------------------------------------------
-   Elion Car Care, site config
+   Wyatt Auto Detailing, site config
 
    Edit any of the values below to update the site.
    No coding needed. Save the file and refresh the page.
@@ -18,9 +18,9 @@
 const CONFIG = {
   business: {
     name: "Wyatt Auto Detailing",
-    tagline: "Hand-detailed, in your driveway. Ann Arbor.",
+    tagline: "Hand-detailed, in your driveway. Bay View & Petoskey, MI.",
     sub: "Hand wash, spray wax, ceramic coat. Done by hand on your block.",
-    description: "Hand auto detailing in Ann Arbor, Michigan. Two-bucket wash, spray wax, ceramic coat, and headlight restoration, done in your driveway by Ellis, a local detailer based in Burns Park.",
+    description: "Mobile hand auto detailing in the Bay View and Petoskey, Michigan area. Two-bucket wash, interior detailing, spray wax, ceramic coat, and headlight restoration, done in your driveway by Ellis.",
   },
 
   contact: {
@@ -51,8 +51,8 @@ const CONFIG = {
 
   // Cal.com booking URLs per tier. Ellis manages availability in his Cal.com
   // dashboard at app.cal.com. Each tier event type is configured with the
-  // matching duration (Basic 45m, Essential 90m, Premium 240m) and In-Person
-  // (Attendee Address) location so the customer's address becomes the job site.
+  // matching duration and In-Person (Attendee Address) location so the
+  // customer's address becomes the job site.
   calBaseUrl: "https://cal.com/elion",
   calEventBySlug: {
     basic: "basic",
@@ -62,61 +62,74 @@ const CONFIG = {
   // Human-readable duration per tier, surfaced on the "Pick a time" CTA in the
   // confirmation modal. Keep keys aligned with bundle ids + calEventBySlug.
   calDurationLabel: {
-    basic: "45 min",
-    essential: "1 hr",
+    basic: "45–60 min",
+    essential: "1–1.5 hr",
     premium: "from 4 hr",
   },
 
   // ----------------------------------------------------------
   // PACKAGES
-  // Base price is the exterior wash. Add-ons (below) are selected
-  // inside the Cal.com booking and priced on top. Premium is a quote
-  // (set quote: true) — the price field is the starting number.
+  // Prices are ranges (small car / large car). Essential always
+  // carries a "wash" marker — the visible label is handled in
+  // the render layer. Premium is quoted.
   // ----------------------------------------------------------
   bundles: [
     {
       id: "basic",
       name: "Basic",
-      price: 37,
+      priceMin: 38,
+      priceMax: 50,
+      priceLabel: "$38–50",
+      priceSub: "small car $38 / large car $50, quoted on site",
       time: "about 45 minutes",
-      summary: "A real hand wash. Every bit of dirt and grime off, car looks fresh.",
+      summary: "A real hand wash plus an interior vacuum. Every bit of dirt and grime off, car cleaned inside and out.",
       includes: [
         "Wheel and tire pressure rinse",
         "Pre-wash foam to lift grit",
         "Mr. Pink two-bucket contact wash",
         "Full body rinse",
         "Hand dry, no water spots",
+        "Interior vacuum",
       ],
       popular: false,
     },
     {
       id: "essential",
       name: "Essential",
-      price: 60,
-      time: "about 1 hour",
-      summary: "Everything in Basic, sealed with a wax protectant and tire shine.",
+      priceMin: 85,
+      priceMax: 110,
+      priceLabel: "$85–110",
+      priceSub: "small car $85 / large car $110",
+      // washLabel: true triggers rendering a "wash" marker/checkbox in tier lists
+      washLabel: true,
+      time: "about 1–1.5 hours",
+      summary: "A full wash and wax plus a thorough interior detail. This is the most complete everyday service.",
       includes: [
         "Everything in Basic",
         "Wax protectant for gloss and a few weeks of protection",
         "Tire shine",
+        "Interior: boar's hair brushing on all panels and interior parts",
+        "Mats and upholstery drill-scrubbed",
       ],
       popular: true,
     },
     {
       id: "premium",
       name: "Premium",
-      price: 200,
+      priceMin: 150,
+      priceMax: 200,
+      priceLabel: "$150–200",
       quote: true,
-      priceLabel: "from $200",
       time: "about 4 hours",
-      summary: "Clay bar, machine polish, and ceramic protection. Quoted on your car.",
+      summary: "Clay bar, machine polish, and ceramic protection on the paint and wheels. Interior gets the Essential-level treatment plus Chemical Guys VRP protectant on all vinyl, rubber, and plastic surfaces.",
       includes: [
         "Everything in Essential",
         "Clay bar decontamination",
         "Single-stage machine polish",
         "Ceramic protection on the paint, in place of wax",
-        "Ceramic protection on the wheels, included",
-        "Diablo wheel cleaner and tire shine, included",
+        "Ceramic protection on the wheels",
+        "Diablo wheel cleaner, included",
+        "Chemical Guys VRP vinyl/rubber/plastic shine and protectant, included",
       ],
       popular: false,
     },
@@ -127,28 +140,22 @@ const CONFIG = {
   // tiers:       which packages can add this (shown as a checkbox in booking)
   // includedIn:  packages where it's already part of the job (shown as "included")
   // price:       flat add-on price
-  // priceByTier: per-package price (Interior is $40 Basic, $35 on the higher
-  //              tiers; Trim is $30 Essential, $25 Premium for exterior)
+  // priceByTier: per-package price
   // quotedTiers: packages where this add-on is quoted, not flat-priced
   // requires:    add-on id this depends on (steam clean needs interior)
   // boxed:       render in its own highlighted box (Deep clean, always quoted)
+  // NOTE: Diablo wheel cleaner is no longer an add-on. It is an included
+  //       FEATURE on all packages — listed in the Premium includes above and
+  //       called out in the process section. It does not appear here.
   // These mirror the Cal.com booking questions on each event type.
   // ----------------------------------------------------------
   addons: [
-    {
-      id: "interior",
-      name: "Interior",
-      priceByTier: { basic: 40, essential: 35, premium: 35 },
-      tiers: ["basic", "essential", "premium"],
-      description: "Vacuum, full wipe-down, glass, door jambs, and vents. A standard interior clean. Set-in stains, heavy pet hair, or a neglected cabin go to a Deep clean (quoted), see below.",
-    },
     {
       id: "steam",
       name: "Steam clean",
       price: 20,
       tiers: ["basic", "essential", "premium"],
-      requires: "interior",
-      description: "A steam upgrade to the interior detail. Lifts set-in grime and sanitizes vents, seams, and the spots a wipe-down misses. Pairs with Interior.",
+      description: "Steam upgrades the interior detail. Lifts set-in grime and sanitizes vents, seams, and the spots a wipe-down misses.",
     },
     {
       id: "deepclean",
@@ -159,20 +166,12 @@ const CONFIG = {
       description: "For an interior that needs more than a standard clean: set-in stains, spills, heavy pet hair, or a long-neglected cabin. Ellis quotes it once he sees the car.",
     },
     {
-      id: "diablo",
-      name: "Diablo wheel cleaner",
-      price: 10,
-      tiers: ["basic", "essential"],
-      includedIn: ["premium"],
-      description: "Diablo is a wheel-cleaning compound, not a brush. It breaks down brake dust and grime baked onto the wheels, past what a rinse can lift.",
-    },
-    {
       id: "claybar",
       name: "Clay bar",
       price: 20,
       tiers: ["essential"],
       includedIn: ["premium"],
-      description: "Clay bar decontamination pulls embedded grit and fallout the wash can't reach, so the paint feels glass-smooth. The right prep before wax or ceramic.",
+      description: "Clay bar decontamination pulls embedded grit and fallout the wash cannot reach, so the paint feels glass-smooth. The right prep before wax or ceramic.",
     },
     {
       id: "trim",
@@ -212,7 +211,8 @@ const CONFIG = {
       "Foam cannon and Mr. Pink pH-balanced soap",
       "Microfiber sorted by job, color-coded",
       "Cordless vacuum, brushes, and detailing swabs",
-      "Diablo wheel cleaner, clay bar, wax, polish, and ceramic",
+      "Diablo wheel cleaner — included on every wash",
+      "Clay bar, wax, polish, and ceramic",
       "Chemical Guys VRP for trim and plastics",
     ],
     youProvide: [
@@ -241,7 +241,7 @@ const CONFIG = {
     },
     {
       q: "What products do you use?",
-      a: "Mr. Pink pH-balanced soap with a two-bucket method and a foam cannon, microfiber sorted by job, Diablo cleaner for the wheels, clay bar for paint decon, and Chemical Guys VRP for trim. Essential gets a wax protectant; Premium gets a machine polish and a ceramic coat. I'll talk you through anything specific to your car.",
+      a: "Mr. Pink pH-balanced soap with a two-bucket method and a foam cannon, microfiber sorted by job, Diablo cleaner for the wheels (included on every wash), clay bar for paint decon, and Chemical Guys VRP for trim. Essential gets a wax protectant; Premium gets a machine polish and a ceramic coat. I'll talk you through anything specific to your car.",
     },
     {
       q: "How do I know it'll be done well?",
@@ -256,23 +256,25 @@ const CONFIG = {
       a: "Yes. I detail your car in your own driveway. Burns Park is free travel and gets the fastest scheduling. Greater Ann Arbor (48104, 48103, 48105) adds $5.",
     },
     {
-      q: "How much does car detailing cost in Ann Arbor?",
-      a: "A real hand wash is $37. A wash plus wax and tire shine is $60. A full ceramic detail is from $200, quoted on your car. Add an interior for $40 on Basic, or $35 with Essential or Premium. No minimums and no surprise fees.",
+      q: "How much does car detailing cost?",
+      a: "Basic is $38–50 (small car $38, large car $50) — a full hand wash plus interior vacuum. Essential is $85–110, which adds a wax finish and a thorough interior detail with boar's hair brushing and drill-scrubbed mats. Premium is $150–200, the full paint correction and ceramic treatment. No minimums and no surprise fees.",
+    },
+    {
+      q: "What does detailing include vs a regular wash?",
+      a: "A detail goes deeper than a wash. The paint gets decontaminated, corrected, and protected. The interior gets properly cleaned, not just wiped down. See our <a href='/detailing'>What is a detail?</a> page for the full breakdown.",
     },
   ],
 
   formspreeId: "",
 
-  // Dollar amount off when a customer bundles interior + exterior in one visit
-  // (i.e. accepts the "Add interior" upsell on the chat recommendation screen,
-  // or originally chose "Both inside and out"). Set to 0 to disable the offer.
+  // Dollar amount off when a customer bundles interior + exterior in one visit.
+  // Set to 0 to disable the offer.
   bundleDiscount: 10,
 
   referral: {
     headline: "Tell a neighbor.",
     body: "Send a neighbor to Wyatt Auto Detailing. When they book, you both get $10 off your next wash.",
     shareText: "Heads up, you should book Wyatt Auto Detailing for your car. Ellis details by hand in your driveway. Local, careful, the work is good:",
-    // Now that elioncarcare.com is live, point shares directly at it.
     shareUrl: "https://elioncarcare.com",
   },
 };
