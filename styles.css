@@ -755,11 +755,8 @@ section {
   transform: translateY(-2px);
   background: var(--surface-soft);
 }
-.bundle.popular {
-  border-color: var(--accent);
-  border-width: 1.5px;
-  background: linear-gradient(180deg, rgba(229, 162, 53, 0.05), transparent 30%), var(--surface);
-}
+/* "Most popular" highlight outline removed per request. Essential keeps its
+   orange tier stripe + orange CTA, but no special border/tint or badge. */
 .bundle-head {
   display: flex;
   align-items: baseline;

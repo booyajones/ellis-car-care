@@ -79,7 +79,9 @@
       const starterClass = b.id === "basic" ? " bundle--starter" : "";
       card.className = "bundle" + (b.popular ? " popular" : "") + starterClass;
       card.dataset.tier = b.id;
-      const popularBadge = b.popular ? '<span class="popular-badge">Most popular</span>' : "";
+      // "Most popular" badge removed per request. The popular flag still drives
+      // the orange CTA styling via .bundle.popular .bundle-cta.
+      const popularBadge = "";
       const calSlug = (cfg.calEventBySlug && cfg.calEventBySlug[b.id]) || b.id;
       const calBase = cfg.calBaseUrl || "https://cal.com/elion";
       const calUrl = `${calBase}/${calSlug}`;
