@@ -30,7 +30,7 @@ Ordering goes through **Cal.com** now. The `/book` page leads with the calendar.
 
 1. They pick a tier (Basic / Essential / Premium) on `/book`
 2. They pick a time slot in the embedded Cal.com calendar
-3. They check off add-ons (Diablo wheel scrub, clay bar, interior, headlights) right in the Cal.com booking
+3. They check off add-ons (steam clean, clay bar, headlights, etc.) right in the Cal.com booking — interior is included, Diablo is included, no add-on needed for those
 4. **You get a Cal.com email + it shows in your Cal.com dashboard** at app.cal.com. The booking has their name, phone, address, the add-ons they picked, and any notes.
 5. **You confirm the total when you arrive** (the site quotes a starting number; you finalize it based on add-ons, deep interior, etc.)
 
