@@ -678,12 +678,14 @@ section {
   /* Essential + Premium sit side by side in row 1; Starter spans full width below */
   .bundles { grid-template-columns: repeat(2, 1fr); gap: var(--s-5); }
 
-  /* Starter bar: full-width, horizontal condensed layout */
-  .bundle--starter {
+  /* Starter bar: full-width, horizontal condensed layout.
+     Selector is scoped to .bundles for specificity so it wins over the
+     base .bundle{flex-direction:column} defined later in the stylesheet. */
+  .bundles .bundle--starter {
     grid-column: 1 / -1;
     flex-direction: row;
     align-items: center;
-    padding: var(--s-4) var(--s-5);
+    padding: var(--s-4) var(--s-6);
     gap: var(--s-5);
   }
   .bundle--starter .bundle-head {
@@ -710,6 +712,7 @@ section {
     flex: 1;
     font-size: 0.88rem;
     margin: 0;
+    align-self: center;
   }
   .bundle--starter .bundle-includes {
     display: none;
@@ -719,8 +722,10 @@ section {
   }
   .bundle--starter .bundle-cta {
     margin-top: 0;
+    margin-left: auto;
     flex-shrink: 0;
     white-space: nowrap;
+    align-self: center;
   }
   .bundle--starter .tier-accent {
     display: none;
