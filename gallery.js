@@ -5,7 +5,7 @@
 
    1. "In the wild" — process photos from images/process/wash-NN-*.
       Currently 12 hand-curated shots of Ellis foam-washing cars
-      in actual Burns Park driveways. Lives in WASH_PHOTOS (below).
+      in Bay View and Petoskey driveways. Lives in WASH_PHOTOS (below).
 
    2. "Recent jobs" — before/after pairs from images/jobs/, driven
       by CONFIG.JOBS_COUNT. Empty by default until Ellis starts
@@ -19,15 +19,15 @@
 
   // 16 photos: 8 new detailed shots + 8 original foam-wash shots.
   const WASH_PHOTOS = [
-    { id: "01", alt: "Black Mazda CX-5 freshly detailed in a Burns Park driveway" },
-    { id: "02", alt: "Wheel and tire close-up after a hand detail, Burns Park" },
+    { id: "01", alt: "Black Mazda CX-5 freshly detailed in a Bay View driveway" },
+    { id: "02", alt: "Wheel and tire close-up after a hand detail, Bay View" },
     { id: "03", alt: "Side profile of a clean car in a neighborhood driveway" },
-    { id: "04", alt: "Detail shot from a recent wash in Ann Arbor" },
+    { id: "04", alt: "Detail shot from a recent wash in Petoskey" },
     { id: "05", alt: "Close-up detail on a freshly washed vehicle" },
     { id: "06", alt: "Car exterior after a full hand detail by Ellis" },
-    { id: "07", alt: "Black SUV after a hand wash and wax, driveway in Burns Park" },
+    { id: "07", alt: "Black SUV after a hand wash and wax, driveway in Bay View" },
     { id: "08", alt: "Wheel close-up after tire shine treatment — after" },
-    { id: "09", alt: "Ellis rinsing a dark SUV in a Burns Park driveway, water arc visible" },
+    { id: "09", alt: "Ellis rinsing a dark SUV in a Bay View driveway, water arc visible" },
     { id: "10", alt: "Foam cannon applying suds to the side panel of a black SUV" },
     { id: "11", alt: "Dark SUV fully foamed up before rinse, side profile" },
     { id: "12", alt: "Front three-quarter shot of a car covered in fresh foam, garage in background" },
@@ -35,7 +35,7 @@
     { id: "14", alt: "Foam cannon coating the hood of a black sedan, top-down view" },
     { id: "15", alt: "Foam covering the rear hatch of a black Mazda CX-5" },
     { id: "16", alt: "Rear corner of a Mazda CX-5 with foam mist spraying onto the trunk" },
-    { id: "17", alt: "Drill brush scrub detail on a wheel, Burns Park driveway" },
+    { id: "17", alt: "Drill brush scrub detail on a wheel, Bay View driveway" },
   ];
 
   function tryImage(src) {

@@ -47,7 +47,7 @@
 
   /* 1. Wire SMS / tel / mail links */
 
-  const smsBody = `Hi Ellis, I'd like to book a detail. My car is a ____. I'm in Burns Park / 48104. Available: ____.`;
+  const smsBody = `Hi Ellis, I'd like to book a detail. My car is a ____. I'm in Bay View / Petoskey area. Available: ____.`;
   const smsHref = `sms:${cfg.contact.phoneHref}?&body=${enc(smsBody)}`;
   $$("[data-sms-link]").forEach((a) => a.setAttribute("href", smsHref));
   $$("[data-tel-link]").forEach((a) => a.setAttribute("href", `tel:${cfg.contact.phoneHref}`));
@@ -87,23 +87,25 @@
       // Wash label: Essential carries a visible "wash" marker
       const washBadge = b.washLabel ? ' <span class="bundle-wash-marker">wash</span>' : "";
 
-      // Per-card add-on hint. Included add-ons (Premium) listed as "included",
-      // optional ones as "+ name $price", interior as a quoted note on Premium.
+      // Per-card add-on list. Included add-ons shown as "included" (accent),
+      // optional ones show name + price on their own line.
+      // Boxed add-ons (Deep clean) get their own box below, not this list.
       const included = addonsForTier(b.id).filter(a => addonIsIncluded(a, b.id));
-      // Boxed add-ons (Deep clean) get their own box below, not the hint line.
       const optional = addonsForTier(b.id).filter(a => !addonIsIncluded(a, b.id) && !a.boxed);
-      const optBits = optional.map(a => {
-        if (addonIsQuoted(a, b.id)) return `${escapeHtml(a.name.toLowerCase())} quoted`;
-        return `${escapeHtml(a.name.toLowerCase())} +$${addonPriceForTier(a, b.id)}`;
-      });
-      let hint = "";
-      if (included.length) {
-        hint += `<span class="bundle-addon-inc">${included.map(a => escapeHtml(a.name)).join(" + ")} included.</span> `;
-      }
-      if (optBits.length) {
-        hint += `<span class="bundle-addon-opt">Add ${optBits.join(", ")} in booking.</span>`;
-      }
-      const hintHtml = hint ? `<p class="bundle-addons">${hint}</p>` : "";
+      const listItems = [
+        ...included.map(a =>
+          `<li><span class="addon-name">${escapeHtml(a.name)}:</span> <span class="addon-included">included</span></li>`
+        ),
+        ...optional.map(a => {
+          const price = addonIsQuoted(a, b.id)
+            ? `<span class="addon-price">quoted</span>`
+            : `<span class="addon-price">$${addonPriceForTier(a, b.id)}</span>`;
+          return `<li><span class="addon-name">${escapeHtml(a.name)}:</span> ${price}</li>`;
+        }),
+      ];
+      const hintHtml = listItems.length
+        ? `<ul class="bundle-addons bundle-addons-list">${listItems.join("")}</ul>`
+        : "";
 
       card.innerHTML = `
         <span class="tier-accent" data-tier="${b.id}" aria-hidden="true"></span>

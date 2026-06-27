@@ -759,6 +759,51 @@ section {
 }
 .bundle-addon-inc { color: var(--accent); font-weight: 600; }
 .bundle-addon-opt { color: var(--muted); }
+
+/* Add-on scannable list under each package card */
+.bundle-addons-list {
+  list-style: none;
+  padding: 0;
+  margin: 0.35rem 0 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  font-size: 0.82rem;
+}
+.bundle-addons-list li {
+  display: flex;
+  align-items: baseline;
+  gap: 0.35rem;
+  line-height: 1.4;
+}
+.bundle-addons-list .addon-name {
+  color: var(--ink-soft);
+}
+.bundle-addons-list .addon-price {
+  color: var(--muted);
+  white-space: nowrap;
+}
+.bundle-addons-list .addon-included {
+  color: var(--accent);
+  font-weight: 600;
+  font-size: 0.78rem;
+  letter-spacing: 0.02em;
+}
+
+/* Detail CTA button: orange outline, not as loud as btn-primary */
+.btn-detail-cta {
+  background: transparent;
+  color: var(--accent);
+  border-color: var(--accent);
+  font-weight: 600;
+}
+.btn-detail-cta:hover {
+  background: var(--accent-soft);
+  border-color: var(--accent);
+  color: var(--accent);
+  transform: translateY(-1px);
+}
+.btn-detail-cta:active { transform: translateY(0); }
 .bundle-includes {
   list-style: none;
   padding: 0;
@@ -1185,7 +1230,7 @@ section {
 .area-art img {
   width: clamp(220px, 26vw, 320px);
   height: auto;
-  /* Image has transparent bg, cream silhouette, amber Ann Arbor star. */
+  /* Image has transparent bg, cream silhouette, amber Michigan star. */
 }
 
 /* FAQ ------------------------------------------------------ */

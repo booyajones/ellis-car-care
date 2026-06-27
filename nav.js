@@ -21,7 +21,7 @@
   const PHONE = "(628) 252-0740";
   const PHONE_HREF = "+16282520740";
   const SMS_BODY = encodeURIComponent(
-    "Hi Ellis, I'd like to book a detail. My car is a ____. I'm in Burns Park / 48104. Available: ____."
+    "Hi Ellis, I'd like to book a detail. My car is a ____. I'm in Bay View / Petoskey area. Available: ____."
   );
 
   function currentPath() {
@@ -40,7 +40,7 @@
         <span class="brand-stripe" aria-hidden="true"></span>
         <span class="brand-stack">
           <span class="brand-name">Wyatt</span>
-          <span class="brand-mono">Auto Detailing · Ann Arbor</span>
+          <span class="brand-mono">Auto Detailing · Bay View</span>
         </span>
       </a>
       <nav class="topnav" aria-label="Primary">${navItems}</nav>
@@ -55,7 +55,7 @@
         <div class="nav-drawer-head">
           <a class="brand" href="/" aria-label="Wyatt Auto Detailing home">
             <span class="brand-name">Wyatt Auto Detailing</span>
-            <span class="brand-mono">ANN ARBOR · MI</span>
+            <span class="brand-mono">BAY VIEW · MI</span>
           </a>
           <button class="nav-drawer-close" type="button" aria-label="Close menu">
             <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
@@ -84,19 +84,19 @@
       <div class="container footer-grid">
         <div>
           <p class="footer-brand">Wyatt Auto Detailing</p>
-          <p class="muted small">Mobile car detailing in Ann Arbor, MI.</p>
+          <p class="muted small">Mobile car detailing in Bay View and Petoskey, MI.</p>
         </div>
         <div>
           <p><a href="tel:${PHONE_HREF}" data-tel-link>${PHONE}</a></p>
           <p><a href="mailto:wyattauto44@gmail.com">wyattauto44@gmail.com</a></p>
         </div>
         <div>
-          <p class="muted small">Serving Burns Park and ZIPs 48104, 48103, 48105.</p>
+          <p class="muted small">Serving Bay View and the greater Petoskey area.</p>
           <p class="muted small">Comes to your driveway. No drop-off.</p>
         </div>
       </div>
       <hr class="stripe-rule is-wide" aria-hidden="true">
-      <p class="footer-fine muted small">© ${year} WYATT AUTO DETAILING · MADE IN ANN ARBOR</p>
+      <p class="footer-fine muted small">© ${year} WYATT AUTO DETAILING · BAY VIEW, MI</p>
     `;
   }
 

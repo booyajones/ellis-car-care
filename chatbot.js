@@ -151,8 +151,8 @@
         "• Add-ons: Steam clean +$20 · Clay bar +$20 (on Essential) · Trim shine from $25 · Ceramic wheels +$25 · Headlights +$35.",
         "• Deep clean (set-in stains, heavy pet hair, neglected interior): quoted on your car.",
         "• Diablo wheel cleaner is included on every wash, not an add-on.",
-        "• First-time customer: 15% off your first wash, taken off your total.",
-        "Burns Park is free travel. Greater Ann Arbor (48104/48103/48105) adds $5.",
+        "• Returning customer: 15% off your second wash, taken off your total.",
+        "Bay View is free travel. Greater Petoskey area is covered with no fee.",
       ],
       options: [
         { label: "Help me pick", value: "back", next: () => "carType" },
@@ -370,10 +370,10 @@
 
     location: {
       id: "location",
-      prompt: () => "Where's the car? (Burns Park is free, Greater Ann Arbor adds $5.)",
+      prompt: () => "Where's the car? (Bay View is free. Greater Petoskey area is covered.)",
       options: [
-        { label: "Burns Park", value: "burns" },
-        { label: "Ann Arbor (48104 / 48103 / 48105)", value: "annarbor" },
+        { label: "Bay View", value: "burns" },
+        { label: "Greater Petoskey area", value: "annarbor" },
         { label: "Somewhere else nearby", value: "nearby" },
       ],
       next: () => "notes",
@@ -488,10 +488,8 @@
     const base = PRICES[pkg];
     const priceRangeLabel = PRICE_RANGE_LABEL[pkg];
     const addonTotal = addons.reduce((sum, ad) => sum + (ad.price || 0), 0);
-    const travel = a.location === "annarbor" ? 5 : 0;
-    const travelNote = a.location === "annarbor"
-      ? " (+$5 travel)"
-      : (a.location === "nearby" ? " (Ellis will confirm travel after you book)" : "");
+    const travel = 0;
+    const travelNote = a.location === "nearby" ? " (Ellis will confirm travel after you book)" : "";
 
     const bundleApplied = false;
     const bundleDiscount = 0;
@@ -555,7 +553,7 @@
 
     if (rec.travel > 0) {
       lines.push("");
-      lines.push(`Travel: +$${rec.travel} for Greater Ann Arbor.`);
+      lines.push(`Travel: +$${rec.travel} (outside the Petoskey area).`);
     } else if (rec.travelNote) {
       lines.push("");
       lines.push(rec.travelNote.trim());
@@ -686,7 +684,7 @@
     return ({ thisweek: "This week", weekend: "This weekend", nextweek: "Next week", flexible: "Flexible" })[t] || t || "not specified";
   }
   function prettyLocation(l) {
-    return ({ burns: "Burns Park", annarbor: "Greater Ann Arbor (48104/03/05)", nearby: "Nearby, please confirm travel" })[l] || l || "not specified";
+    return ({ burns: "Bay View", annarbor: "Greater Petoskey area", nearby: "Nearby, please confirm travel" })[l] || l || "not specified";
   }
 
   function openSms(prefill) {
@@ -749,7 +747,7 @@
           <span class="chat-avatar" aria-hidden="true">E</span>
           <div>
             <p id="chat-title" class="chat-title">Wash Planner</p>
-            <p class="chat-sub">Built by Ellis · Burns Park</p>
+            <p class="chat-sub">Built by Ellis · Bay View</p>
           </div>
         </div>
         <div class="chat-head-actions">

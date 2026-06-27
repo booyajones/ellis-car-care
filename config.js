@@ -37,12 +37,12 @@ const CONFIG = {
   },
 
   serviceArea: {
-    primary: "Burns Park, Ann Arbor",
+    primary: "Bay View, Petoskey",
     primaryFree: true,
-    extended: "Greater Ann Arbor (48104, 48103, 48105)",
-    extendedFee: "$5",
-    lat: 42.2628,
-    lng: -83.7281,
+    extended: "Greater Petoskey area",
+    extendedFee: "",
+    lat: 45.3733,
+    lng: -84.9550,
     radiusMeters: 4000,
   },
 
@@ -253,7 +253,7 @@ const CONFIG = {
     },
     {
       q: "Do you come to me?",
-      a: "Yes. I detail your car in your own driveway. Burns Park is free travel and gets the fastest scheduling. Greater Ann Arbor (48104, 48103, 48105) adds $5.",
+      a: "Yes. I detail your car in your own driveway. Bay View is free travel and gets the fastest scheduling. Greater Petoskey area is covered too. Anywhere further out, text me.",
     },
     {
       q: "How much does car detailing cost?",

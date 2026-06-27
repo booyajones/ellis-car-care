@@ -233,7 +233,7 @@ body.nav-drawer-open { overflow: hidden; }
   text-align: center;
 }
 .service-map-fallback::before {
-  content: "📍 Burns Park, Ann Arbor, MI";
+  content: "📍 Bay View, Petoskey, MI";
   display: block;
   font-family: var(--display);
   font-size: 1.2rem;

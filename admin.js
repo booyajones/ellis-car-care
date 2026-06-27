@@ -160,7 +160,7 @@
         <div>📞 <a href="tel:${escapeHtml(phoneHref)}">${escapeHtml(order.phone)}</a> · <a href="sms:${escapeHtml(phoneHref)}">text</a></div>
         <div>📍 <a href="${escapeHtml(mapHref)}" target="_blank" rel="noopener">${escapeHtml(order.address)}</a></div>
         ${order.preferred_timing ? `<div>🕐 ${escapeHtml(order.preferred_timing)}</div>` : ""}
-        ${order.location === "annarbor" ? '<div style="color: var(--muted);">+$5 travel (Greater Ann Arbor)</div>' : ""}
+        ${order.location === "annarbor" ? '<div style="color: var(--muted);">Greater Petoskey area</div>' : ""}
         ${order.first_time ? '<div style="color: var(--accent);">⭐ First-time customer (15% discount applied)</div>' : ""}
       </div>
       ${order.notes ? `<div class="order-card-notes">"${escapeHtml(order.notes)}"</div>` : ""}
