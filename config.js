@@ -211,7 +211,7 @@ const CONFIG = {
       "Foam cannon and Mr. Pink pH-balanced soap",
       "Microfiber sorted by job, color-coded",
       "Cordless vacuum, brushes, and detailing swabs",
-      "Diablo wheel cleaner — included on every wash",
+      "Diablo wheel cleaner, included on every wash",
       "Clay bar, wax, polish, and ceramic",
       "Chemical Guys VRP for trim and plastics",
     ],
@@ -257,7 +257,7 @@ const CONFIG = {
     },
     {
       q: "How much does car detailing cost?",
-      a: "Basic is $38–50 (small car $38, large car $50) — a full hand wash plus interior vacuum. Essential is $85–110, which adds a wax finish and a thorough interior detail with boar's hair brushing and drill-scrubbed mats. Premium is $150–200, the full paint correction and ceramic treatment. No minimums and no surprise fees.",
+      a: "Basic is $38–50 (small car $38, large car $50), a full hand wash plus interior vacuum. Essential is $85–110, which adds a wax finish and a thorough interior detail with boar's hair brushing and drill-scrubbed mats. Premium is $150–200, the full paint correction and ceramic treatment. No minimums and no surprise fees.",
     },
     {
       q: "What does detailing include vs a regular wash?",
